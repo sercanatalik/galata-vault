@@ -599,3 +599,101 @@ fn a_token_can_do_everything_its_scope_allows() {
     let again = read.audit(&store).unwrap();
     assert_eq!(again.new_rows, 0);
 }
+
+/// The token list goes to the owner and to an admin token, and to nobody
+/// else (`docs/spec/http-api.md#2`). A lesser scope is refused by name,
+/// never shown an empty list, which would say the vault has no tokens.
+#[test]
+fn an_admin_token_lists_tokens_and_lesser_scopes_are_refused() {
+    let server = start();
+    let (_m, mut owner) = project(&server.url, &["acme/dev"]);
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    env.set_secret("A", b"a").unwrap();
+    env.set_secret("B", b"b").unwrap();
+    let admin = env.mint(Scope::Admin, 0, &[]).unwrap();
+    let read = env.mint(Scope::Read, 0, &["A".to_owned()]).unwrap();
+    let meta = env.mint(Scope::Meta, 0, &[]).unwrap();
+    owner.close(env).unwrap();
+
+    // The admin token sees every token, with the read token's allow-list
+    // decrypted to the name it names.
+    let admin_vault = Vault::new(admin.expose(), &server.url).unwrap();
+    let listed = admin_vault.tokens().unwrap();
+    assert_eq!(listed.len(), 3, "{listed:?}");
+    let allow: Vec<_> = listed.iter().filter_map(|t| t.only.clone()).collect();
+    assert_eq!(allow, vec![vec!["A".to_owned()]], "{listed:?}");
+
+    // The owner sees the same three.
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    assert_eq!(env.tokens().unwrap().len(), 3);
+    owner.close(env).unwrap();
+
+    // Every other scope is refused, naming the scope it lacks.
+    for (scope, token) in [(Scope::Read, &read), (Scope::Meta, &meta)] {
+        let v = Vault::new(token.expose(), &server.url).unwrap();
+        let e = v.tokens().unwrap_err();
+        assert_eq!(e.kind(), ErrorKind::Forbidden, "{scope}: {e}");
+        assert!(e.to_string().contains("admin"), "{scope}: {e}");
+    }
+}
+
+/// An `admin` token may revoke, as the protocol says (`http-api.md#2`), and
+/// gets the same forward-only warning the owner gets, because it cannot
+/// rotate: the keys the revoked token held still open what its holder
+/// copied. Every lesser scope is refused by name.
+#[test]
+fn an_admin_token_revokes_and_is_warned_that_it_cannot_rotate() {
+    let server = start();
+    let (_m, mut owner) = project(&server.url, &["acme/dev"]);
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    env.set_secret("S", b"v").unwrap();
+    let admin = env.mint(Scope::Admin, 0, &[]).unwrap();
+    let read = env.mint(Scope::Read, 0, &[]).unwrap();
+    let meta = env.mint(Scope::Meta, 0, &[]).unwrap();
+    owner.close(env).unwrap();
+
+    let seen = Arc::new(Recorder::default());
+    let api = ClientBuilder::new(&server.url)
+        .events(seen.clone())
+        .build()
+        .unwrap();
+    let admin_vault = Vault::with_api(admin.expose(), &api).unwrap();
+
+    // Revoking the read token: forward-only, and it says what that token held.
+    let revocation = admin_vault.revoke(&read.id()).unwrap();
+    assert!(revocation.forward_only(), "{revocation:?}");
+    assert!(revocation.held_keys().contains("the secret key"));
+    let warned = seen.warnings.lock().unwrap().clone();
+    assert!(
+        warned.iter().any(|w| matches!(
+            w,
+            Warning::ForwardOnlyRevocation { scope, .. } if scope == "read"
+        )),
+        "{warned:?}"
+    );
+
+    // The server really dropped it.
+    assert_eq!(
+        Vault::new(read.expose(), &server.url).unwrap_err().code(),
+        "unauthorized"
+    );
+
+    // A meta token holds nothing that outlives revocation, so no warning.
+    seen.warnings.lock().unwrap().clear();
+    let revocation = admin_vault.revoke(&meta.id()).unwrap();
+    assert!(!revocation.forward_only(), "{revocation:?}");
+    assert!(seen.warnings.lock().unwrap().is_empty());
+
+    // A lesser scope may not revoke at all: refused by scope, client-side,
+    // before anything is sent.
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    let victim = env.mint(Scope::Read, 0, &[]).unwrap();
+    let bystander = env.mint(Scope::Read, 0, &[]).unwrap();
+    owner.close(env).unwrap();
+    let read_vault = Vault::new(bystander.expose(), &server.url).unwrap();
+    let e = read_vault.revoke(&victim.id()).unwrap_err();
+    assert_eq!(e.kind(), ErrorKind::Forbidden, "{e}");
+    assert!(e.to_string().contains("admin"), "{e}");
+    // And the victim still works, so nothing was sent.
+    assert!(Vault::new(victim.expose(), &server.url).is_ok());
+}

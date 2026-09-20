@@ -4,7 +4,7 @@
 use std::ops::Deref;
 
 use galata_vault_client::Warning;
-use galata_vault_proto::api::{Scope, VaultStatus};
+use galata_vault_proto::api::{Scope, TokenSummary, VaultStatus};
 use galata_vault_proto::ids::TokenId;
 use galata_vault_proto::path::EnvPath;
 use galata_vault_proto::tolerant::Tolerant;
@@ -173,10 +173,30 @@ impl Environment {
         &self.status
     }
 
+    /// The token list from the status this environment was opened with.
+    ///
+    /// `None` is not an empty vault: it is a server that did not send the
+    /// list, which for an owner-opened environment should not happen. It is
+    /// refused rather than flattened away, because the one caller that most
+    /// needs it is the guard in [`Environment::mint`], which exists to stop
+    /// a mint while a token of an unknown scope is present — and an absent
+    /// list is exactly when that guard would otherwise wave everything
+    /// through. `galata_vault_seal::SealError::TokensNotVisible` refuses the
+    /// same way for a rotation.
+    fn visible_tokens(&self) -> Result<&[TokenSummary], Error> {
+        self.status.tokens.as_deref().ok_or_else(|| {
+            Error::other(format!(
+                "{}: the server did not send this vault's token list; \
+                 ask for status as the owner",
+                self.path
+            ))
+        })
+    }
+
     /// The vault's tokens, as of its status at open, with a read token's
     /// allow-list names decrypted.
     pub fn tokens(&self) -> Result<Vec<TokenInfo>, Error> {
-        let tokens = self.status.tokens.clone().unwrap_or_default();
+        let tokens = self.visible_tokens()?.to_vec();
         let names: std::collections::HashMap<_, _> = self
             .handle()
             .list()?
@@ -207,13 +227,7 @@ impl Environment {
     /// whose scope this client does not know: a newer client has used the
     /// vault in a way this one cannot account for (`docs/spec/http-api.md#7`).
     pub fn mint(&self, scope: Scope, ttl_secs: u64, only: &[String]) -> Result<MintedToken, Error> {
-        if let Some(t) = self
-            .status
-            .tokens
-            .iter()
-            .flatten()
-            .find(|t| !t.scope.is_known())
-        {
+        if let Some(t) = self.visible_tokens()?.iter().find(|t| !t.scope.is_known()) {
             return Err(Error::unsupported(format!(
                 "{}: token {} has scope {:?}, which this client does not know; upgrade before minting",
                 self.path,

@@ -1,0 +1,52 @@
+# What the dependency tree may be licensed under, and where it may come from.
+#
+# galata-vault is MIT, and that promise is only as good as the tree
+# underneath it.
+#
+# NOT RUN BY scripts/check-all.sh. That suite is offline and fast; `cargo deny`
+# wants an advisory database and therefore a network. It runs as its own CI job:
+#
+#   cargo deny check
+#
+# ALLOW-LIST, NOT A DENY-LIST. A new dependency under an unexamined licence
+# should stop and be looked at; adding a line here is cheap and deliberate.
+
+[licenses]
+allow = [
+    # What we are, and most of the tree.
+    "MIT",
+    "Apache-2.0",
+    # The Rust project's own toolchain crates.
+    "Apache-2.0 WITH LLVM-exception",
+    # Permissive, attribution only.
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    # rustls and ring. Functionally equivalent to MIT.
+    "ISC",
+    # BurntSushi crates (memchr and friends).
+    "Unlicense",
+    # foldhash, reached through hashbrown (rusqlite, indexmap). OSI-approved,
+    # permissive, no attribution required in binaries.
+    "Zlib",
+    # The ICU/Unicode data crates pulled in through idna.
+    "Unicode-3.0",
+    # Data, not code: the CA root bundle shipped by webpki-roots.
+    "CDLA-Permissive-2.0",
+]
+
+# cargo-deny's default, deliberately not loosened.
+confidence-threshold = 0.8
+
+[bans]
+# Duplicate-version policy is a separate question from licensing.
+multiple-versions = "allow"
+
+[advisories]
+# A vulnerable dependency in a secrets service is a stop, not a warning.
+yanked = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+# crates.io only. A git dependency arriving unannounced is worth a stop.
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

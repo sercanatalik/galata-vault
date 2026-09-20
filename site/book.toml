@@ -1,0 +1,45 @@
+# galata-vault docs, built with mdBook (site/README.md).
+#
+# `src` is staged by site/stage.py: a mirror of the repository's Markdown
+# (README.md, docs/, the crate READMEs, deploy/README.md) plus a generated
+# SUMMARY.md, so every relative link in the sources keeps working. Run
+# site/build.sh, not `mdbook build` alone.
+
+[book]
+title = "galata vault"
+description = "End-to-end-encrypted secrets and config documents for software, with no accounts."
+authors = ["The galata-vault contributors"]
+language = "en"
+src = "_src"
+
+[build]
+build-dir = "_build/docs"
+create-missing = false
+
+[output.html]
+theme = "theme"
+default-theme = "light"
+preferred-dark-theme = "coal"
+additional-css = ["galata.css"]
+additional-js = ["galata.js"]
+git-repository-url = "https://github.com/sercanatalik/galata-vault"
+edit-url-template = "https://github.com/sercanatalik/galata-vault/edit/main/{path}"
+site-url = "/galata-vault/docs/"
+no-section-label = true
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true
+limit-results = 20
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 2
+
+[output.html.print]
+enable = true

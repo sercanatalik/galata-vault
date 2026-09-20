@@ -1,0 +1,39 @@
+[package]
+name = "galata-vault-server-core"
+description = "galata-vault server rules as a synchronous library: authentication, scopes, quotas, records, critical operations and journal replay. Links no HTTP stack, async runtime or decryption code. Implementation detail of galata-vault: depend on `galata-vault`."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["galata-vault", "server", "secrets", "e2ee"]
+categories = ["authentication", "cryptography"]
+# Sources, the README and the licence text only: tests and fixtures that
+# read the repository (testdata/, docs/spec/) stay in the workspace.
+# scripts/check-packaging.sh checks the list and the licence copies.
+include = ["/src/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+# What the server holds, and nothing that opens it: galata-vault-proto verifies
+# signatures with public keys, galata-vault-store keeps ciphertext.
+# scripts/check-server-linkage.sh holds the direct workspace set to exactly
+# these two, and forbids any HTTP, async or decryption crate at any depth.
+[dependencies]
+galata-vault-proto.workspace = true
+galata-vault-store.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+# The unit tests sign requests and records as a real client would.
+[dev-dependencies]
+galata-vault-keys.workspace = true
+galata-vault-seal.workspace = true
+tempfile.workspace = true

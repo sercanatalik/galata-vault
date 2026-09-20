@@ -1,0 +1,278 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "records",
+  "spec": "records.md#4",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "records-001",
+      "description": "a secret value, by the secret writer key",
+      "spec": "records.md#4",
+      "op": "sign",
+      "inputs": {
+        "writer_seed": "6f188a1c2fb9c81ebd5461f702eb0b0da671b389a78d3f72d584289ca6bd26d9",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5"
+      },
+      "expect": "success",
+      "outputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "tombstone": false,
+        "value_ct_hash": "e40a392703e1ed50c00709320e5ffd410b8f33c81877a38e7e9bda251f13e0f6",
+        "name_ct_hash": "7b62429d8197ec234893b3a08e241d78c6abad0ed9a4ed7471c6d1ff104ded3f",
+        "signing_input": "67762f76312f7265636f726400e9cb749994ea300f5bbf5285cba1056d000000010113c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a32400000000000000030000000068c152db00e40a392703e1ed50c00709320e5ffd410b8f33c81877a38e7e9bda251f13e0f67b62429d8197ec234893b3a08e241d78c6abad0ed9a4ed7471c6d1ff104ded3f",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      }
+    },
+    {
+      "id": "records-002",
+      "description": "a secret tombstone: the hash of an empty value, tombstone 1",
+      "spec": "records.md#4",
+      "op": "sign",
+      "inputs": {
+        "writer_seed": "6f188a1c2fb9c81ebd5461f702eb0b0da671b389a78d3f72d584289ca6bd26d9",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": null
+      },
+      "expect": "success",
+      "outputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "tombstone": true,
+        "value_ct_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "name_ct_hash": "7b62429d8197ec234893b3a08e241d78c6abad0ed9a4ed7471c6d1ff104ded3f",
+        "signing_input": "67762f76312f7265636f726400e9cb749994ea300f5bbf5285cba1056d000000010113c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a32400000000000000030000000068c152db01e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b8557b62429d8197ec234893b3a08e241d78c6abad0ed9a4ed7471c6d1ff104ded3f",
+        "sig": "0b827da22a35adfeed020f4b33ebd9e3e31d2f256c47bb510648a4ba70d776c95a0da278b98e773027803041bd5463ab1e26f257049a7b2daa038e553bd9f102"
+      }
+    },
+    {
+      "id": "records-003",
+      "description": "a config document, by the config writer key",
+      "spec": "records.md#4",
+      "op": "sign",
+      "inputs": {
+        "writer_seed": "3920c82ae81991427dc82835565e4b8c1e6d9fb03e7eebf66322fbf80b3ff1da",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "config",
+        "name_index": "a4cd749fb90aafc41a0d85e3edfc08691080a1e22e1e77f20a8ed553be388234",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5"
+      },
+      "expect": "success",
+      "outputs": {
+        "writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f",
+        "tombstone": false,
+        "value_ct_hash": "e40a392703e1ed50c00709320e5ffd410b8f33c81877a38e7e9bda251f13e0f6",
+        "name_ct_hash": "7b62429d8197ec234893b3a08e241d78c6abad0ed9a4ed7471c6d1ff104ded3f",
+        "signing_input": "67762f76312f7265636f726400e9cb749994ea300f5bbf5285cba1056d0000000102a4cd749fb90aafc41a0d85e3edfc08691080a1e22e1e77f20a8ed553be38823400000000000000030000000068c152db00e40a392703e1ed50c00709320e5ffd410b8f33c81877a38e7e9bda251f13e0f67b62429d8197ec234893b3a08e241d78c6abad0ed9a4ed7471c6d1ff104ded3f",
+        "sig": "902dc2e3b736e8352831adc134592f74fe35e438ec48332495e880eacbcc319bb6beb8a2b90115d888fc092fd24207d19af69545df3b20b2632d233f7e23830f"
+      }
+    },
+    {
+      "id": "records-004",
+      "description": "a secret verifies under the secret writer key",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "success",
+      "outputs": {}
+    },
+    {
+      "id": "records-005",
+      "description": "a secret signed by the config writer key",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "d2b5a0f1b6daa5445465c2f4183f6cd1997f321f8766e5d2839323ca53b36c49acaeffd1b0b2c8f7962f64d138ad81669752d8ce05df25e0699c047e1ff84805"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-006",
+      "description": "a genuine secret checked against the config writer key",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-007",
+      "description": "the server reports another version",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 4,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-008",
+      "description": "presented as a tombstone",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": null,
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-009",
+      "description": "presented as a config",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "config",
+        "name_index": "4d44477f71e8e105f4d181a1a077b664cf167044886b62f106f64e7ed7403a00",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-010",
+      "description": "moved to another vault",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "00000000000000000000000000000000",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-011",
+      "description": "moved to another generation",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 2,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-012",
+      "description": "another name ciphertext",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1757500123,
+        "name_ct": "c87c00c900aee338fa0c4364cfb8319b648e45358e669d3bf5eca4ca31f70bbd",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "records-013",
+      "description": "another write time",
+      "spec": "records.md#4",
+      "op": "verify",
+      "inputs": {
+        "writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "name_index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "version": 3,
+        "written_at": 1,
+        "name_ct": "b3c9c4053249be7b0e598ac64ff8b47d9fa59a2ac32c7d2c112f83a44ec5f678",
+        "value_ct": "6167652d656e6372797074696f6e2e6f72672f76310ab8d214d35701d0eeb11659091e45dfa6b1de281eb17a0dfc5fd0d25e22fc23a5",
+        "sig": "2abb54da2479acdf10017d8ef45923179ba571011242f5caf5653790347ede72ffa71a0cfd7b5d3be7a1c9d8fe381d6ecc8cb890061987f983ef8ca475b5200b"
+      },
+      "expect": "bad_signature"
+    }
+  ]
+}

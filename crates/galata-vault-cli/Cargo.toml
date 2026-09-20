@@ -1,0 +1,79 @@
+[package]
+name = "galata-vault-cli"
+description = "The `gv` command line for galata-vault, end-to-end-encrypted secrets with no accounts, and a library another binary can brand and extend."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["secrets", "e2ee", "cli", "dotenv", "vault"]
+categories = ["command-line-utilities", "cryptography"]
+# Sources, the README and the licence text only: tests and fixtures that
+# read the repository (testdata/, docs/spec/) stay in the workspace.
+# scripts/check-packaging.sh checks the list and the licence copies.
+include = ["/src/**", "/examples/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+# dist (dist-workspace.toml): the release binaries enable `gv ui`.
+[package.metadata.dist]
+features = ["ui"]
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "gv"
+path = "src/main.rs"
+
+# `gv ui`'s tests need the feature (scripts/check-all.sh enables it).
+[[test]]
+name = "ui"
+required-features = ["ui"]
+
+[features]
+default = []
+# `gv ui`: the vault in a browser, served by this process on loopback. Off by
+# default, so a binary embedding the command tree links no web server unless
+# it asks for one. Every gv we release enables it: the Python wheel (gv-py's
+# dependency) and `cargo build --release -p galata-vault-cli --features ui`. Without
+# it, `gv ui` says so.
+ui = ["dep:tiny_http", "dep:maud", "dep:signal-hook", "dep:getrandom", "dep:sha2"]
+
+[dependencies]
+galata-vault.workspace = true
+tiny_http = { workspace = true, optional = true }
+maud = { workspace = true, optional = true }
+signal-hook = { workspace = true, optional = true }
+getrandom = { workspace = true, optional = true }
+sha2 = { workspace = true, optional = true }
+galata-vault-proto.workspace = true
+galata-vault-keys.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+keyring.workspace = true
+rlimit.workspace = true
+rpassword.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+toml.workspace = true
+zeroize.workspace = true
+
+# Tests run the real `gv` binary against a real server in-process.
+[dev-dependencies]
+# The tests forge and open ciphertext themselves, and speak HTTP to `gv ui`
+# directly (dev only: gv reaches both through the SDK).
+galata-vault-seal.workspace = true
+ureq.workspace = true
+galata-vault-server = { path = "../galata-vault-server" }
+# The malicious-server harness (tests/adversary.rs).
+gv-adversary = { path = "../gv-adversary" }
+# One test rewinds a vault to before config documents (config_pub NULL).
+rusqlite.workspace = true
+galata-vault-store.workspace = true
+axum.workspace = true
+tempfile.workspace = true
+tokio.workspace = true

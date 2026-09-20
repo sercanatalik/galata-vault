@@ -1,0 +1,247 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "paths",
+  "spec": "formats.md#3",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "paths-001",
+      "description": "'acme' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "acme"
+        ],
+        "depth": 1,
+        "project": "acme"
+      }
+    },
+    {
+      "id": "paths-002",
+      "description": "'acme/prod' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/prod"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "acme",
+          "prod"
+        ],
+        "depth": 2,
+        "project": "acme"
+      }
+    },
+    {
+      "id": "paths-003",
+      "description": "'acme/prod/eu' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/prod/eu"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "acme",
+          "prod",
+          "eu"
+        ],
+        "depth": 3,
+        "project": "acme"
+      }
+    },
+    {
+      "id": "paths-004",
+      "description": "'a/b/c/d' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "a/b/c/d"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "depth": 4,
+        "project": "a"
+      }
+    },
+    {
+      "id": "paths-005",
+      "description": "'0x/9-a' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "0x/9-a"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "0x",
+          "9-a"
+        ],
+        "depth": 2,
+        "project": "0x"
+      }
+    },
+    {
+      "id": "paths-006",
+      "description": "'acme/staging-2' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/staging-2"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "acme",
+          "staging-2"
+        ],
+        "depth": 2,
+        "project": "acme"
+      }
+    },
+    {
+      "id": "paths-007",
+      "description": "'p/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' is a path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "p/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expect": "success",
+      "outputs": {
+        "segments": [
+          "p",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "depth": 2,
+        "project": "p"
+      }
+    },
+    {
+      "id": "paths-008",
+      "description": "refused: an empty path",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": ""
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-009",
+      "description": "refused: a trailing slash",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-010",
+      "description": "refused: a leading slash",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "/acme"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-011",
+      "description": "refused: an empty segment",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme//prod"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-012",
+      "description": "refused: an upper-case letter",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/Prod"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-013",
+      "description": "refused: an underscore",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/prod_eu"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-014",
+      "description": "refused: a segment starting with '-'",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/-prod"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-015",
+      "description": "refused: a space",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/pr od"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-016",
+      "description": "refused: a non-ASCII letter",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "acme/prød"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-017",
+      "description": "refused: a 64-character segment",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "p/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expect": "bad_path"
+    },
+    {
+      "id": "paths-018",
+      "description": "refused: five segments",
+      "spec": "formats.md#3",
+      "op": "parse",
+      "inputs": {
+        "path": "a/b/c/d/e"
+      },
+      "expect": "bad_path"
+    }
+  ]
+}

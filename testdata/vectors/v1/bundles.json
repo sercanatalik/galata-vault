@@ -1,0 +1,572 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "bundles",
+  "spec": "records.md#2",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "bundles-001",
+      "description": "a meta token opens its names bundle, and every key matches the descriptor",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "11111111111111111111111111111111",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "191a05f4fb2a1bb6c9aa91451098ff70fb38cf6f36642941bfdbac03c034047e",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "meta",
+        "generation": 1,
+        "sealed": "b4f7f1905d9bc28bbbaadba8bb8e4adb9c6b5154559d709606d6df9048b97e4c85c3e391d51118385851677cdb99f4a4bf683319df8ffae49d4431b2b26daae18068fcb6c655777e5018cc6daa731163632cadd32de286ebfd169e29d1c4aec30b7958e7363b00e5765128e69689375b03d5fa84141e",
+        "sig": "3d64e76bbae0e592cb81e4b52bd9e509979d000ecd9a8ecee62e8b292ebd55ea02ae50c136ccc5c5c211138f1fc6abbaa062815fca374737ad4a01fc394c6002",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f14",
+          "config_pub": "52c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c",
+          "secret_writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+          "config_writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "names",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447"
+      }
+    },
+    {
+      "id": "bundles-002",
+      "description": "a append token opens its append bundle, and every key matches the descriptor",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "12121212121212121212121212121212",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "f4335698e052193a0788c02f241b1a7efa880f2beb6f8888706eca1240e0978f",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "append",
+        "generation": 1,
+        "sealed": "637ecc0080f41bfea65dbd89fde72166c72527c0d7116153ff9120c1a61f645f8e9dbe125d68e40ea46b4dac86f9d279af43872ab0ea113a9fd70e121b835fc39fb99ac1dac308ee7d617f25340c149aeacc73656a9fb4d791d2e475cedc1ae5adb9418a9a2be319c26a56e1aa19ebaee5296a90aad2b9d6802484ff48872577e4d7d4a44267e51dab92a5a48f5d52d546fad0c997f70d235f8c6998ba18a8c0be1bb5be70badbc7bcffdd6bdaff894589e2251462a6",
+        "sig": "0603417517cba628a68a529f1ecb99bc641753f101d94df94b5597ff0b83f691b4cfe36a1dcdbd4fffb7541c57b6f05607b41c506ea10debe6a2d9202d1b930d",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f14",
+          "config_pub": "52c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c",
+          "secret_writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+          "config_writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "append",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "secret_writer": "6f188a1c2fb9c81ebd5461f702eb0b0da671b389a78d3f72d584289ca6bd26d9",
+        "config_writer": "3920c82ae81991427dc82835565e4b8c1e6d9fb03e7eebf66322fbf80b3ff1da"
+      }
+    },
+    {
+      "id": "bundles-003",
+      "description": "a read token opens its read bundle, and every key matches the descriptor",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "73a24d05010fdf915c68ac75afe7b37d2b1d3b282513d51ad81b762a16d735135c81e4a238710bfe1992cf2f2b93e43387f138f8a6cab98cd263257fb7f7c63d48b08973663746b4512a826a2f57148ede18c124ec8e71695b9dea1f33c6f847af56b9d8bdad84514bcbb159250698d5368d502359597ee7f44791abb071a3829f4c7cce1208d85dc7175717a21221ce21f94fbd1d80ed02be1d901f5a3aff728c198b4452f3fe14d8be4ebc80e6c9f42515e445a777",
+        "sig": "8990f0ffac83488eab7adf529e88173e15471a70095e25f906c05483b9e8a0408f5ce0ae453e21903dcfa91a8101e1fff524ccba9b9b6a171c9b8c09ad2e4f04",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f14",
+          "config_pub": "52c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c",
+          "secret_writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+          "config_writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "read",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_sk": "0c14489ac6574db1418f5bd9ca0922a4bb30324f43263e36742409cba7398094",
+        "config_sk": "6266f82e282c99bf9c07d613c21eb664d74ead6681bc32497596a516a8d6c9ae"
+      }
+    },
+    {
+      "id": "bundles-004",
+      "description": "a admin token opens its full bundle, and every key matches the descriptor",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "14141414141414141414141414141414",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "85b5abe63a54773bd5e066d9daae15648bd5913550710ae7c668c780dd0bda65",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "admin",
+        "generation": 1,
+        "sealed": "696bca17339a3249d6d50d5ab5b21c2405a2bfc0d6f26bedb890e3687f97ee18f2a023e5222c7f64b2892e8155a0cf3d31fc5a0db0fb4e21cf4bebb2b278f45dfa48881fc3c9debbb487942657b82b350046671a3c77da31b60a492856afde62326f8ec803689a0acf8a7d803ea889bee9162bd00f1cb7b2fc7e42e25df38b52e321147aa9481587fa2de4cde33334a9f5b6b3ccc10d5bfb4e77908882716da318bcc3cbeefb81b7dff8d15de8f10da9d75be1749a84bbcdecbe9838d7705eed613a9544c0e1e8d11c74e0212ff02accb385b9dd950624938b3861d4330cc8673bb775f2825c1e24d56b9919122bfd9cbcb6607dda13",
+        "sig": "069d790f333aa6557846793f67bbd0d230710c0c511e7659171db1578af34a3dc54a06b8bcd505ad270d205dddbadcb402d7259a41953c3ba8e14fc676e22303",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f14",
+          "config_pub": "52c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c",
+          "secret_writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+          "config_writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "full",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_sk": "0c14489ac6574db1418f5bd9ca0922a4bb30324f43263e36742409cba7398094",
+        "config_sk": "6266f82e282c99bf9c07d613c21eb664d74ead6681bc32497596a516a8d6c9ae",
+        "secret_writer": "6f188a1c2fb9c81ebd5461f702eb0b0da671b389a78d3f72d584289ca6bd26d9",
+        "config_writer": "3920c82ae81991427dc82835565e4b8c1e6d9fb03e7eebf66322fbf80b3ff1da"
+      }
+    },
+    {
+      "id": "bundles-005",
+      "description": "a config token opens its config bundle, and every key matches the descriptor",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "15151515151515151515151515151515",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "6462b5e07208f920051e82767bbc657ce5558794d9245c4327c5855eb658fa3c",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "config",
+        "generation": 1,
+        "sealed": "9a46699ba362eb7aca80ea68944ce7d78de5894ab6ca4839bf945a77db9b767854319ee82a42c500659e131b8ff3e66ecfbd3b62dedf97dd03be81869f6c3fbab213354d5b07aec1e24d12ed3f7bbc088c43ad442e957b5a957f693066851babb5854db38232f457f4b5ede8451b6354aacdea7f2d6c7bfc58468ff7a7b1af99c06509aa44c30e6732a8a1f50a40c198a3e9dae6846e",
+        "sig": "c74960b0521acee2681bc467b74a3fa9b5ab21e778d00cf765ef9c604df3a80b1c34c6e9045e4553d600470f95f10023024cd0a68ef75724fa723644583a950a",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f14",
+          "config_pub": "52c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c",
+          "secret_writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+          "config_writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "config",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "config_sk": "6266f82e282c99bf9c07d613c21eb664d74ead6681bc32497596a516a8d6c9ae"
+      }
+    },
+    {
+      "id": "bundles-006",
+      "description": "a config-write token opens its config-write bundle, and every key matches the descriptor",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "16161616161616161616161616161616",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "ff819ab535ae494eeb16b75707dbb247a3cd17bd2c9d6bb68764c0fdd845bf17",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "config-write",
+        "generation": 1,
+        "sealed": "8059733295650b9dc23ab24ddda83e01ec8bf587671f429af3b3024dbf91994474d7540533d7ed9a75be088953bbdd91e6a960f82bf5c4286d226c727652487a1819ce6a45e13d17d45efae4d02dff9525dc3103445817c06789318bee2afd9116fd2c8989d7d828ac0783e5e5418d886e739f28d112948a16b0d84f8ff4d7b85d3465d52c4b4add0982b16057fa89a99d97329ee03cc8538974b3945ff0f0d0d60e2a58b622232d2fd5c36296c72c7d9055c7e367d2",
+        "sig": "5b320afcc678bb6217d83bc193a73bf251e8f6f867dfbe02e178b6322540c85e052026d7a05358cad69ab197cdb91c5bce227fae2d3f76f894c328e9f4a52805",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f14",
+          "config_pub": "52c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c",
+          "secret_writer_pub": "0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc7",
+          "config_writer_pub": "34247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "config-write",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "config_sk": "6266f82e282c99bf9c07d613c21eb664d74ead6681bc32497596a516a8d6c9ae",
+        "config_writer": "3920c82ae81991427dc82835565e4b8c1e6d9fb03e7eebf66322fbf80b3ff1da"
+      }
+    },
+    {
+      "id": "bundles-007",
+      "description": "an owner key that does not hash to the token's vault id",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "96293664854ffb51553e002aa8db62194f0d5905f45ce6177978ceacf228bfb0",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "cf816230dc424cde66e133da685714f53d3707a37748dfb96f74435b7fec4f631f2dea8bfa219b20735bc90fb039632344027234225da63b6238a8a83a2493a5b64e9186987d34af6e5949b725c721b20612c931265800270ab91366ac9927c86e33bb2b55b800e924218d8ab01651288b9d942f3dd2db33a342245cf949f7dda6cf0df1535a29851c991dbc48b27480b1ebf71ae1e0685f12e1f19a08650858ef3e68d3b88da004c05f8d0125b5b643e1be6eea3dfb",
+        "sig": "89dd109bace7c254ff3e9f5dfc35158eb2ff94b11cdcc36b30d4dc7fa5d3e5e44ed1c9c3635f429e5a7e8e50c1029922e46af9f094a1025a555321dfdab84106"
+      },
+      "expect": "key_mismatch"
+    },
+    {
+      "id": "bundles-008",
+      "description": "signed for another scope",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "cf816230dc424cde66e133da685714f53d3707a37748dfb96f74435b7fec4f631f2dea8bfa219b20735bc90fb039632344027234225da63b6238a8a83a2493a5b64e9186987d34af6e5949b725c721b20612c931265800270ab91366ac9927c86e33bb2b55b800e924218d8ab01651288b9d942f3dd2db33a342245cf949f7dda6cf0df1535a29851c991dbc48b27480b1ebf71ae1e0685f12e1f19a08650858ef3e68d3b88da004c05f8d0125b5b643e1be6eea3dfb",
+        "sig": "a777ffc2058c285084155022d6ed243a76f70cba19137051acb1270a3e850b78cb4a62a1e96713f44c80910f102bd8bc10c16f57c2a0c125a73410aca8b0a408"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "bundles-009",
+      "description": "a flipped signature bit",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "cf816230dc424cde66e133da685714f53d3707a37748dfb96f74435b7fec4f631f2dea8bfa219b20735bc90fb039632344027234225da63b6238a8a83a2493a5b64e9186987d34af6e5949b725c721b20612c931265800270ab91366ac9927c86e33bb2b55b800e924218d8ab01651288b9d942f3dd2db33a342245cf949f7dda6cf0df1535a29851c991dbc48b27480b1ebf71ae1e0685f12e1f19a08650858ef3e68d3b88da004c05f8d0125b5b643e1be6eea3dfb",
+        "sig": "fe176ba734fcbf1be19f02d42bb70c2a0c3f59cdf37f652daab06da4ce9ab3fdccbe9ee525280795960195b56ef0b2aef08e0fa2b8e8cf5c797f53a2e3dd4f0f"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "bundles-010",
+      "description": "signed for another generation",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "cf816230dc424cde66e133da685714f53d3707a37748dfb96f74435b7fec4f631f2dea8bfa219b20735bc90fb039632344027234225da63b6238a8a83a2493a5b64e9186987d34af6e5949b725c721b20612c931265800270ab91366ac9927c86e33bb2b55b800e924218d8ab01651288b9d942f3dd2db33a342245cf949f7dda6cf0df1535a29851c991dbc48b27480b1ebf71ae1e0685f12e1f19a08650858ef3e68d3b88da004c05f8d0125b5b643e1be6eea3dfb",
+        "sig": "0243b53d1aab77f39065f599008df1133cd2d9e422f276341c1039ad41d3419d2598483cc4a297d108ba1c80ae30b87ba7d76b682a92e605674eb56cc08ff003"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "bundles-011",
+      "description": "sealed to another token's box key",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "10a2c3d52cf8ea264b7979d0f0b4946fba877eab514de4d810e0479f10778f592d523a1c637957969f50413cc3426ae500eb5ee15eb6ddd995fd66663c030942c48e375c83276870059f25174fa3259f956869e1b2e8b38846cae1bdfcfd2ec8216fcd6aac7c4ff7f34d6830866f102b5c6fcf2c99118834a35d2d9feb302c22246ef282427709011795d76883ef0f984634cfd713e2eab1bf303b74dfca212879ec57a36d267263936fbef4278303920bc7bbc4205c",
+        "sig": "ee37ec6d2927a9ab26b5c9812a6c34419a152bcfd596c13dcb673b3720f0d24c3a493b111b79fa6d8a91bcc77cb7d2f551d7341ab9b716301d2f378d9306c409"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "bundles-012",
+      "description": "a sealed byte changed, and the change signed",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "cf816230dc424cde66e133da685714f53d3707a37748dfb96f74435b7fec4f631f2dea8bfa219b20735bc90fb039632344027234225da63b6238a8a83b2493a5b64e9186987d34af6e5949b725c721b20612c931265800270ab91366ac9927c86e33bb2b55b800e924218d8ab01651288b9d942f3dd2db33a342245cf949f7dda6cf0df1535a29851c991dbc48b27480b1ebf71ae1e0685f12e1f19a08650858ef3e68d3b88da004c05f8d0125b5b643e1be6eea3dfb",
+        "sig": "98ba6d5d8baec21b430518856f2962dcf0de0020aa50b3bbb9aa4cf0b17f46a388abcd4a57e8678843213b34f28aa7ab54860fdc0ef48b86d3365ab0b588220b"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "bundles-013",
+      "description": "a bundle version this client does not know",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "706b6e20e1de4c5f6293f20080b1aed860c37abddf32dee35f078e3da9c78642a102f279e011b83e0770b4f8de50ce23aae435f30af1ef5b94c8609d838fcc33cc20f78006de208ae311ba234022fe5fb2a02e9b5bdf31bccc6d958066b8d61aa9dab565dde0b58b340eaf248990dce43b29fad6979d09915209804af6916d5451c2f88b824280301bb85447743d01c8b82f4c0717d0c66bbddb0c7875a935bccfd0d3b58e7cf6617ba0cb05f02cae3972f38fc27180",
+        "sig": "d3b3f8815dc5c26f63ede3df9adc64dd2f142a2d8c519496d2b581bd3a820b2ab1afa0abb93fc742041294278c8b1df0c6b6e5cd612ee0a26169c1133052ad04"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "bundles-014",
+      "description": "a bundle kind this client does not know",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "262f68776803117a79684f6caf89c0ee04d97985f68a5d2f50377cff6037912c3e214e49f236d32aff16c819744c04a3554ca639f3564b6a66835e784378ad10fb5be637442d8ebfdfe85fcee5bffb24302d44d1ace3131b8dfdbd1da5e999a441f510301582351816c1ac36824409c90f3e01a12d15ae11f320a2287238e0cc33db205444b3ff139d9d9d26ad3c2ca8fbfa3b1975cf12e9ed5bc5ad04eeb32690ef53d65c408b7883719b6974169b4f0ee900817eed",
+        "sig": "f14080f655f4914425541529e566d74411dfccc1f57a172136c4a6671596ffe2c1825cec1428a443a8a069d1ad438253b845ce7da5e8001b68517950820f0a07"
+      },
+      "expect": "unknown_kind"
+    },
+    {
+      "id": "bundles-015",
+      "description": "a read bundle one key short",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "b8fc6a2a2119f465a109afee02c211d7b5f32ec79c9526a22ec63bb7f6410072c47f681f26c1d885bd4e4376d97e43bade7d0b65f146faa3ae29645032de7267320beedf4c76e83e8700c8ba5467190ebcaa57a00aea8f555d1380fda1a30d256d36229bb4aac18521a8aa981df6f52b00a27363d62d1e0f14d01e9afc0f100d682d326ea2734a27c4145775e29783abde9428382119",
+        "sig": "277e75fc0038e683e5ba592ec343372b9156ace22ed4f0860c8a0bfaaf256c58b82b6f1a908868b1bfede3bee04f4af646bc3b120257817104bfc249d1225c04"
+      },
+      "expect": "bad_length"
+    },
+    {
+      "id": "bundles-016",
+      "description": "a plaintext shorter than the header",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "c84c4a26a564d434f8836d870c3e77fc6ffd456842c39fa7daaac4da4f337f053e21fd59219f7544991aad1b00b3b9547903bf22fdca0a39fcaed6caee3ce8d27b0df766",
+        "sig": "7460f0f83d82b68fda931dc43d86691109a392798fd04cb8e905943cd5a0849c38625137f038753ca6df60437ecc5d157932cdf10b43f091db3582cb19cc4a02"
+      },
+      "expect": "truncated"
+    },
+    {
+      "id": "bundles-017",
+      "description": "a child key where a token bundle is expected",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "1c0dc8877b4d9f2ca5e2e11b92e2eb8a6bd2a39ff15ce6c81a74afddfdb95d3a292ca0adf01e569b69934f297a57b15917993be7ffc1539043770b3fbff1b56c277aeef4b1e79a765684587b61167dacc06e776bd6d765a094ea244a32ad3c6e44faaac3fa043fcf8cac964a680416f96e41343c6423",
+        "sig": "637902c868437d5e91f26c89391db51d93872daa8b867a9f172819ff21e9273bd10881c6417f45d2d797b9cb30d2577fa542eabe0299a68398f0da9f36c50908"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "bundles-018",
+      "description": "a plaintext naming another vault",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "d5c71d6ea359cee1834b613389fab05254d3511e810772c5de9e54e6b1642801d8a6d62b635396530a2f50a777e309b68f4af416a7c3ad31dc67c76cedd945d1ab097259d90f8bed96813f9033f956f0f2079665194dae2035c95d6b8e9ae909ccde7e98e19ee81838d51289219efed9bc356eb8a4dc7649afc8060b53cb322443badd4fc9b3967dbb72e55c955cdfc4ac638048ceda84c2b5f7a1806ab853f218aa5a88f2d87f9d078f59fc2c8e1b412225ba6aa727",
+        "sig": "0d5223a3c11e0d78e1379bb8c8414c082c0a8eacd520dc26268e758e2aadfbcb154e1cc63d229955f3889f2203c8453c3a8f9d64b5f9a97864773682e3669c08"
+      },
+      "expect": "vault_mismatch"
+    },
+    {
+      "id": "bundles-019",
+      "description": "a plaintext naming another token",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "fbbeeb21c290bd837f3d5ae591b2671a4b1d3f3980d35c099892dc0228a63d49eb3e617cc72ab1074e6197054df99fdf61e2f212bd3702e0b3603bd4ef35d702ba9b473e0e08d8caded509c145bdf016c4ecc83af09d20adfd8d6267fd2ccc6c24d8889fee655901160bc6066348fc86efed8003667253ec7da0acf15549eed3c39f3c243e9fbc2e7e822a5b310270dad7c4fec89ded62fd3f5e1fa76f16b6ad04fe68d8a43501d7f232f25e7c34a9b48b383d4d186f",
+        "sig": "e7c41632a50f99deb39b3d0b683c5cd69cff313d01ca9f17315078706f978af0d271717d676894ab666119b07619be2f11892f17e5613a25231df6ff861f3806"
+      },
+      "expect": "token_mismatch"
+    },
+    {
+      "id": "bundles-020",
+      "description": "a plaintext naming another generation",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "9fac6d8a0181b38938e963485eb474953d7e36bf39e6af5a7c9d790acdab3d2be32e3709ca1c6199103ba8320132b7a292b3d4813a9dffde73357944b1723635d5259420f3f50c98bc1303ec83cd6e2bfd573a839004851e8fb040da2f95103180bd6ab136682209df7a131b95721c065ffaae720786d6a96b6e79622a1689366c63a6ef074c8ca2aa8599f51af3112bdbe69195fbae87c0765c040be64369878d3e8185907b6340d1594e6df9a923804ed0847c8760",
+        "sig": "af19ee6ff7be5ff041003001a983e36e094b20233ea7a712d17c8fced8cd02e9a8c9dfcae2e5853e8e5b9ea8c15f6ef91e15abb4df5ff070031c503456ba9309"
+      },
+      "expect": "generation_mismatch"
+    },
+    {
+      "id": "bundles-021",
+      "description": "a names bundle signed as a read token's",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "583dc4fea988a52935a29b309983371f37569dc9e143a579dc32783a4f03aa12b37be406322ca922c990fb7e76b7c1056b9603eb7c042c3c92da17b2c9ce4f5c10b33145ee1b49a8a908a1b70ae54e078f2b6fff030ca5b0939a13f401faa5de53fdd9741f698aa6e969998608c84139d3c2bc31460d",
+        "sig": "133b642c211a99fa349619354beff48b38ceadd0349c80f6c8170fb3258306e14adab4fd7e71a32d95212c908ce3a3335ee7ddd3c389b72c72cf1b200dff050f"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "bundles-022",
+      "description": "the bundle's keys are not the ones the descriptor names",
+      "spec": "records.md#2.5",
+      "op": "open_token",
+      "inputs": {
+        "token_id": "13131313131313131313131313131313",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "1191723560a11e953704ef2b3f4fed2d04a742bcadaef7ae663c19c9e55cfc01",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "scope": "read",
+        "generation": 1,
+        "sealed": "cf816230dc424cde66e133da685714f53d3707a37748dfb96f74435b7fec4f631f2dea8bfa219b20735bc90fb039632344027234225da63b6238a8a83a2493a5b64e9186987d34af6e5949b725c721b20612c931265800270ab91366ac9927c86e33bb2b55b800e924218d8ab01651288b9d942f3dd2db33a342245cf949f7dda6cf0df1535a29851c991dbc48b27480b1ebf71ae1e0685f12e1f19a08650858ef3e68d3b88da004c05f8d0125b5b643e1be6eea3dfb",
+        "sig": "fe176ba734fcbf1be19e02d42bb70c2a0c3f59cdf37f652daab06da4ce9ab3fdccbe9ee525280795960195b56ef0b2aef08e0fa2b8e8cf5c797f53a2e3dd4f0f",
+        "descriptor": {
+          "generation": 1,
+          "vault_pub": "020f52636f84f5b907ef83b0c9daa181ddeac00b6b95406f5203a6b04548a42b",
+          "config_pub": "a9fc9525e26e972b1f085d7dc7f7a7099e21151d6735fee316526edee62b9376",
+          "secret_writer_pub": "16af83eb0d01f3af7d9894da0a58d2df4ad3b1cf528c894bdba6d70cf46e21cf",
+          "config_writer_pub": "ba25124909301f404748ceed000b69f2994ea6f16c4f082367e41fe498cbb1b5"
+        }
+      },
+      "expect": "descriptor_mismatch"
+    },
+    {
+      "id": "bundles-023",
+      "description": "the owner opens its own bundle: token id zero, scope code 0",
+      "spec": "records.md#2.5",
+      "op": "open_owner",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "generation": 1,
+        "sealed": "c3f8f3fba7ca9e7c09e05c58d78619a4cf16a4a0a926df50488f3a6337ce2b5b40129637f30d3944ae706ca57c5b509a6b9e16d24e5f2d9ad1544e7e0c26ecb27af148cee397e276f2907539608c6ae84b81b9a1bfab00446cd978ed78cecc12c030650b7c38ca20e9c9c32582904dd0c5d5b8766f95d588b143a2eeead0e2da254f98f13620fa625f2ff4aba09428516493b099f4a495f46460d4edac6a5373644db4021bb6d6915b6256ba1b587b2cb55979d798f94c43368c4003202965e223906289dbba9ee1d4d618176b5aa7dcd91e4deeee24d5b3c5ab7e2fbd0550841b7af4424ceb1248802a2835c22c89b3c24d135f4be9",
+        "sig": "0c3a2fa7e0ec79cae954c63fd19cfd52e8bde948f1b147766aa362ab5a3afb4337559dffe4f3604793dce1722af0c461286f4d93b805d7eb4c3fd4d662b58f06"
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "full",
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_sk": "0c14489ac6574db1418f5bd9ca0922a4bb30324f43263e36742409cba7398094",
+        "config_sk": "6266f82e282c99bf9c07d613c21eb664d74ead6681bc32497596a516a8d6c9ae",
+        "secret_writer": "6f188a1c2fb9c81ebd5461f702eb0b0da671b389a78d3f72d584289ca6bd26d9",
+        "config_writer": "3920c82ae81991427dc82835565e4b8c1e6d9fb03e7eebf66322fbf80b3ff1da"
+      }
+    },
+    {
+      "id": "bundles-024",
+      "description": "the owner's bundle signed with an admin scope code",
+      "spec": "records.md#2.5",
+      "op": "open_owner",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "generation": 1,
+        "sealed": "c3f8f3fba7ca9e7c09e05c58d78619a4cf16a4a0a926df50488f3a6337ce2b5b40129637f30d3944ae706ca57c5b509a6b9e16d24e5f2d9ad1544e7e0c26ecb27af148cee397e276f2907539608c6ae84b81b9a1bfab00446cd978ed78cecc12c030650b7c38ca20e9c9c32582904dd0c5d5b8766f95d588b143a2eeead0e2da254f98f13620fa625f2ff4aba09428516493b099f4a495f46460d4edac6a5373644db4021bb6d6915b6256ba1b587b2cb55979d798f94c43368c4003202965e223906289dbba9ee1d4d618176b5aa7dcd91e4deeee24d5b3c5ab7e2fbd0550841b7af4424ceb1248802a2835c22c89b3c24d135f4be9",
+        "sig": "fc8a200560607b5e5fb14c49238caf5449e21e33d3e6007160d87382b60f887386d82145d5025e08cd79722298fa20d10d61b7800643f6bd15981c6e6dac6c0f"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "bundles-025",
+      "description": "a names bundle where the owner expects every key",
+      "spec": "records.md#2.5",
+      "op": "open_owner",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "generation": 1,
+        "sealed": "a3b522bbd82b78c41416f542b064d62c93f755040c509a33eeff8c26391a9e4cfef1561eb157b47ee3f1da1380bc67d74ad5c8320141a0edf6e4893455a4a9684b346a23b9bf55d0a511074596cebdd2a3e18650616a5563fd5de485f46904d38a77f3f1b0592d62e119bbdff972c3dfab306210e9e1",
+        "sig": "d2d1b04713bdb5e4072820033e0c13199b46a014b59f97b6fb8a5f45d4c813aa7a09db9912d6aa22949f0cf4158ec4215608f5245ec71cf75dbed9415b88470a"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "bundles-026",
+      "description": "a re-rooted child's key, sealed to its parent",
+      "spec": "records.md#2.6",
+      "op": "open_child",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "sealed": "128e2afcd3d631ce5cb27c370ff1a9939386c962b352ff792fe799d98ffc17114606f28cff9b393bf9a9acea4b605b5e774cbb6d0d8a16e2444ad3d57d9ad1f569144573762ca627867ab3025734be1994ee37c78efb302eb5c47578ea18c14d04f5e570325cf674c0e067dbcd13c6b672726f799f95"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "5a3fca622212d7fed76201dfe0923796f85a1d8b45fef21ff017842a505f9ddd"
+      }
+    },
+    {
+      "id": "bundles-027",
+      "description": "a child key bound to another parent vault",
+      "spec": "records.md#2.6",
+      "op": "open_child",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "sealed": "c973b116e4e1b8ff950853c284c1ee9d1b0df934ead113ca78fc5e6e28648b7e6c1c9a0e7b4fa00df1b2e744b911e47d36f17f0c9b66e162da4c347e574929a204dc7d7428649b3f67ea1a3f76e1ab44577eb17e36372994f01cc9a4dded65b4a36efe16890c699eb60317b0a4c55ec416cf2d0927de"
+      },
+      "expect": "vault_mismatch"
+    },
+    {
+      "id": "bundles-028",
+      "description": "a token bundle where a child key is expected",
+      "spec": "records.md#2.6",
+      "op": "open_child",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "sealed": "c3f8f3fba7ca9e7c09e05c58d78619a4cf16a4a0a926df50488f3a6337ce2b5b40129637f30d3944ae706ca57c5b509a6b9e16d24e5f2d9ad1544e7e0c26ecb27af148cee397e276f2907539608c6ae84b81b9a1bfab00446cd978ed78cecc12c030650b7c38ca20e9c9c32582904dd0c5d5b8766f95d588b143a2eeead0e2da254f98f13620fa625f2ff4aba09428516493b099f4a495f46460d4edac6a5373644db4021bb6d6915b6256ba1b587b2cb55979d798f94c43368c4003202965e223906289dbba9ee1d4d618176b5aa7dcd91e4deeee24d5b3c5ab7e2fbd0550841b7af4424ceb1248802a2835c22c89b3c24d135f4be9"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "bundles-029",
+      "description": "a child key with 64 bytes of body",
+      "spec": "records.md#2.6",
+      "op": "open_child",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "sealed": "28a939c812eca9b5b4f8d2a136cd984be6ed2704de9d08460dce27aa818d2f06d197a11bab60dae68b2c5f53640a97d715ed73d7a43ce19f4963dde87e164a3b5547be3bb03ed7bbd2d068abdaaa944f3b5f41319be1a2a7c9ca0a0b750c849780785ad48b52532d2f44abc5c2f4490c0a61ab74fcb74c0c3d61b47643c4c2335f70c3e52228b78907d1fbfcadb9c925091be599728f"
+      },
+      "expect": "bad_length"
+    },
+    {
+      "id": "bundles-030",
+      "description": "sealed to another owner",
+      "spec": "records.md#2.6",
+      "op": "open_child",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "sealed": "ed27f12aa5e94fc0ba7f606e75b9aa4f01e456ebe73a6977cab637544eb7d47f067910ac3b5d5d8a6cb75885e2b31abd6639df56f3d8eb6533eb2ce1a7efdf3e95030518b9d1d30b084c04441fde4a19fd9a340c67a364503fe3507354f49775eb2bf71143f0aadb67c175999170a91f5e65537adfb9"
+      },
+      "expect": "decrypt_failed"
+    }
+  ]
+}

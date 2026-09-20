@@ -1,0 +1,56 @@
+[package]
+name = "galata-vault-client"
+description = "galata-vault client transport: canonical requests, request signing and response mapping, shared by the SDK and the MCP server. Links no value decryption. Implementation detail of galata-vault: depend on `galata-vault`."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["galata-vault", "client", "e2ee", "secrets"]
+categories = ["network-programming", "web-programming::http-client"]
+# Sources, the README and the licence text only: tests and fixtures that
+# read the repository (testdata/, docs/spec/) stay in the workspace.
+# scripts/check-packaging.sh checks the list and the licence copies.
+include = ["/src/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[features]
+default = ["http"]
+# The HTTP transport (ureq on rustls). Without it the crate links no HTTP
+# client: a caller brings its own `Transport`.
+http = ["dep:ureq"]
+# The operating system's trust store instead of the bundled Mozilla roots.
+platform-verifier = ["http", "ureq/platform-verifier"]
+# `RecordingTransport`, for tests: captures requests, replays answers.
+test-util = []
+
+# The guard (scripts/check-client-linkage.sh) forbids galata-vault-seal, age, keyring,
+# rlimit, rpassword, clap and pyo3 at any depth: this crate can sign requests
+# and read metadata, never decrypt a value.
+[dependencies]
+galata-vault-proto.workspace = true
+galata-vault-keys.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ureq = { workspace = true, optional = true }
+zeroize.workspace = true
+
+[dev-dependencies]
+# RecordingTransport in this crate's own tests.
+galata-vault-client = { path = ".", features = ["test-util"] }
+# A real server in-process, for the canonical-bytes test.
+galata-vault-server = { path = "../galata-vault-server" }
+galata-vault-store.workspace = true
+axum.workspace = true
+tokio.workspace = true
+tempfile.workspace = true
+# The private-CA test serves TLS itself. rustls and ring are already in the
+# graph through ureq; this names them for the test and adds no crate.
+rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }

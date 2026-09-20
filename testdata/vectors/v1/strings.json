@@ -1,0 +1,553 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "strings",
+  "spec": "formats.md#2",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "strings-001",
+      "description": "base62 of no bytes: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": ""
+      },
+      "expect": "success",
+      "outputs": {
+        "string": ""
+      }
+    },
+    {
+      "id": "strings-002",
+      "description": "base62 of one zero byte: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "00"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "00"
+      }
+    },
+    {
+      "id": "strings-003",
+      "description": "base62 of one 0xff byte: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "ff"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "47"
+      }
+    },
+    {
+      "id": "strings-004",
+      "description": "base62 of the largest 4-byte value (a checksum's width): fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "ffffffff"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "4gfFC3"
+      }
+    },
+    {
+      "id": "strings-005",
+      "description": "base62 of 16 zero bytes: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "00000000000000000000000000000000"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "0000000000000000000000"
+      }
+    },
+    {
+      "id": "strings-006",
+      "description": "base62 of 32 bytes 0x00..0x1f: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf"
+      }
+    },
+    {
+      "id": "strings-007",
+      "description": "base62 of 32 bytes of 0xff: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "yhjskwdA6OZ1AL1YmHWZWm8LLG7HjnuCA2j5rOw8Xp1"
+      }
+    },
+    {
+      "id": "strings-008",
+      "description": "base62 of 64 bytes: fixed width, left-padded with 0",
+      "spec": "formats.md#2.1",
+      "op": "base62",
+      "inputs": {
+        "bytes": "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "l2KvVJKvNwFnO1guRunoBaBveMz4J5a0BUz78Uzp4kuHo3v0qPVkwr0wuqmt40ykQmfc7VH9AlJwyuRPBLkOCL"
+      }
+    },
+    {
+      "id": "strings-009",
+      "description": "a 32-byte value decodes",
+      "spec": "formats.md#2.1",
+      "op": "base62_decode",
+      "inputs": {
+        "string": "003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf",
+        "length": 32
+      },
+      "expect": "success",
+      "outputs": {
+        "bytes": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      }
+    },
+    {
+      "id": "strings-010",
+      "description": "leading zero bytes are kept",
+      "spec": "formats.md#2.1",
+      "op": "base62_decode",
+      "inputs": {
+        "string": "0000000000000000000000000000000000000000001",
+        "length": 32
+      },
+      "expect": "success",
+      "outputs": {
+        "bytes": "0000000000000000000000000000000000000000000000000000000000000001"
+      }
+    },
+    {
+      "id": "strings-011",
+      "description": "one character short of the width",
+      "spec": "formats.md#2.1",
+      "op": "base62_decode",
+      "inputs": {
+        "string": "03aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf",
+        "length": 32
+      },
+      "expect": "truncated"
+    },
+    {
+      "id": "strings-012",
+      "description": "one character past the width",
+      "spec": "formats.md#2.1",
+      "op": "base62_decode",
+      "inputs": {
+        "string": "0003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf",
+        "length": 32
+      },
+      "expect": "bad_length"
+    },
+    {
+      "id": "strings-013",
+      "description": "a character outside the alphabet",
+      "spec": "formats.md#2.1",
+      "op": "base62_decode",
+      "inputs": {
+        "string": "-03aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf",
+        "length": 32
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "strings-014",
+      "description": "the right width, but a value of 256^32 or more",
+      "spec": "formats.md#2.1",
+      "op": "base62_decode",
+      "inputs": {
+        "string": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+        "length": 32
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "strings-015",
+      "description": "the checksum is CRC-32 of the text prefix ‖ body, in 6 base62 characters",
+      "spec": "formats.md#2.2",
+      "op": "checksum",
+      "inputs": {
+        "prefix": "gvk1_",
+        "body": "003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf"
+      },
+      "expect": "success",
+      "outputs": {
+        "checksum": "4avqed"
+      }
+    },
+    {
+      "id": "strings-016",
+      "description": "the node key 0x00..0x1f",
+      "spec": "formats.md#2.3",
+      "op": "encode_key",
+      "inputs": {
+        "key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed"
+      }
+    },
+    {
+      "id": "strings-017",
+      "description": "the node key 0x00..0x1f parses",
+      "spec": "formats.md#2.3",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed"
+      },
+      "expect": "success",
+      "outputs": {
+        "key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      }
+    },
+    {
+      "id": "strings-018",
+      "description": "the node key of all zero bytes",
+      "spec": "formats.md#2.3",
+      "op": "encode_key",
+      "inputs": {
+        "key": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvk1_00000000000000000000000000000000000000000003xDeAh"
+      }
+    },
+    {
+      "id": "strings-019",
+      "description": "the node key of all zero bytes parses",
+      "spec": "formats.md#2.3",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_00000000000000000000000000000000000000000003xDeAh"
+      },
+      "expect": "success",
+      "outputs": {
+        "key": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "strings-020",
+      "description": "the node key of all 0xff bytes",
+      "spec": "formats.md#2.3",
+      "op": "encode_key",
+      "inputs": {
+        "key": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvk1_yhjskwdA6OZ1AL1YmHWZWm8LLG7HjnuCA2j5rOw8Xp12HJcwJ"
+      }
+    },
+    {
+      "id": "strings-021",
+      "description": "the node key of all 0xff bytes parses",
+      "spec": "formats.md#2.3",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_yhjskwdA6OZ1AL1YmHWZWm8LLG7HjnuCA2j5rOw8Xp12HJcwJ"
+      },
+      "expect": "success",
+      "outputs": {
+        "key": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    {
+      "id": "strings-022",
+      "description": "the node key acme/prod under the first test root",
+      "spec": "formats.md#2.3",
+      "op": "encode_key",
+      "inputs": {
+        "key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvk1_mp1FSdrcFOJcKkPA1yfzP77ntbmmVyTdlKYSW5gbXJu2OhUXf"
+      }
+    },
+    {
+      "id": "strings-023",
+      "description": "the node key acme/prod under the first test root parses",
+      "spec": "formats.md#2.3",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_mp1FSdrcFOJcKkPA1yfzP77ntbmmVyTdlKYSW5gbXJu2OhUXf"
+      },
+      "expect": "success",
+      "outputs": {
+        "key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e"
+      }
+    },
+    {
+      "id": "strings-024",
+      "description": "one body character mistyped",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC71jlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed"
+      },
+      "expect": "checksum_mismatch"
+    },
+    {
+      "id": "strings-025",
+      "description": "one checksum character mistyped",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4av1ed"
+      },
+      "expect": "checksum_mismatch"
+    },
+    {
+      "id": "strings-026",
+      "description": "two adjacent body characters swapped",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_030aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed"
+      },
+      "expect": "checksum_mismatch"
+    },
+    {
+      "id": "strings-027",
+      "description": "the last character cut off",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqe"
+      },
+      "expect": "truncated"
+    },
+    {
+      "id": "strings-028",
+      "description": "cut off in the middle",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFa"
+      },
+      "expect": "truncated"
+    },
+    {
+      "id": "strings-029",
+      "description": "one character too many",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed0"
+      },
+      "expect": "bad_length"
+    },
+    {
+      "id": "strings-030",
+      "description": "a checksum character outside the alphabet",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf-avqed"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "strings-031",
+      "description": "a body character outside the alphabet, under a checksum that matches it",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_-03aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf2RuYVg"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "strings-032",
+      "description": "a body above 2^256, under a checksum that matches it",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk1_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz3Ix0WM"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "strings-033",
+      "description": "a key with another version digit",
+      "spec": "formats.md#2.6",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvk2_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf3bvZ9e"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "strings-034",
+      "description": "a token where a node key is expected",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "gvt1_003Vqjw7cu3hfvkU3qiqaQe8Gts1pLcPNXBMqxhmGeo3B7OcD1mdQin0y0zAmRfEKxtUpX00K8tScj6WxEtCHc1R47N4"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "strings-035",
+      "description": "the body and checksum with no prefix",
+      "spec": "formats.md#2.5",
+      "op": "decode_key",
+      "inputs": {
+        "string": "003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "strings-036",
+      "description": "the first test token: token_id ‖ vault_id ‖ secret",
+      "spec": "formats.md#2.4",
+      "op": "encode_token",
+      "inputs": {
+        "token_id": "000102030405060708090a0b0c0d0e0f",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvt1_003Vqjw7cu3hfvkU3qiqaQe8Gts1pLcPNXBMqxhmGeo3B7OcD1mdQin0y0zAmRfEKxtUpX00K8tScj6WxEtCHc1R47N4"
+      }
+    },
+    {
+      "id": "strings-037",
+      "description": "the first test token parses",
+      "spec": "formats.md#2.4",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvt1_003Vqjw7cu3hfvkU3qiqaQe8Gts1pLcPNXBMqxhmGeo3B7OcD1mdQin0y0zAmRfEKxtUpX00K8tScj6WxEtCHc1R47N4"
+      },
+      "expect": "success",
+      "outputs": {
+        "token_id": "000102030405060708090a0b0c0d0e0f",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c"
+      }
+    },
+    {
+      "id": "strings-038",
+      "description": "all 0xff id, zero vault and secret: token_id ‖ vault_id ‖ secret",
+      "spec": "formats.md#2.4",
+      "op": "encode_token",
+      "inputs": {
+        "token_id": "ffffffffffffffffffffffffffffffff",
+        "vault_id": "00000000000000000000000000000000",
+        "secret": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvt1_xR9fAlrdKvCIINsqEkJZSYIlTSCquBUonkERqEhoB7y8hvZYWvFXM1UZoqOObgOC7hdJpOXwClaIC7BBYao6To1Pk6YF"
+      }
+    },
+    {
+      "id": "strings-039",
+      "description": "all 0xff id, zero vault and secret parses",
+      "spec": "formats.md#2.4",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvt1_xR9fAlrdKvCIINsqEkJZSYIlTSCquBUonkERqEhoB7y8hvZYWvFXM1UZoqOObgOC7hdJpOXwClaIC7BBYao6To1Pk6YF"
+      },
+      "expect": "success",
+      "outputs": {
+        "token_id": "ffffffffffffffffffffffffffffffff",
+        "vault_id": "00000000000000000000000000000000",
+        "secret": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "strings-040",
+      "description": "a random-looking token: token_id ‖ vault_id ‖ secret",
+      "spec": "formats.md#2.4",
+      "op": "encode_token",
+      "inputs": {
+        "token_id": "a56145270ce6b3bebd1dd012b7394867",
+        "vault_id": "e6f0a1fbb43c89196dcfcbef85908f19",
+        "secret": "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b"
+      },
+      "expect": "success",
+      "outputs": {
+        "string": "gvt1_cOfOi8PtqH5ZmSkg60QSTtbBn23JzWoEvGSyUZ2xtJsXYJoUjVJaSEHgFGVjQ5OVPOQhQzd0wEVxs5OZ3kyh9X2mxRK0"
+      }
+    },
+    {
+      "id": "strings-041",
+      "description": "a random-looking token parses",
+      "spec": "formats.md#2.4",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvt1_cOfOi8PtqH5ZmSkg60QSTtbBn23JzWoEvGSyUZ2xtJsXYJoUjVJaSEHgFGVjQ5OVPOQhQzd0wEVxs5OZ3kyh9X2mxRK0"
+      },
+      "expect": "success",
+      "outputs": {
+        "token_id": "a56145270ce6b3bebd1dd012b7394867",
+        "vault_id": "e6f0a1fbb43c89196dcfcbef85908f19",
+        "secret": "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b"
+      }
+    },
+    {
+      "id": "strings-042",
+      "description": "one token character mistyped",
+      "spec": "formats.md#2.5",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvt1_003Vqjw7cu3hfvkU3qiqaQe8Gts1pLcPNXBMqxhm1eo3B7OcD1mdQin0y0zAmRfEKxtUpX00K8tScj6WxEtCHc1R47N4"
+      },
+      "expect": "checksum_mismatch"
+    },
+    {
+      "id": "strings-043",
+      "description": "a token with its checksum cut off",
+      "spec": "formats.md#2.5",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvt1_003Vqjw7cu3hfvkU3qiqaQe8Gts1pLcPNXBMqxhmGeo3B7OcD1mdQin0y0zAmRfEKxtUpX00K8tScj6WxEtCHc"
+      },
+      "expect": "truncated"
+    },
+    {
+      "id": "strings-044",
+      "description": "a token with another version digit",
+      "spec": "formats.md#2.6",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvt2_000RxY9kz6ouWMJLgFtBDiUPCkeK8fsOOHCGbYdCUyWx6xd2ivh2DOxR816N56NAd3aKb6m"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "strings-045",
+      "description": "a node key where a token is expected",
+      "spec": "formats.md#2.5",
+      "op": "decode_token",
+      "inputs": {
+        "string": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed"
+      },
+      "expect": "kind_mismatch"
+    }
+  ]
+}

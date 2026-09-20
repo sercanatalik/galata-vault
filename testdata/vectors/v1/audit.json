@@ -1,0 +1,1402 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "audit",
+  "spec": "audit.md#2",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "audit-001",
+      "description": "vault_create by owner",
+      "spec": "audit.md#2",
+      "op": "row_hash",
+      "inputs": {
+        "row": {
+          "v": 1,
+          "seq": 1,
+          "ts": 1757500000,
+          "actor": {
+            "kind": "owner"
+          },
+          "action": "vault_create",
+          "name_hmac": null,
+          "result": "ok",
+          "version": 0,
+          "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+          "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+          "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "encoding": "0100000000000000010000000068c15260000001000000000000000000000001eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a0000000000000000000000000000000000000000000000000000000000000000",
+        "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+      }
+    },
+    {
+      "id": "audit-002",
+      "description": "token_mint by owner",
+      "spec": "audit.md#2",
+      "op": "row_hash",
+      "inputs": {
+        "row": {
+          "v": 1,
+          "seq": 2,
+          "ts": 1757500001,
+          "actor": {
+            "kind": "owner"
+          },
+          "action": "token_mint",
+          "name_hmac": null,
+          "subject": "42424242424242424242424242424242",
+          "result": "ok",
+          "version": 0,
+          "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+          "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "encoding": "0100000000000000020000000068c1526100000a0000014242424242424242424242424242424200000000000000000067e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+        "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+      }
+    },
+    {
+      "id": "audit-003",
+      "description": "secret_put by token",
+      "spec": "audit.md#2",
+      "op": "row_hash",
+      "inputs": {
+        "row": {
+          "v": 1,
+          "seq": 3,
+          "ts": 1757500002,
+          "actor": {
+            "kind": "token",
+            "id": "42424242424242424242424242424242"
+          },
+          "action": "secret_put",
+          "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+          "result": "ok",
+          "version": 1,
+          "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+          "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+          "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "encoding": "0100000000000000030000000068c1526201424242424242424242424242424242420014012121212121212121212121212121212121212121212121212121212121212121000000000000000000010165da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d90420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+        "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+      }
+    },
+    {
+      "id": "audit-004",
+      "description": "secret_read by token",
+      "spec": "audit.md#2",
+      "op": "row_hash",
+      "inputs": {
+        "row": {
+          "v": 1,
+          "seq": 4,
+          "ts": 1757500003,
+          "actor": {
+            "kind": "token",
+            "id": "42424242424242424242424242424242"
+          },
+          "action": "secret_read",
+          "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+          "result": "refused",
+          "version": 1,
+          "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+          "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "encoding": "0100000000000000040000000068c15263014242424242424242424242424242424200160121212121212121212121212121212121212121212121212121212121212121210100000000000000000100b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+        "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+      }
+    },
+    {
+      "id": "audit-005",
+      "description": "vault_rotate by owner",
+      "spec": "audit.md#2",
+      "op": "row_hash",
+      "inputs": {
+        "row": {
+          "v": 1,
+          "seq": 5,
+          "ts": 1757500004,
+          "actor": {
+            "kind": "owner"
+          },
+          "action": "vault_rotate",
+          "name_hmac": null,
+          "result": "ok",
+          "version": 0,
+          "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+          "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+          "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "encoding": "0100000000000000050000000068c15264000002000000000000000000000001661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f36339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+        "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+      }
+    },
+    {
+      "id": "audit-006",
+      "description": "a chain from genesis",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "head": {
+          "seq": 5,
+          "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+        },
+        "verified": 5,
+        "unverifiable_from": null
+      }
+    },
+    {
+      "id": "audit-007",
+      "description": "the continuation of a known head",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": {
+          "seq": 2,
+          "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+        },
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "head": {
+          "seq": 5,
+          "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+        },
+        "verified": 3,
+        "unverifiable_from": null
+      }
+    },
+    {
+      "id": "audit-008",
+      "description": "nothing new since the known head",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": {
+          "seq": 5,
+          "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+        },
+        "page": {
+          "rows": [],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "head": {
+          "seq": 5,
+          "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+        },
+        "verified": 0,
+        "unverifiable_from": null
+      }
+    },
+    {
+      "id": "audit-009",
+      "description": "no head known: from the first row served",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "success",
+      "outputs": {
+        "head": {
+          "seq": 5,
+          "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+        },
+        "verified": 3,
+        "unverifiable_from": null
+      }
+    },
+    {
+      "id": "audit-010",
+      "description": "a row's field changed, its hash not",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 2,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "chain_break"
+    },
+    {
+      "id": "audit-011",
+      "description": "a row rehashed over another predecessor",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "34541acb7649f94874a49f8aded17e9f8cd068918ff878a6231af13ee1593c14"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "chain_break"
+    },
+    {
+      "id": "audit-012",
+      "description": "a row missing",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "chain_break"
+    },
+    {
+      "id": "audit-013",
+      "description": "a server head the rows do not reach",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "chain_break"
+    },
+    {
+      "id": "audit-014",
+      "description": "the server ends before the known head",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": {
+          "seq": 4,
+          "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+        },
+        "page": {
+          "rows": [],
+          "head": {
+            "seq": 3,
+            "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+          }
+        }
+      },
+      "expect": "rollback"
+    },
+    {
+      "id": "audit-015",
+      "description": "the server shows no rows at all after a known head",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": {
+          "seq": 4,
+          "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+        },
+        "page": {
+          "rows": [],
+          "head": null
+        }
+      },
+      "expect": "rollback"
+    },
+    {
+      "id": "audit-016",
+      "description": "another row at the known head's position",
+      "spec": "audit.md#5",
+      "op": "verify",
+      "inputs": {
+        "known": {
+          "seq": 4,
+          "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+        },
+        "page": {
+          "rows": [],
+          "head": {
+            "seq": 4,
+            "hash": "faea553897b24f21c6650b3949af8e429a6a0e9de1b6b020c3baf88d11f33919"
+          }
+        }
+      },
+      "expect": "fork"
+    },
+    {
+      "id": "audit-017",
+      "description": "a row in format 2: the rows before it verify, the rest are unverifiable",
+      "spec": "audit.md#4",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 2,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "witness": "a field format 2 adds"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "unverifiable_newer_format",
+      "outputs": {
+        "head": {
+          "seq": 3,
+          "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+        },
+        "verified": 3,
+        "unverifiable_from": 4
+      }
+    },
+    {
+      "id": "audit-018",
+      "description": "a row without a format marker",
+      "spec": "audit.md#4",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "audit-019",
+      "description": "a row naming an action this client does not know",
+      "spec": "audit.md#4",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "vault_teleport",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "unknown_value"
+    },
+    {
+      "id": "audit-020",
+      "description": "a row naming an actor kind this client does not know",
+      "spec": "audit.md#4",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "service",
+                "id": "x"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "unknown_value"
+    },
+    {
+      "id": "audit-021",
+      "description": "a row with a field format 1 does not have",
+      "spec": "audit.md#4",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": 1,
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "note": "not hashed"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "audit-022",
+      "description": "a row whose seq is not a number",
+      "spec": "audit.md#4",
+      "op": "verify",
+      "inputs": {
+        "known": null,
+        "page": {
+          "rows": [
+            {
+              "v": 1,
+              "seq": "one",
+              "ts": 1757500000,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_create",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "eff16bf46556a8cacddd03fa0100e55246590a5ea96d77364b04d61110e8e55a",
+              "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+              "hash": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f"
+            },
+            {
+              "v": 1,
+              "seq": 2,
+              "ts": 1757500001,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "token_mint",
+              "name_hmac": null,
+              "subject": "42424242424242424242424242424242",
+              "result": "ok",
+              "version": 0,
+              "prev": "67e328193ac2f9e56f700caf2beef213917f9b450c004659bd04d91dae5d1f2f",
+              "hash": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23"
+            },
+            {
+              "v": 1,
+              "seq": 3,
+              "ts": 1757500002,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_put",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "ok",
+              "version": 1,
+              "ct_hash": "65da867639080176b5998c77219e2745474aa518a04268522467322f06fbd9d9",
+              "prev": "0420c55ac8558a4deac74ca48e44077e95c8d8646c0a33cd46ba0db6bacfaa23",
+              "hash": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45"
+            },
+            {
+              "v": 1,
+              "seq": 4,
+              "ts": 1757500003,
+              "actor": {
+                "kind": "token",
+                "id": "42424242424242424242424242424242"
+              },
+              "action": "secret_read",
+              "name_hmac": "2121212121212121212121212121212121212121212121212121212121212121",
+              "result": "refused",
+              "version": 1,
+              "prev": "b138353772b508af7f5aab43e6e46449705aeaeb881febc236788c28d574da45",
+              "hash": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee"
+            },
+            {
+              "v": 1,
+              "seq": 5,
+              "ts": 1757500004,
+              "actor": {
+                "kind": "owner"
+              },
+              "action": "vault_rotate",
+              "name_hmac": null,
+              "result": "ok",
+              "version": 0,
+              "ct_hash": "661c8587d8f8bf82e8da515a24dff60e3ebcda2e725be158227b68cec5c073f3",
+              "prev": "6339f34fc5e7d477df2f074b3af2c0adccd5c56bfe0e3bc0c1a6e364ac2da4ee",
+              "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+            }
+          ],
+          "head": {
+            "seq": 5,
+            "hash": "3116dad2d8c8b708b8676eccb1183879ac46e3af826e820794753a9fdb302c66"
+          }
+        }
+      },
+      "expect": "bad_encoding"
+    }
+  ]
+}

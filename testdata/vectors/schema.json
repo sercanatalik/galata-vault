@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://galata-vault.invalid/testdata/vectors/schema.json",
+  "title": "galata-vault protocol test vector file",
+  "description": "One file per construct under testdata/vectors/v1/. See docs/spec/README.md#5.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["suite", "protocol", "construct", "spec", "generator", "cases"],
+  "properties": {
+    "suite": { "const": "galata-vault test vectors" },
+    "protocol": { "const": 2 },
+    "construct": {
+      "description": "The construct, which is also the file's name.",
+      "enum": [
+        "strings", "paths", "keys", "names", "descriptors", "bundles", "envelopes",
+        "records", "children", "kits", "signatures", "audit", "pow"
+      ]
+    },
+    "spec": { "$ref": "#/$defs/anchor" },
+    "generator": { "type": "string", "minLength": 1 },
+    "cases": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/case" } }
+  },
+  "$defs": {
+    "anchor": {
+      "description": "A specification section: file and numbered anchor, e.g. records.md#2.5.",
+      "type": "string",
+      "pattern": "^[a-z-]+\\.md#[0-9]+(\\.[0-9]+)*$"
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "spec", "op", "inputs", "expect"],
+      "properties": {
+        "id": {
+          "description": "<construct>-<three digits>, unique in the file.",
+          "type": "string",
+          "pattern": "^[a-z]+-[0-9]{3}$"
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "spec": { "$ref": "#/$defs/anchor" },
+        "op": {
+          "description": "The operation the case exercises; each construct's operations are listed in docs/spec/README.md#5.",
+          "type": "string",
+          "pattern": "^[a-z_]+$"
+        },
+        "inputs": { "type": "object" },
+        "expect": {
+          "description": "success, or a name from the failure registry (docs/spec/README.md#4).",
+          "enum": [
+            "success",
+            "checksum_mismatch", "bad_encoding", "bad_length", "truncated",
+            "unknown_version", "unknown_kind", "unknown_format", "kind_mismatch",
+            "bad_signature", "key_mismatch", "vault_mismatch", "token_mismatch",
+            "generation_mismatch", "version_mismatch", "written_at_mismatch",
+            "name_mismatch", "descriptor_mismatch", "decrypt_failed", "chain_break",
+            "rollback", "fork", "unverifiable_newer_format", "unknown_value",
+            "bad_path", "bad_server", "bad_proof", "expired"
+          ]
+        },
+        "outputs": {
+          "description": "Required on success. On a failure, what an implementation still reports (a partial result), if anything.",
+          "type": "object"
+        }
+      },
+      "if": { "properties": { "expect": { "const": "success" } } },
+      "then": { "required": ["outputs"] }
+    }
+  }
+}

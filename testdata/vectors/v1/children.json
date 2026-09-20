@@ -1,0 +1,251 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "children",
+  "spec": "records.md#5",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "children-001",
+      "description": "three children, sorted by segment, compact JSON",
+      "spec": "records.md#5.1",
+      "op": "encode",
+      "inputs": {
+        "children": [
+          {
+            "seg": "staging",
+            "created_at": 1757500200,
+            "mode": {
+              "kind": "derived"
+            }
+          },
+          {
+            "seg": "dev",
+            "created_at": 1757500100,
+            "mode": {
+              "kind": "derived"
+            }
+          },
+          {
+            "seg": "eu",
+            "created_at": 1757500300,
+            "mode": {
+              "kind": "sealed",
+              "key_ct": "Lz65J3gKm8viFKdOxt2tMwd2YhL2Hqx6DiQ55Pbp0V0"
+            }
+          }
+        ]
+      },
+      "expect": "success",
+      "outputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\":\"dev\",\"created_at\":1757500100,\"mode\":{\"kind\":\"derived\"}},{\"seg\":\"eu\",\"created_at\":1757500300,\"mode\":{\"kind\":\"sealed\",\"key_ct\":\"Lz65J3gKm8viFKdOxt2tMwd2YhL2Hqx6DiQ55Pbp0V0\"}},{\"seg\":\"staging\",\"created_at\":1757500200,\"mode\":{\"kind\":\"derived\"}}]}"
+      }
+    },
+    {
+      "id": "children-002",
+      "description": "no children",
+      "spec": "records.md#5.1",
+      "op": "encode",
+      "inputs": {
+        "children": []
+      },
+      "expect": "success",
+      "outputs": {
+        "plaintext": "{\"v\":1,\"children\":[]}"
+      }
+    },
+    {
+      "id": "children-003",
+      "description": "a record in any order parses to the canonical one",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\": \"staging\", \"created_at\": 1757500200, \"mode\": {\"kind\": \"derived\"}}, {\"seg\": \"dev\", \"created_at\": 1757500100, \"mode\": {\"kind\": \"derived\"}}, {\"seg\": \"eu\", \"created_at\": 1757500300, \"mode\": {\"kind\": \"sealed\", \"key_ct\": \"Lz65J3gKm8viFKdOxt2tMwd2YhL2Hqx6DiQ55Pbp0V0\"}}]}"
+      },
+      "expect": "success",
+      "outputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\":\"dev\",\"created_at\":1757500100,\"mode\":{\"kind\":\"derived\"}},{\"seg\":\"eu\",\"created_at\":1757500300,\"mode\":{\"kind\":\"sealed\",\"key_ct\":\"Lz65J3gKm8viFKdOxt2tMwd2YhL2Hqx6DiQ55Pbp0V0\"}},{\"seg\":\"staging\",\"created_at\":1757500200,\"mode\":{\"kind\":\"derived\"}}]}"
+      }
+    },
+    {
+      "id": "children-004",
+      "description": "refused: version 0",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":0,\"children\":[]}"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "children-005",
+      "description": "refused: version 2",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":2,\"children\":[]}"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "children-006",
+      "description": "refused: a segment listed twice",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\":\"a\",\"created_at\":1,\"mode\":{\"kind\":\"derived\"}},{\"seg\":\"a\",\"created_at\":2,\"mode\":{\"kind\":\"derived\"}}]}"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "children-007",
+      "description": "refused: an unknown field",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":1,\"children\":[],\"server\":\"x\"}"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "children-008",
+      "description": "refused: an invalid segment",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\":\"Bad\",\"created_at\":1,\"mode\":{\"kind\":\"derived\"}}]}"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "children-009",
+      "description": "refused: an unknown entry mode",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\":\"a\",\"created_at\":1,\"mode\":{\"kind\":\"linked\"}}]}"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "children-010",
+      "description": "refused: not JSON",
+      "spec": "records.md#5.1",
+      "op": "parse",
+      "inputs": {
+        "plaintext": "children"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "children-011",
+      "description": "the owner signs frame(gv/v1/children, vault_id ‖ version ‖ SHA-256(ct))",
+      "spec": "records.md#5.2",
+      "op": "sign",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "e36eaf8acd610df83d199999d9f31eee55f4aeb13838d549a0b7122e22f4cd3d3dac8c1f451283f82c3b6ab2faa421d96b6e56814a1afcb5e2f1e5a9ddaaa8cb217b6d14489a11dd0f16b1aed0d4b50e5f9fa51dc55d1aa4921e17fe39ee4e8637869dbfda2440a7790df61e1d77a4d9a9d1698f8058d58b8ec4102b9b40a329c7353f3dc57f42b53aa359999e987982d6c96e9a410741e5452acf14ddfc8afcb7231c6d368cd4bbeba2d24e3eb5ddcc6b9a9da278ce8a764bcf1e257fc55ad202e7a03da0c81b50daa184df8bc589454fdf0bc7c29728ed173a5180fb165eef94b33b942fd07eafa3cb144a165a174bb864970d5e8676d4f89f6a236178919f1fbfc194423cf3c101aec5b9d6d4f30f043ec52dd3b13bc07958c09e3410f92d08b4a15d571bb075d79471a4c1704a34b9c70f2efcdd855b853a1c4f0e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f6368696c6472656e00e9cb749994ea300f5bbf5285cba1056d00000000000000040fdf6e051144d4e157b554c858bd40310c054c82c747f0f66779731b57bc313b",
+        "sig": "7856bb28523e64663d12c39ed8d2fd72541cd38cf7865543ee9b2f58b191ec7aa08642d5988ac596af7748017b0d1ca2124cbb9537cefc209c7258ea72a0b90d"
+      }
+    },
+    {
+      "id": "children-012",
+      "description": "the owner opens its children record",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "e36eaf8acd610df83d199999d9f31eee55f4aeb13838d549a0b7122e22f4cd3d3dac8c1f451283f82c3b6ab2faa421d96b6e56814a1afcb5e2f1e5a9ddaaa8cb217b6d14489a11dd0f16b1aed0d4b50e5f9fa51dc55d1aa4921e17fe39ee4e8637869dbfda2440a7790df61e1d77a4d9a9d1698f8058d58b8ec4102b9b40a329c7353f3dc57f42b53aa359999e987982d6c96e9a410741e5452acf14ddfc8afcb7231c6d368cd4bbeba2d24e3eb5ddcc6b9a9da278ce8a764bcf1e257fc55ad202e7a03da0c81b50daa184df8bc589454fdf0bc7c29728ed173a5180fb165eef94b33b942fd07eafa3cb144a165a174bb864970d5e8676d4f89f6a236178919f1fbfc194423cf3c101aec5b9d6d4f30f043ec52dd3b13bc07958c09e3410f92d08b4a15d571bb075d79471a4c1704a34b9c70f2efcdd855b853a1c4f0e",
+        "sig": "7856bb28523e64663d12c39ed8d2fd72541cd38cf7865543ee9b2f58b191ec7aa08642d5988ac596af7748017b0d1ca2124cbb9537cefc209c7258ea72a0b90d"
+      },
+      "expect": "success",
+      "outputs": {
+        "plaintext": "{\"v\":1,\"children\":[{\"seg\":\"dev\",\"created_at\":1757500100,\"mode\":{\"kind\":\"derived\"}},{\"seg\":\"eu\",\"created_at\":1757500300,\"mode\":{\"kind\":\"sealed\",\"key_ct\":\"Lz65J3gKm8viFKdOxt2tMwd2YhL2Hqx6DiQ55Pbp0V0\"}},{\"seg\":\"staging\",\"created_at\":1757500200,\"mode\":{\"kind\":\"derived\"}}]}"
+      }
+    },
+    {
+      "id": "children-013",
+      "description": "signed by the secret writer key (what an append token holds)",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "e36eaf8acd610df83d199999d9f31eee55f4aeb13838d549a0b7122e22f4cd3d3dac8c1f451283f82c3b6ab2faa421d96b6e56814a1afcb5e2f1e5a9ddaaa8cb217b6d14489a11dd0f16b1aed0d4b50e5f9fa51dc55d1aa4921e17fe39ee4e8637869dbfda2440a7790df61e1d77a4d9a9d1698f8058d58b8ec4102b9b40a329c7353f3dc57f42b53aa359999e987982d6c96e9a410741e5452acf14ddfc8afcb7231c6d368cd4bbeba2d24e3eb5ddcc6b9a9da278ce8a764bcf1e257fc55ad202e7a03da0c81b50daa184df8bc589454fdf0bc7c29728ed173a5180fb165eef94b33b942fd07eafa3cb144a165a174bb864970d5e8676d4f89f6a236178919f1fbfc194423cf3c101aec5b9d6d4f30f043ec52dd3b13bc07958c09e3410f92d08b4a15d571bb075d79471a4c1704a34b9c70f2efcdd855b853a1c4f0e",
+        "sig": "2d956330d12267d65f6740cf08716479cc5e6dfab15c3ea87533f26fa10861a22002369cc212142f98b308595e7a675005c3e4e31d7df11a13382ea5df29c30d"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "children-014",
+      "description": "served as another version",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 5,
+        "ct": "e36eaf8acd610df83d199999d9f31eee55f4aeb13838d549a0b7122e22f4cd3d3dac8c1f451283f82c3b6ab2faa421d96b6e56814a1afcb5e2f1e5a9ddaaa8cb217b6d14489a11dd0f16b1aed0d4b50e5f9fa51dc55d1aa4921e17fe39ee4e8637869dbfda2440a7790df61e1d77a4d9a9d1698f8058d58b8ec4102b9b40a329c7353f3dc57f42b53aa359999e987982d6c96e9a410741e5452acf14ddfc8afcb7231c6d368cd4bbeba2d24e3eb5ddcc6b9a9da278ce8a764bcf1e257fc55ad202e7a03da0c81b50daa184df8bc589454fdf0bc7c29728ed173a5180fb165eef94b33b942fd07eafa3cb144a165a174bb864970d5e8676d4f89f6a236178919f1fbfc194423cf3c101aec5b9d6d4f30f043ec52dd3b13bc07958c09e3410f92d08b4a15d571bb075d79471a4c1704a34b9c70f2efcdd855b853a1c4f0e",
+        "sig": "7856bb28523e64663d12c39ed8d2fd72541cd38cf7865543ee9b2f58b191ec7aa08642d5988ac596af7748017b0d1ca2124cbb9537cefc209c7258ea72a0b90d"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "children-015",
+      "description": "signed for another vault",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "8e021b9d610b8fee50ce048698fda51eb2ab48f83d8d53b82ba3c9c987500b717a3645206b8552e25dfec5b5831c328dba48335ebb4c97c2ed880775dbeabb42863f94247ba8844a03fb451a6f7db22e36773d57f0d9da6aa633a756a40c1fbca6d8106d7630fc70f323da9d327b5a50e0c8125a5d0c6525bb52737d4e48e39be40104e04247f8d66520e326cbb9fb7e4be516f84cd97f51381728b000e7d04d3be6c982e2ca4e268dc015e9b056bb057cdf7af0586aecd3b6118dc5af237b029649d3994cf09f97da36cac774632b1335ee1b14e48c57e51affc3c46c7abc39625e68982b38275c780d5e887c99faafd146907c10155ae935c25ad65cbf7fcce969d17608b7054c6d6a33b4680d588627288d9452339a17d26dc0c9e1b00fd58b1c85bd3711f85332cbed61bc9768eebdfba4dc791fa2aeecfb80d955",
+        "sig": "ef2865b00199edf0465893267aed614eb7560347326a156762749077e4da99bce657e800b76c2166cd2c729a1d8ae020e4d79856bbe4a8f88e1ab069e270780b"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "children-016",
+      "description": "sealed to another owner, signed by this one",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "c5204bcf3011998ab6caf2392b2a3891a49f0acbbc310f1f20019c11299cd83563b34959ffa06d50165435662b09737e92f6685ffa119338f5a9ba0b8350a3453f4b006ec2be23d70304eaf6619f10ca9cdb55e9ddf0a24447f750b86bb8c1a1c3e12ae4b4ab0f6f3790b6d80c971e19d02a4e1ec96a1109e7e58de40278668bd311e1b8dfd08970762a56faf4d768285c406e25f8c68bf98aa13f2d6b013c38f1d4cbce4e41034d6889c38928c53cae51060da6729133a803f30e9910aa0894f29e16a2dd5b6a54ffffdbcfda0b1a01555524eff302913c5b782a83aeab20ab66314a69ae45980fdbfcc6ce89e1b738923fca77489f79e66f25295447fa89eb99d59ed2d8f8b9af8c6b3beb8ac9f8ce78e197eb1931bfa91561bdd66bac6c4943240e8cf84e2e80494bff7d82109228ddbd2642f7ba9bb799447f5653",
+        "sig": "bd660bdf560263d28589487ff2e692617b90bd064512bfb8651b5bae621c354dc3b44d967f0cb59926e40ec8c03616f7730fc0fdb3128210d00203cbe59dff06"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "children-017",
+      "description": "a version 2 record, correctly sealed and signed",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "621c349c2da40c65f95560d2eefee9c7ea72a955cd44dd34a52c6d5787012511a9b206aca607fd17b0230f5fcc6c5b4c09c8adfc578062d13c25cf62d3a8e19fce459688dd",
+        "sig": "ea5574e951344f875b37efc52a5a0c2a44730b2508e690a3b1c9c5971cf23c29af7759da038fac34d8e5cdc33cff81f7c9b1ac8d02003bab40a163688331820d"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "children-018",
+      "description": "a segment listed twice, correctly sealed and signed",
+      "spec": "records.md#5.3",
+      "op": "open",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 4,
+        "ct": "8bf93660262b6e35003fd09d6db21695d13e741002369e9ff18a8385576d8248722adf9803fc413cf8db44c58b3a5aa1dd94861bec2368eb9d857f7d3085d3a45cfe2088483cb8f1db85b2596f7e66210ec3097ce03758d47ddd2f35497e4bc50cb9783079c230d9b87d038c6b34df09a9f51c872a9a3019c28f2ee4603be1b1ced727da3f1632a9ee1cd81275601a09f242df36286c0451d7f258f8d476f1db9ec01e061b0bc94456c20a2afc9d",
+        "sig": "146da511ba27b4e5a598eeab08f849541aaccbd0480e68903646c6bf209d131668b0d490a4bd35268a91d93e364d31c252e90c7d34295b37de3f9ed5bf0f7b09"
+      },
+      "expect": "bad_encoding"
+    }
+  ]
+}

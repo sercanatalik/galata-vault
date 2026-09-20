@@ -1,0 +1,26 @@
+The vectors in this directory are copied, unchanged, from the `age/testdata`
+folder of the Community Cryptography Test Vectors (C2SP CCTV),
+https://github.com/C2SP/CCTV, at commit
+4448f2097b2daa812c91a26141f9f36c2096b9ca.
+
+Upstream states their license as follows (age/README.md, "License"; the whole
+upstream README is kept beside this file as UPSTREAM-README.md):
+
+    The vectors in the `testdata` folder and the files in this top-level
+    directory are available under the terms of the Zero-Clause BSD
+    (reproduced below), CC0 1.0, or Unlicense license, to your choice.
+
+    Copyright (c) 2022 The age Authors
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    The software is provided "as is" and the author disclaims all warranties
+    with regard to this software including all implied warranties of
+    merchantability and fitness. In no event shall the author be liable for
+    any special, direct, indirect, or consequential damages or any damages
+    whatsoever resulting from loss of use, data or profits, whether in an
+    action of contract, negligence or other tortious action, arising out of or
+    in connection with the use or performance of this software.
+
+galata-vault uses them under the Zero-Clause BSD license.

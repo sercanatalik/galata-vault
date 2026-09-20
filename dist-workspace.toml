@@ -1,0 +1,47 @@
+# dist (https://github.com/axodotdev/cargo-dist): the gv, gv-server and gv-mcp
+# release binaries, built by .github/workflows/release.yml when a version tag
+# is pushed (release-plz pushes `v<version>`; RELEASING.md). Regenerate the
+# workflow with `dist generate` after changing this file; CI's `plan` step
+# fails if the two disagree.
+#
+# Per package (their Cargo.toml `[package.metadata.dist]`): galata-vault-cli
+# builds with `ui`; galata-vault-server and galata-vault-mcp build for Linux
+# and macOS only. Crates marked `publish = false` are not built.
+
+[workspace]
+members = ["cargo:."]
+
+[dist]
+cargo-dist-version = "0.32.0"
+ci = "github"
+# gv on Linux (x86_64, aarch64), macOS (aarch64, x86_64) and Windows (x86_64).
+# Every target builds natively on a hosted runner: no zigbuild or
+# cross, which cargo-auditable does not support.
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-gnu",
+    "x86_64-pc-windows-msvc",
+]
+installers = ["shell", "powershell", "homebrew"]
+# The tap repository: `brew install sercanatalik/tap/<formula>`.
+# The publish job needs the HOMEBREW_TAP_TOKEN secret, scoped to that
+# repository only.
+tap = "sercanatalik/homebrew-tap"
+publish-jobs = ["homebrew"]
+# Provenance: a GitHub artifact attestation for every artifact, and the
+# dependency list embedded in every binary (`cargo audit bin` reads it).
+github-attestations = true
+cargo-auditable = true
+install-path = "CARGO_HOME"
+install-updater = false
+# Pull requests only plan a release; nothing is built or uploaded for them.
+pr-run-mode = "plan"
+
+[dist.github-custom-runners]
+aarch64-apple-darwin = "macos-14"
+x86_64-apple-darwin = "macos-15-intel"
+aarch64-unknown-linux-gnu = "ubuntu-24.04-arm"
+x86_64-unknown-linux-gnu = "ubuntu-22.04"
+x86_64-pc-windows-msvc = "windows-2022"

@@ -1,0 +1,137 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "kits",
+  "spec": "records.md#6",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "kits-001",
+      "description": "a recovery kit",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"gvk1_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\n"
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "recovery",
+        "path": "acme",
+        "server": "https://vault.example",
+        "key": "fa52e8a31d814c9c73ba261987266a64146050530ec5e1dadd5dead5eaf1fd10"
+      }
+    },
+    {
+      "id": "kits-002",
+      "description": "a delegation kit for an environment",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault delegation kit (v1)\n#\n# Whoever holds this file owns acme/dev and everything beneath it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"delegation\"\npath = \"acme/dev\"\nserver = \"http://127.0.0.1:8750\"\nkey = \"gvk1_N20mIcPJenI6N6IYKWvKaMDG6WoZ7fFTdipaiD4LD9K46MNfK\"\n"
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "delegation",
+        "path": "acme/dev",
+        "server": "http://127.0.0.1:8750",
+        "key": "612138cd0362b7d14d434e513d553c1054217213e92fe7ff85a1335e26e41e6e"
+      }
+    },
+    {
+      "id": "kits-003",
+      "description": "comments and key order do not matter",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "key = \"gvk1_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\nserver = \"https://vault.example\"\n# a comment\npath = \"acme\"\nkind = \"recovery\"\nv = 1\n"
+      },
+      "expect": "success",
+      "outputs": {
+        "kind": "recovery",
+        "path": "acme",
+        "server": "https://vault.example",
+        "key": "fa52e8a31d814c9c73ba261987266a64146050530ec5e1dadd5dead5eaf1fd10"
+      }
+    },
+    {
+      "id": "kits-004",
+      "description": "kit version 0",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 0\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"gvk1_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\n"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "kits-005",
+      "description": "kit version 2",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 2\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"gvk1_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\n"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "kits-006",
+      "description": "a key with another version digit",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"gvk2_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc29Hr05\"\n"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "kits-007",
+      "description": "a mistyped key",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"gvk1_xMHuL1efCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\n"
+      },
+      "expect": "checksum_mismatch"
+    },
+    {
+      "id": "kits-008",
+      "description": "a plain http server off loopback",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"recovery\"\npath = \"acme\"\nserver = \"http://vault.example\"\nkey = \"gvk1_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\n"
+      },
+      "expect": "bad_server"
+    },
+    {
+      "id": "kits-009",
+      "description": "a recovery kit for an environment",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme/dev\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"recovery\"\npath = \"acme/dev\"\nserver = \"https://vault.example\"\nkey = \"gvk1_N20mIcPJenI6N6IYKWvKaMDG6WoZ7fFTdipaiD4LD9K46MNfK\"\n"
+      },
+      "expect": "kind_mismatch"
+    },
+    {
+      "id": "kits-010",
+      "description": "an unknown field",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "# galata-vault recovery kit (v1)\n#\n# Whoever holds this file owns the project \"acme\" and every environment in it.\n# There is no account and no reset: lose every copy of this key and\n# the secrets are gone. Keep it offline or in a password manager,\n# and never commit it.\nv = 1\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"gvk1_xMHuLaefCWGf5XE4DitMxgTdF7KhKAZ6CjEvkEH8KRc1MnRGm\"\nnote = \"x\"\n"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "kits-011",
+      "description": "not TOML",
+      "spec": "records.md#6",
+      "op": "parse",
+      "inputs": {
+        "text": "v = 1\nkind = recovery\n"
+      },
+      "expect": "bad_encoding"
+    }
+  ]
+}

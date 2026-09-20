@@ -1,0 +1,330 @@
+/* galata-vault docs: mdBook theme variables.
+ *
+ * Overrides mdBook's theme/css/variables.css. Two themes are styled: `light`
+ * (stone) and `coal` (night); the others fall back to mdBook's defaults from
+ * the same variables so the theme menu still works. Keep the variable set in
+ * step with the mdBook release pinned in .github/workflows/pages.yml. */
+
+:root {
+    --sidebar-target-width: 300px;
+    --sidebar-width: min(var(--sidebar-target-width), 80vw);
+    --sidebar-resize-indicator-width: 8px;
+    --sidebar-resize-indicator-space: 2px;
+    --page-padding: 15px;
+    --content-max-width: 760px;
+    --menu-bar-height: 56px;
+    --mono-font: "IBM Plex Mono", ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --code-font-size: 0.875em;
+    --searchbar-margin-block-start: 5px;
+
+    /* galata-vault palette, shared by the landing page. */
+    --gv-stone: #F5F3EE;
+    --gv-stone-2: #EBE7DE;
+    --gv-line: #D9D3C6;
+    --gv-ink: #1A1917;
+    --gv-ink-2: #3D3A34;
+    --gv-muted: #5C5850;
+    --gv-bosphorus: #0E5E68;
+    --gv-bosphorus-2: #6CC3CC;
+    --gv-copper: #8A4B2A;
+    --gv-night: #17181A;
+    --gv-night-2: #1F2124;
+    --gv-night-line: #33363B;
+    --gv-night-fg: #ECE8E0;
+    --gv-night-muted: #A9A399;
+}
+
+.light, html:not(.js) {
+    --bg: #F5F3EE;
+    --fg: #1A1917;
+
+    --sidebar-bg: #EBE7DE;
+    --sidebar-fg: #1A1917;
+    --sidebar-non-existant: #8F8A7F;
+    --sidebar-active: #0E5E68;
+    --sidebar-spacer: #D9D3C6;
+
+    --scrollbar: #8F8A7F;
+
+    --icons: #5C5850;
+    --icons-hover: #1A1917;
+
+    --links: #0E5E68;
+
+    --inline-code-color: #1A1917;
+
+    --theme-popup-bg: #EBE7DE;
+    --theme-popup-border: #D9D3C6;
+    --theme-hover: #DCE9EA;
+
+    --quote-bg: #F1E6D6;
+    --quote-border: #D8BFA2;
+
+    --warning-border: #8A4B2A;
+
+    --table-border-color: #D9D3C6;
+    --table-header-bg: #E4DFD3;
+    --table-alternate-bg: #EFECE4;
+
+    --searchbar-border-color: #D9D3C6;
+    --searchbar-bg: #FBFAF7;
+    --searchbar-fg: #1A1917;
+    --searchbar-shadow-color: #D9D3C6;
+    --searchresults-header-fg: #5C5850;
+    --searchresults-border-color: #D9D3C6;
+    --searchresults-li-bg: #EBE7DE;
+    --search-mark-bg: #C9E3E5;
+
+    --color-scheme: light;
+
+    --copy-button-filter: invert(34%) sepia(6%) saturate(400%) hue-rotate(2deg) brightness(93%) contrast(88%);
+    --copy-button-filter-hover: invert(25%) sepia(50%) saturate(1500%) hue-rotate(155deg) brightness(90%) contrast(95%);
+
+    --footnote-highlight: #C9E3E5;
+
+    --overlay-bg: rgba(26, 25, 23, 0.35);
+
+    --blockquote-note-color: #0E5E68;
+    --blockquote-tip-color: #2E6B3A;
+    --blockquote-important-color: #5B4A8A;
+    --blockquote-warning-color: #8A4B2A;
+    --blockquote-caution-color: #9A2F2F;
+
+    --sidebar-header-border-color: #0E5E68;
+}
+
+.coal {
+    --bg: #17181A;
+    --fg: #ECE8E0;
+
+    --sidebar-bg: #1F2124;
+    --sidebar-fg: #ECE8E0;
+    --sidebar-non-existant: #6E6A63;
+    --sidebar-active: #6CC3CC;
+    --sidebar-spacer: #33363B;
+
+    --scrollbar: #6E6A63;
+
+    --icons: #A9A399;
+    --icons-hover: #ECE8E0;
+
+    --links: #6CC3CC;
+
+    --inline-code-color: #ECE8E0;
+
+    --theme-popup-bg: #1F2124;
+    --theme-popup-border: #33363B;
+    --theme-hover: #233236;
+
+    --quote-bg: #2A2420;
+    --quote-border: #5A4636;
+
+    --warning-border: #D9A27E;
+
+    --table-border-color: #33363B;
+    --table-header-bg: #2A2D31;
+    --table-alternate-bg: #1C1E21;
+
+    --searchbar-border-color: #33363B;
+    --searchbar-bg: #1F2124;
+    --searchbar-fg: #ECE8E0;
+    --searchbar-shadow-color: #33363B;
+    --searchresults-header-fg: #A9A399;
+    --searchresults-border-color: #33363B;
+    --searchresults-li-bg: #2A2D31;
+    --search-mark-bg: #2F5C62;
+
+    --color-scheme: dark;
+
+    --copy-button-filter: invert(70%) sepia(5%) saturate(300%) hue-rotate(2deg) brightness(95%) contrast(85%);
+    --copy-button-filter-hover: invert(75%) sepia(20%) saturate(900%) hue-rotate(140deg) brightness(95%) contrast(90%);
+
+    --footnote-highlight: #2F5C62;
+
+    --overlay-bg: rgba(23, 24, 26, 0.5);
+
+    --blockquote-note-color: #6CC3CC;
+    --blockquote-tip-color: #7FC98A;
+    --blockquote-important-color: #B3A2E6;
+    --blockquote-warning-color: #D9A27E;
+    --blockquote-caution-color: #E07070;
+
+    --sidebar-header-border-color: #6CC3CC;
+}
+
+/* The remaining mdBook themes keep their stock look, remapped to the same
+ * variable names so the theme menu never leaves a page unstyled. */
+.navy {
+    --bg: hsl(226, 23%, 11%);
+    --fg: #bcbdd0;
+    --sidebar-bg: #282d3f;
+    --sidebar-fg: #c8c9db;
+    --sidebar-non-existant: #505274;
+    --sidebar-active: #6CC3CC;
+    --sidebar-spacer: #2d334f;
+    --scrollbar: var(--sidebar-fg);
+    --icons: #737480;
+    --icons-hover: #b7b9cc;
+    --links: #6CC3CC;
+    --inline-code-color: #c5c8c6;
+    --theme-popup-bg: #161923;
+    --theme-popup-border: #737480;
+    --theme-hover: #282e40;
+    --quote-bg: hsl(226, 15%, 17%);
+    --quote-border: hsl(226, 15%, 22%);
+    --warning-border: #ff8e00;
+    --table-border-color: hsl(226, 23%, 16%);
+    --table-header-bg: hsl(226, 23%, 31%);
+    --table-alternate-bg: hsl(226, 23%, 14%);
+    --searchbar-border-color: #aaa;
+    --searchbar-bg: #aeaec6;
+    --searchbar-fg: #000;
+    --searchbar-shadow-color: #aaa;
+    --searchresults-header-fg: #5f5f71;
+    --searchresults-border-color: #5c5c68;
+    --searchresults-li-bg: #242430;
+    --search-mark-bg: #a2cff5;
+    --color-scheme: dark;
+    --copy-button-filter: invert(51%) sepia(10%) saturate(393%) hue-rotate(198deg) brightness(86%) contrast(87%);
+    --copy-button-filter-hover: invert(46%) sepia(20%) saturate(1537%) hue-rotate(156deg) brightness(85%) contrast(90%);
+    --footnote-highlight: #4079ae;
+    --overlay-bg: rgba(33, 40, 48, 0.4);
+    --blockquote-note-color: #4493f8;
+    --blockquote-tip-color: #09ca09;
+    --blockquote-important-color: #ab7df8;
+    --blockquote-warning-color: #d29922;
+    --blockquote-caution-color: #f21424;
+    --sidebar-header-border-color: #2f6ab5;
+}
+
+.ayu {
+    --bg: hsl(210, 25%, 8%);
+    --fg: #c5c5c5;
+    --sidebar-bg: #14191f;
+    --sidebar-fg: #c8c9db;
+    --sidebar-non-existant: #5c6773;
+    --sidebar-active: #ffb454;
+    --sidebar-spacer: #2d334f;
+    --scrollbar: var(--sidebar-fg);
+    --icons: #737480;
+    --icons-hover: #b7b9cc;
+    --links: #0096cf;
+    --inline-code-color: #ffb454;
+    --theme-popup-bg: #14191f;
+    --theme-popup-border: #5c6773;
+    --theme-hover: #191f26;
+    --quote-bg: hsl(226, 15%, 17%);
+    --quote-border: hsl(226, 15%, 22%);
+    --warning-border: #ff8e00;
+    --table-border-color: hsl(210, 25%, 13%);
+    --table-header-bg: hsl(210, 25%, 28%);
+    --table-alternate-bg: hsl(210, 25%, 11%);
+    --searchbar-border-color: #848484;
+    --searchbar-bg: #424242;
+    --searchbar-fg: #fff;
+    --searchbar-shadow-color: #d4c89f;
+    --searchresults-header-fg: #666;
+    --searchresults-border-color: #888;
+    --searchresults-li-bg: #252932;
+    --search-mark-bg: #e3b171;
+    --color-scheme: dark;
+    --copy-button-filter: invert(45%) sepia(6%) saturate(621%) hue-rotate(198deg) brightness(99%) contrast(85%);
+    --copy-button-filter-hover: invert(68%) sepia(55%) saturate(531%) hue-rotate(341deg) brightness(104%) contrast(101%);
+    --footnote-highlight: #2668a6;
+    --overlay-bg: rgba(33, 40, 48, 0.4);
+    --blockquote-note-color: #74b9ff;
+    --blockquote-tip-color: #09ca09;
+    --blockquote-important-color: #d3abff;
+    --blockquote-warning-color: #f0b72f;
+    --blockquote-caution-color: #f21424;
+    --sidebar-header-border-color: #c18639;
+}
+
+.rust {
+    --bg: hsl(60, 9%, 87%);
+    --fg: #262625;
+    --sidebar-bg: #3b2e2a;
+    --sidebar-fg: #c8c9db;
+    --sidebar-non-existant: #505254;
+    --sidebar-active: #e69f67;
+    --sidebar-spacer: #45373a;
+    --scrollbar: var(--sidebar-fg);
+    --icons: #737480;
+    --icons-hover: #262625;
+    --links: #2b79a2;
+    --inline-code-color: #6e6b5e;
+    --theme-popup-bg: #e1e1db;
+    --theme-popup-border: #b38f6b;
+    --theme-hover: #99908a;
+    --quote-bg: hsl(60, 5%, 75%);
+    --quote-border: hsl(60, 5%, 70%);
+    --warning-border: #ff8e00;
+    --table-border-color: hsl(60, 9%, 82%);
+    --table-header-bg: #b3a497;
+    --table-alternate-bg: hsl(60, 9%, 84%);
+    --searchbar-border-color: #aaa;
+    --searchbar-bg: #fafafa;
+    --searchbar-fg: #000;
+    --searchbar-shadow-color: #aaa;
+    --searchresults-header-fg: #666;
+    --searchresults-border-color: #888;
+    --searchresults-li-bg: #dec2a2;
+    --search-mark-bg: #e69f67;
+    --color-scheme: light;
+    --copy-button-filter: invert(51%) sepia(10%) saturate(393%) hue-rotate(198deg) brightness(86%) contrast(87%);
+    --copy-button-filter-hover: invert(77%) sepia(16%) saturate(1798%) hue-rotate(328deg) brightness(98%) contrast(83%);
+    --footnote-highlight: #d3a17a;
+    --overlay-bg: rgba(150, 150, 150, 0.25);
+    --blockquote-note-color: #023b95;
+    --blockquote-tip-color: #007700;
+    --blockquote-important-color: #8250df;
+    --blockquote-warning-color: #603700;
+    --blockquote-caution-color: #aa1721;
+    --sidebar-header-border-color: #8c391f;
+}
+
+/* Without JavaScript, follow the system: night when it asks for dark. */
+@media (prefers-color-scheme: dark) {
+    html:not(.js) {
+        --bg: #17181A;
+        --fg: #ECE8E0;
+        --sidebar-bg: #1F2124;
+        --sidebar-fg: #ECE8E0;
+        --sidebar-non-existant: #6E6A63;
+        --sidebar-active: #6CC3CC;
+        --sidebar-spacer: #33363B;
+        --scrollbar: #6E6A63;
+        --icons: #A9A399;
+        --icons-hover: #ECE8E0;
+        --links: #6CC3CC;
+        --inline-code-color: #ECE8E0;
+        --theme-popup-bg: #1F2124;
+        --theme-popup-border: #33363B;
+        --theme-hover: #233236;
+        --quote-bg: #2A2420;
+        --quote-border: #5A4636;
+        --warning-border: #D9A27E;
+        --table-border-color: #33363B;
+        --table-header-bg: #2A2D31;
+        --table-alternate-bg: #1C1E21;
+        --searchbar-border-color: #33363B;
+        --searchbar-bg: #1F2124;
+        --searchbar-fg: #ECE8E0;
+        --searchbar-shadow-color: #33363B;
+        --searchresults-header-fg: #A9A399;
+        --searchresults-border-color: #33363B;
+        --searchresults-li-bg: #2A2D31;
+        --search-mark-bg: #2F5C62;
+        --color-scheme: dark;
+        --copy-button-filter: invert(70%) sepia(5%) saturate(300%) hue-rotate(2deg) brightness(95%) contrast(85%);
+        --copy-button-filter-hover: invert(75%) sepia(20%) saturate(900%) hue-rotate(140deg) brightness(95%) contrast(90%);
+        --footnote-highlight: #2F5C62;
+        --overlay-bg: rgba(23, 24, 26, 0.5);
+        --blockquote-note-color: #6CC3CC;
+        --blockquote-tip-color: #7FC98A;
+        --blockquote-important-color: #B3A2E6;
+        --blockquote-warning-color: #D9A27E;
+        --blockquote-caution-color: #E07070;
+        --sidebar-header-border-color: #6CC3CC;
+    }
+}

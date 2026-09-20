@@ -1,0 +1,120 @@
+# galata-vault: an end-to-end-encrypted secrets library, with no accounts.
+#
+# The crate boundaries ARE the security design. scripts/ checks them against
+# the resolved dependency graph:
+#
+#   galata-vault-server-core,   never link galata-vault-keys, galata-vault-seal,
+#   galata-vault-server         age or crypto_box. The server cannot decrypt,
+#                               because the code is not in it. The core links
+#                               no HTTP stack or async runtime either.
+#   galata-vault-mcp            never links galata-vault-seal or age. The MCP
+#                               server cannot read a value, for the same reason.
+#
+# Published to crates.io (RELEASING.md): every galata-vault-* crate and the
+# SDK, in one lockstep version. Not published: gv-py (PyPI, as
+# `galata-vault`), gv-adversary and gv-conformance, each `publish = false` in
+# its own manifest.
+
+[workspace]
+resolver = "3"
+members = [
+    "crates/galata-vault-proto",
+    "crates/galata-vault-keys",
+    "crates/galata-vault-seal",
+    "crates/galata-vault-store",
+    "crates/galata-vault-server-core",
+    "crates/galata-vault-server",
+    "crates/galata-vault-client",
+    "crates/galata-vault-cli",
+    "crates/galata-vault-mcp",
+    "crates/gv-py",
+    "crates/galata-vault",
+    # Test-only: the malicious-server harness (a dev-dependency, never shipped).
+    "crates/gv-adversary",
+    # Unpublished: the black-box conformance suite for servers (docs/spec/README.md#6).
+    "crates/gv-conformance",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "MIT"
+# The repository the crates are released from (maintainer input,
+# 2026-09-15). The same URL is in crates/gv-py/pyproject.toml
+# ([project.urls]) and release-plz.toml (repo_url).
+repository = "https://github.com/sercanatalik/galata-vault"
+
+# Every path entry carries the workspace version, so a packaged manifest
+# names a registry version. They move together (release-plz.toml).
+[workspace.dependencies]
+galata-vault-proto = { version = "0.1.0", path = "crates/galata-vault-proto" }
+galata-vault-keys = { version = "0.1.0", path = "crates/galata-vault-keys" }
+galata-vault-seal = { version = "0.1.0", path = "crates/galata-vault-seal" }
+galata-vault-store = { version = "0.1.0", path = "crates/galata-vault-store" }
+galata-vault-server-core = { version = "0.1.0", path = "crates/galata-vault-server-core" }
+# No default features here: a member names `http` when it wants the HTTP
+# transport (galata-vault-mcp does; the SDK forwards it as its own default feature).
+galata-vault-client = { version = "0.1.0", path = "crates/galata-vault-client", default-features = false }
+galata-vault = { version = "0.1.0", path = "crates/galata-vault" }
+galata-vault-server = { version = "0.1.0", path = "crates/galata-vault-server" }
+galata-vault-cli = { version = "0.1.0", path = "crates/galata-vault-cli" }
+
+age = "0.12"
+anyhow = "1"
+axum = "0.8"
+clap = { version = "4", features = ["derive"] }
+# The CLI: the OS keychain, no-echo prompts, no core dumps, a small
+# synchronous HTTP client on rustls.
+keyring = "4.2"
+rlimit = "0.11"
+rpassword = "7.5"
+ureq = { version = "3.4", default-features = false, features = ["rustls"] }
+# `gv ui` (crates/galata-vault-cli, feature `ui`): a small blocking HTTP server on
+# loopback, templates that escape by default, and Ctrl-C handling.
+tiny_http = "0.12"
+maud = "0.27"
+signal-hook = "0.3"
+# The Python package (crates/gv-py): one abi3 wheel per platform for CPython
+# 3.11+. maturin adds `extension-module` when it builds the wheel.
+pyo3 = { version = "0.29", features = ["abi3-py311"] }
+# The metadata-only MCP server (spike 1.5): stdio transport only.
+rmcp = { version = "=3.2.0", default-features = false, features = ["server", "macros", "transport-io"] }
+http-body-util = "0.1"
+subtle = "2.6"
+tokio = { version = "1.53", features = ["macros", "rt-multi-thread", "net", "signal", "time"] }
+toml = "1"
+tower = { version = "0.5", features = ["util"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+base64 = "0.22"
+# The version age itself uses: vault keys cross into age as bech32 strings.
+bech32 = "0.11"
+blake3 = "1.8"
+chacha20poly1305 = "0.11"
+# 0.9 is the stable line; 0.10 is still a pre-release. `seal` gives
+# libsodium-compatible sealed boxes (crypto_box_seal).
+crypto_box = { version = "0.9", features = ["seal", "std", "getrandom"] }
+ed25519-dalek = "3"
+getrandom = "0.4"
+hkdf = "0.13"
+hmac = "0.13"
+proptest = "1.11"
+# `bundled`: one known SQLite everywhere, whatever the host ships.
+rusqlite = { version = "0.40", features = ["bundled"] }
+tempfile = "3"
+crc32fast = "1.5"
+hex = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.11"
+thiserror = "2"
+zeroize = "1.9"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

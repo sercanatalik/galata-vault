@@ -1,0 +1,296 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "pow",
+  "spec": "hosted.md#2",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "pow-001",
+      "description": "a challenge of difficulty 8",
+      "spec": "hosted.md#2.1",
+      "op": "issue",
+      "inputs": {
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "id": "9a48fc320361e4d1b91c3237508b982a",
+        "expires_at": 1757500600,
+        "difficulty": 8
+      },
+      "expect": "success",
+      "outputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs"
+      }
+    },
+    {
+      "id": "pow-002",
+      "description": "a challenge of difficulty 24",
+      "spec": "hosted.md#2.1",
+      "op": "issue",
+      "inputs": {
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "id": "9a48fc320361e4d1b91c3237508b982a",
+        "expires_at": 1757600000,
+        "difficulty": 24
+      },
+      "expect": "success",
+      "outputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowtkAGNU0xZIQfPFqk7h5K3cTIO4"
+      }
+    },
+    {
+      "id": "pow-003",
+      "description": "a challenge of difficulty 0",
+      "spec": "hosted.md#2.1",
+      "op": "issue",
+      "inputs": {
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "id": "9a48fc320361e4d1b91c3237508b982a",
+        "expires_at": 1,
+        "difficulty": 0
+      },
+      "expect": "success",
+      "outputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAAAAAAABAMdpOlnnD-7AX2WZfSLbmEo"
+      }
+    },
+    {
+      "id": "pow-004",
+      "description": "a challenge opens before it expires",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 1757500000
+      },
+      "expect": "success",
+      "outputs": {
+        "id": "9a48fc320361e4d1b91c3237508b982a",
+        "expires_at": 1757500600,
+        "difficulty": 8
+      }
+    },
+    {
+      "id": "pow-005",
+      "description": "at its expiry time it still opens",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 1757500600
+      },
+      "expect": "success",
+      "outputs": {
+        "id": "9a48fc320361e4d1b91c3237508b982a",
+        "expires_at": 1757500600,
+        "difficulty": 8
+      }
+    },
+    {
+      "id": "pow-006",
+      "description": "one second after it expires",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 1757500601
+      },
+      "expect": "expired"
+    },
+    {
+      "id": "pow-007",
+      "description": "issued under another server key",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "server_key": "d3a7745a5f437856fc0e5bde634fb1cb9e0021232a3f584956e3eadc13fbef38",
+        "now": 0
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "pow-008",
+      "description": "the difficulty edited without the key",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpEGUvnA5ys4VSd2zWW6I",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 0
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "pow-009",
+      "description": "a difficulty above 40, correctly tagged",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4KRcdr3Z4IcIxXqboacx9yqE",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 0
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "pow-010",
+      "description": "not base64url",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "!!",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 0
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "pow-011",
+      "description": "one byte short",
+      "spec": "hosted.md#2.1",
+      "op": "open",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgi",
+        "server_key": "aa03feea5f52f3f1b416c2a1fbc2c11f1ce7bfbaafe383d10b742624899bef2a",
+        "now": 0
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "pow-012",
+      "description": "the work hash for nonce 0",
+      "spec": "hosted.md#2.2",
+      "op": "hash",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "nonce": 0
+      },
+      "expect": "success",
+      "outputs": {
+        "hash": "f83fbbaaf1f60b4e68f3c53695175208c42c0d64439fe71d158700df13f4a3f9",
+        "zero_bits": 0
+      }
+    },
+    {
+      "id": "pow-013",
+      "description": "the work hash for nonce 1",
+      "spec": "hosted.md#2.2",
+      "op": "hash",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "nonce": 1
+      },
+      "expect": "success",
+      "outputs": {
+        "hash": "08c73c1c88039bd52df8226804f4ff2b5e31806b56dff90f2814efaf17b302ee",
+        "zero_bits": 4
+      }
+    },
+    {
+      "id": "pow-014",
+      "description": "the work hash for nonce 18446744073709551615",
+      "spec": "hosted.md#2.2",
+      "op": "hash",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "nonce": 18446744073709551615
+      },
+      "expect": "success",
+      "outputs": {
+        "hash": "7574832aacd0c6f5b85f8ff2954c624ac1ff44eaf2a21a87612c6fc7616b8b71",
+        "zero_bits": 1
+      }
+    },
+    {
+      "id": "pow-015",
+      "description": "the first nonce with 4 leading zero bits",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 4,
+        "nonce": 1
+      },
+      "expect": "success",
+      "outputs": {}
+    },
+    {
+      "id": "pow-016",
+      "description": "a nonce with fewer than 4 leading zero bits",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 4,
+        "nonce": 0
+      },
+      "expect": "bad_proof"
+    },
+    {
+      "id": "pow-017",
+      "description": "the first nonce with 8 leading zero bits",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 8,
+        "nonce": 523
+      },
+      "expect": "success",
+      "outputs": {}
+    },
+    {
+      "id": "pow-018",
+      "description": "a nonce with fewer than 8 leading zero bits",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 8,
+        "nonce": 0
+      },
+      "expect": "bad_proof"
+    },
+    {
+      "id": "pow-019",
+      "description": "the first nonce with 12 leading zero bits",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 12,
+        "nonce": 2741
+      },
+      "expect": "success",
+      "outputs": {}
+    },
+    {
+      "id": "pow-020",
+      "description": "a nonce with fewer than 12 leading zero bits",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 12,
+        "nonce": 0
+      },
+      "expect": "bad_proof"
+    },
+    {
+      "id": "pow-021",
+      "description": "difficulty 0 accepts any nonce",
+      "spec": "hosted.md#2.2",
+      "op": "verify",
+      "inputs": {
+        "challenge": "mkj8MgNh5NG5HDI3UIuYKgAAAABowVS4CJZpzx7ZhiCVuAB5BeJgiMs",
+        "difficulty": 0,
+        "nonce": 12345
+      },
+      "expect": "success",
+      "outputs": {}
+    }
+  ]
+}

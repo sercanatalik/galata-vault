@@ -1,0 +1,363 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "names",
+  "spec": "keys.md#8",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "names-001",
+      "description": "the secret index of 'DATABASE_URL'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "secret",
+        "name": "DATABASE_URL"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324"
+      }
+    },
+    {
+      "id": "names-002",
+      "description": "the secret index of 'STRIPE_KEY'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "secret",
+        "name": "STRIPE_KEY"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "2f3786705704ff228e7ea2f941043d9f80d8467184b53918a6b8e05f4755686b"
+      }
+    },
+    {
+      "id": "names-003",
+      "description": "the secret index of 'gv:children'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "secret",
+        "name": "gv:children"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "9b383d5e93bfcc4fa3c9258b6404cdb14fd52abfddc52ddf0c09fdd228bad84f"
+      }
+    },
+    {
+      "id": "names-004",
+      "description": "the secret index of 'a'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "secret",
+        "name": "a"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "70d4b2bf8bd8ac8382095a63991ffcc29d1c4d65f5a32e4a996454f636dfda81"
+      }
+    },
+    {
+      "id": "names-005",
+      "description": "the secret index of 'ünïcode'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "secret",
+        "name": "ünïcode"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "bfc96b1225da58745dc83c035c9d9509c811c6f54362a118d66837cbe0a827a9"
+      }
+    },
+    {
+      "id": "names-006",
+      "description": "the config index of 'DATABASE_URL'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "config",
+        "name": "DATABASE_URL"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "4d44477f71e8e105f4d181a1a077b664cf167044886b62f106f64e7ed7403a00"
+      }
+    },
+    {
+      "id": "names-007",
+      "description": "the config index of 'STRIPE_KEY'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "config",
+        "name": "STRIPE_KEY"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "96553a427c045ee5e084f14eca7c527dfeb2853cb6793bdaefd7614413ab0520"
+      }
+    },
+    {
+      "id": "names-008",
+      "description": "the config index of 'gv:children'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "config",
+        "name": "gv:children"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "4c7856a021d670bcc154296e39acafdb5cc9eb8956391f28aacda47232c646f7"
+      }
+    },
+    {
+      "id": "names-009",
+      "description": "the config index of 'a'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "config",
+        "name": "a"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "9a1c750ddde34aba5ba333b26115d749a89b850bd5119608819344ca5c1273b8"
+      }
+    },
+    {
+      "id": "names-010",
+      "description": "the config index of 'ünïcode'",
+      "spec": "keys.md#8.1",
+      "op": "index",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "kind": "config",
+        "name": "ünïcode"
+      },
+      "expect": "success",
+      "outputs": {
+        "index": "9e394696019132e09292c857479ae4fd542bbd53d55148f13a75659a61e82245"
+      }
+    },
+    {
+      "id": "names-011",
+      "description": "the associated data of a generation 1 secret name",
+      "spec": "keys.md#8.2",
+      "op": "aad",
+      "inputs": {
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret"
+      },
+      "expect": "success",
+      "outputs": {
+        "aad": "67762f76312f6e616d6500e9cb749994ea300f5bbf5285cba1056d0000000101"
+      }
+    },
+    {
+      "id": "names-012",
+      "description": "the associated data of a generation 7 config name",
+      "spec": "keys.md#8.2",
+      "op": "aad",
+      "inputs": {
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 7,
+        "kind": "config"
+      },
+      "expect": "success",
+      "outputs": {
+        "aad": "67762f76312f6e616d6500e9cb749994ea300f5bbf5285cba1056d0000000702"
+      }
+    },
+    {
+      "id": "names-013",
+      "description": "a secret's name opens and matches its index",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "daff64dc3c3dbd2b4955f3dafb02db4f5387ce5c2362eff6aa600bfb22e7c73d5a402162299b9f04549803f37c28e1d50aa0a881"
+      },
+      "expect": "success",
+      "outputs": {
+        "name": "DATABASE_URL"
+      }
+    },
+    {
+      "id": "names-014",
+      "description": "a config's name opens",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 2,
+        "kind": "config",
+        "index": "a4cd749fb90aafc41a0d85e3edfc08691080a1e22e1e77f20a8ed553be388234",
+        "name_ct": "7399d214147fb276d5e285b448e60451d9d5647c8723c00d0469d0647c388c2f1325dc647c893fe957741b"
+      },
+      "expect": "success",
+      "outputs": {
+        "name": "app"
+      }
+    },
+    {
+      "id": "names-015",
+      "description": "a UTF-8 name opens",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "bfc96b1225da58745dc83c035c9d9509c811c6f54362a118d66837cbe0a827a9",
+        "name_ct": "b86ddd99bf1d4435cad67fbc84ac0133f3de980b22a0b8e200c82f7b096fe79799f7745a500b692787dbd32acfd3f1b01a"
+      },
+      "expect": "success",
+      "outputs": {
+        "name": "ünïcode"
+      }
+    },
+    {
+      "id": "names-016",
+      "description": "a name from another vault does not open",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "b83eeeea69f908735998c42783179c63c7ecd53955670ff475cd44c282d250bf821f9502c037303207bca9b0d2d1a6e915571afc"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "names-017",
+      "description": "a name from another generation does not open",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "997b783a2b404a611117d9332eba274da69574a88777e03bde34b3574e6a3dc6320604ee34d23e6b125874093d2bfdd4fb73aecd"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "names-018",
+      "description": "a config's name does not open as a secret's",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "1b95f1bf3654c51f6a7c90644b0adc706f40d5c0062ffa0b12393807dd51887f7d97e6a8ba77157398a0f67f43fba1ed9991ae54"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "names-019",
+      "description": "a flipped tag bit",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "daff64dc3c3dbd2b4955f3dafb02db4f5387ce5c2362eff6aa600bfb22e7c73d5a402162299b9f04549803f37c28e1d50aa0a880"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "names-020",
+      "description": "shorter than a nonce",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "daff64dc3c3dbd2b4955f3dafb02db4f5387ce5c2362ef"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "names-021",
+      "description": "the wrong name key",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "acea3845a1155add68df74c964376e6e8c6727aa99f9e69688e348bcfaf685ca",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "d7d28c02282c564a70f382e3e39dd38e3581ffd0b710fabad4fb7bf0445f6534",
+        "name_ct": "daff64dc3c3dbd2b4955f3dafb02db4f5387ce5c2362eff6aa600bfb22e7c73d5a402162299b9f04549803f37c28e1d50aa0a881"
+      },
+      "expect": "decrypt_failed"
+    },
+    {
+      "id": "names-022",
+      "description": "a genuine name listed under another name's index",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "1d8a3508b78860e80ecb995b11da9ce8cd2e82d000bb86ad643e69e6380a390a1937d65a630401fbd9fd97a162f9afdc2220"
+      },
+      "expect": "name_mismatch"
+    },
+    {
+      "id": "names-023",
+      "description": "a plaintext that is not UTF-8",
+      "spec": "keys.md#8.3",
+      "op": "open",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "generation": 1,
+        "kind": "secret",
+        "index": "13c30ba347a17d07de03e85a28827740037dd3acb9c8c6ff9e1097c8c528a324",
+        "name_ct": "5f54e3e962eeb48c7b2f2e6380a0081ab725995abdb76ea9ce37887f800118c40e460287d38d20f3c687"
+      },
+      "expect": "decrypt_failed"
+    }
+  ]
+}

@@ -1,0 +1,458 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "keys",
+  "spec": "keys.md#4",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "keys-001",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/child ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/child",
+        "data": "70726f64"
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f6368696c640070726f64",
+        "okm": "fffb3743d8dd3d99478a8a4a62f7edcf3f82995ccc9b0a94daa5ab3dc20ba3df"
+      }
+    },
+    {
+      "id": "keys-002",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/owner-sign ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/owner-sign",
+        "data": ""
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f6f776e65722d7369676e00",
+        "okm": "11f72ab0c83d269d9735a89f4ce688647c1a102165b85920d0c3c26f3227ee54"
+      }
+    },
+    {
+      "id": "keys-003",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/owner-box ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/owner-box",
+        "data": ""
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f6f776e65722d626f7800",
+        "okm": "daae5a28cce1bfa4b15570d87b4629846508845d399b56e8645b0ee54bf1f073"
+      }
+    },
+    {
+      "id": "keys-004",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/token-auth ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/token-auth",
+        "data": "000102030405060708090a0b0c0d0e0f"
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f746f6b656e2d6175746800000102030405060708090a0b0c0d0e0f",
+        "okm": "a1bf8d5dab303e917a49381058c067626528b38cc17b167114a61546c1854875"
+      }
+    },
+    {
+      "id": "keys-005",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/token-box ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/token-box",
+        "data": "000102030405060708090a0b0c0d0e0f"
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f746f6b656e2d626f7800000102030405060708090a0b0c0d0e0f",
+        "okm": "1e0147e27d4fd9e4fb95d8abdf3f5fc14c379a91615bb85da80529ae100a0205"
+      }
+    },
+    {
+      "id": "keys-006",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/name-index ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/name-index",
+        "data": ""
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f6e616d652d696e64657800",
+        "okm": "6edc24debe6038366ef6c3fc65278829fbdcedd71d26b8ab62b318f6bd5e9c73"
+      }
+    },
+    {
+      "id": "keys-007",
+      "description": "HKDF-SHA256, salt galata-vault/v1, info gv/v1/name-enc ‖ 0x00 ‖ data",
+      "spec": "keys.md#2",
+      "op": "hkdf",
+      "inputs": {
+        "ikm": "df8d8585ed348dfe006ecd7f136943ebb3940636822793a07ad2661cc9870c53",
+        "label": "gv/v1/name-enc",
+        "data": ""
+      },
+      "expect": "success",
+      "outputs": {
+        "info": "67762f76312f6e616d652d656e6300",
+        "okm": "0e10765b4515af94eaa3896db7e5cd307362baaf9d365c3872e6f970a018b06a"
+      }
+    },
+    {
+      "id": "keys-008",
+      "description": "acme under test root 1: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "path": "acme"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "gvk1": "gvk1_003aUlTJC7tjlCTQj2uNU3MFagCXG9LRKRcwGkBIDlf4avqed",
+        "owner_sign_seed": "d367d577ef48f3d30735a4546e9f96fe35277e40e85647673dd2840cd4377371",
+        "owner_sign_pub": "a439994d7e1e95923b9ae2bf8814b273bdde572b402eb8947211e8b6fc63486e",
+        "owner_box_secret": "3fa750bb883d5e74de6b676243f489a242cac1f43d37eb5f6e1dc2b597ef4db7",
+        "owner_box_pub": "0d5d46c47eaf298690f2f76cfa3ed5cc79dccde268b31521d590df87ef9f9c09",
+        "vault_id": "b945473f2da574dd4463980d1203db26"
+      }
+    },
+    {
+      "id": "keys-009",
+      "description": "acme/prod under test root 1: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "path": "acme/prod"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "gvk1": "gvk1_mp1FSdrcFOJcKkPA1yfzP77ntbmmVyTdlKYSW5gbXJu2OhUXf",
+        "owner_sign_seed": "0eb1aa943ec4a996625ab82415ce177a10d63c63344c2c419ddaa299a4f497e7",
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "owner_box_secret": "b6d88c9b3cc087489583a6c6a718b0fa5f9b119b46e1b9b5a1c9ece1ac2190d0",
+        "owner_box_pub": "2b1f38732d2ecb4bb6f085cfb0cb9116951a3f6eb7bd7ada2cf528381aa4f419",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d"
+      }
+    },
+    {
+      "id": "keys-010",
+      "description": "acme/prod/eu under test root 1: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "path": "acme/prod/eu"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "684b73b49eff5efe93639347ef0299215525bbe1aacde4ff4d96a298340506bf",
+        "gvk1": "gvk1_OjLrRBYSZkZA9lQlhnxJpWCZMV6lkStzkb1FgEj7XUV0MAlx4",
+        "owner_sign_seed": "324e14a162b7ae2ae55d8f59bf8ccd4933d938ea6ba49fbca1de88abbc0d928f",
+        "owner_sign_pub": "0507e115fea5e0a0f10cc570a06f23aa6d1bf8839188cad9b386499c6d10391b",
+        "owner_box_secret": "d4501019e4bc7b83b1e68451d99e26bedeb51214b17ee6d62468fbaff17371b6",
+        "owner_box_pub": "839061e1b4c47a645f83ef6a7c4ee488a4dadb5898fed3ed3705680550621c34",
+        "vault_id": "3b923c5b46ae4f64444ef734b8434190"
+      }
+    },
+    {
+      "id": "keys-011",
+      "description": "acme/prod/eu/1 under test root 1: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "path": "acme/prod/eu/1"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "01617a2ac799ff9c2dfcd1fe5f20e594fe927af8d21e393d395377d2ef2fd6a7",
+        "gvk1": "gvk1_0KIc6xMfqjtBu0ZOlEV3QnDQn2MpbxuXvqVegZnIS2R43qB66",
+        "owner_sign_seed": "91677a64273997b603a56c79e2b85e57e106d32fdb06f2a065d06217ea2150f3",
+        "owner_sign_pub": "fedf0cdece38fc0081f2c723ab5245059a7476d354f37bd34f8d80ee9b90a5ed",
+        "owner_box_secret": "c0d38e99aa1f79b3d6a84509ccf7c27dde834114fa778f49aa420acfb1b7022c",
+        "owner_box_pub": "bfae9c3a934568c5eed4178f6f99d084164bc7e6faa3710f7c82b663b2f15948",
+        "vault_id": "095377386ef4bb7c8f9d754eb2652547"
+      }
+    },
+    {
+      "id": "keys-012",
+      "description": "acme/staging-2 under test root 1: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "path": "acme/staging-2"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "cc7afbeaf49541af38c0964bb932a7785f45d5e4153c939a8b7e6a05c61439f3",
+        "gvk1": "gvk1_mUIBbZ0ZVkg0JIZfONxfdv4pSKmEUEobEJQ4T8h2sPj0vk48Q",
+        "owner_sign_seed": "a28baa3d060dbc59b5198c606ec3e9feac594695eabfcebb955787de3c023691",
+        "owner_sign_pub": "71543fdfb4788ce152a489639236182457d4934b8e1aef24f2318203bf2de273",
+        "owner_box_secret": "0fa635d5c89a4c4a17ca46514a48a446855a750ced83d90d09228b4de0603579",
+        "owner_box_pub": "d0e9cbd230ea88593bfdaa20cba23a5e54ee4e4f7587779527a8618496ccae21",
+        "vault_id": "ee268814543bb8f5be811c4bb52df3dc"
+      }
+    },
+    {
+      "id": "keys-013",
+      "description": "acme/dev under test root 1: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        "path": "acme/dev"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "b062dcbe5eac669f2e10fba7eb1279699fe08f47b61930df2bcca075fb518aa4",
+        "gvk1": "gvk1_fpFQzWScwSwH4vlVtYS70K5DmydEFWq4xqOPf0AhCpI3l6vub",
+        "owner_sign_seed": "7355d9f4ed6e8d9f4ad6753afcc4452a68c70861c163b6080544d77fa0800af8",
+        "owner_sign_pub": "96293664854ffb51553e002aa8db62194f0d5905f45ce6177978ceacf228bfb0",
+        "owner_box_secret": "9a2ffc5235217da1ca2ef53e5b750881eea98862fef99f9873262c7d62dd8eda",
+        "owner_box_pub": "04dd1b6c6a729a2007d35eeb28824b4f076186ec7c5665f227d6b3fac6c94076",
+        "vault_id": "557c11f9d7dc065b0b0d668f054008dd"
+      }
+    },
+    {
+      "id": "keys-014",
+      "description": "acme under test root 2: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "path": "acme"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "gvk1": "gvk1_0pMLsg9KHn5oRe7Cqn5iVZzOmDERuJGOILqW2zabfEC0CeYoz",
+        "owner_sign_seed": "016d55071d92a94d362acd58dee2319edcc7e953335f362021a78e2b533ac68b",
+        "owner_sign_pub": "80b5892f0fb6bcc7648ad1bc6dccbff52945e71371fe05a099e3f07891a8ac72",
+        "owner_box_secret": "12fcd504f018c719d37d16fcb675378aee56f9cad16e610b73091d38dcbcfca3",
+        "owner_box_pub": "40fa1972fda673b2b811884ebd528cb5e871170a669c0d4b77668f8408c0327d",
+        "vault_id": "4f1be4bac9511a83c89183b7f2b56c62"
+      }
+    },
+    {
+      "id": "keys-015",
+      "description": "acme/prod under test root 2: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "path": "acme/prod"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "be90e8d86d201f73f3d8e8b1ac92ddf705155c69ffcf4e52abe32ec0dc36897f",
+        "gvk1": "gvk1_jBipB9fM2Z6nRaoVIzPMYW766coozRTbQCmdYQs8OHX4QvEEw",
+        "owner_sign_seed": "29987676f88bdd4643057efcd689ea6db7446bfc4575cc5f819348bdc17cce01",
+        "owner_sign_pub": "9a11f87e78cebca4dcff5eb0aa06149c0c29b2771de3a38792f09a0baedb31c7",
+        "owner_box_secret": "ce4a6dbeb26a771783290cdcfa47bd19d4226c7063d171f5c383a74cdac6a3bb",
+        "owner_box_pub": "e3826d7b2e23b6e8c79be14c0ea33d4fdacd8dbc180ad7d36f8d6cbaf858af57",
+        "vault_id": "39d84b1713833330f872ff3b04c88b56"
+      }
+    },
+    {
+      "id": "keys-016",
+      "description": "acme/prod/eu under test root 2: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "path": "acme/prod/eu"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "a665e87f3cadf4307c4c93084fb24d18cf37dc7a7642acd2af880fb38a462c5a",
+        "gvk1": "gvk1_dSOyJpVzX6nk3RMxiEJcW134ictQIANxNcZ1c9ySRbu0UKV0H",
+        "owner_sign_seed": "11799a15aad4742ce2ff5363d471371d27f5e1bd6da4bbc5f65c6515fc18bc7b",
+        "owner_sign_pub": "5c03d56ed50fa128e80956616f15d8293951efb09b6df8192dc101927aa8d04d",
+        "owner_box_secret": "c7e4b0193631ab3171e1b90cb005e234fe4ac3dc9abfbbe72c46ef0327694b1a",
+        "owner_box_pub": "7d95fbba593ef88741731bc81b46db1e82eaa6f2c533e36a6dc0a96c14dd9449",
+        "vault_id": "f559a365180ccaa68e438104dd47a123"
+      }
+    },
+    {
+      "id": "keys-017",
+      "description": "acme/prod/eu/1 under test root 2: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "path": "acme/prod/eu/1"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "c01a867e69cd900454917ddaf6ecef4beac9108df1b66ba61b558c2138311b18",
+        "gvk1": "gvk1_jYKMLKCC4tt8iSnUSKM6bvuR8XW3cBIkWQA1lwg49EG3VHXJM",
+        "owner_sign_seed": "c4be64f4bb3140e54319b452fb89ba8fffcc328c9229530ca4cd82815a4eb792",
+        "owner_sign_pub": "9d323bd8bcda83c7d11066acee39cfc202f8fdb489a890531aaa6be209052e7f",
+        "owner_box_secret": "cfc483c5a6b4c219214ee4a288497586dfdf1f9a5cd5a0743eee254d4a82488a",
+        "owner_box_pub": "8c48f09d72eda10ef784a27c7daf73c0cc6a5cd2abf8d421d3426409c35bdd18",
+        "vault_id": "fdca626b42e5d155e86659f2f085879b"
+      }
+    },
+    {
+      "id": "keys-018",
+      "description": "acme/staging-2 under test root 2: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "path": "acme/staging-2"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "9ed642d0206f2d06672427c8e5a873ef79adf8782f7dccf20afb9b472269b051",
+        "gvk1": "gvk1_bfEmCZp1arffpQ9yvLiWf6JHnFVHGmxmIJS9H4ppQfZ0KvksI",
+        "owner_sign_seed": "0d3a6fd7e4407e9b02f5a93e5457fdfab7afd7dbaaedb84e3d6c29e37a81426b",
+        "owner_sign_pub": "80104560d135f548a40dd42551473e0e40cb897989ce73f554d45280dc1ffde8",
+        "owner_box_secret": "97d42ec4cd468d6a16fce31cbeeddf0d3dc19faddcb55cc8ce72fc825dcb4e7d",
+        "owner_box_pub": "ddd3dbd266f88cd76fc63bfa5feb6bfd287e49088bdf7ecd6b657e3cbfbd5d3e",
+        "vault_id": "dad4e95694f2ca8247cc2eec28ecbc3c"
+      }
+    },
+    {
+      "id": "keys-019",
+      "description": "acme/dev under test root 2: node key, owner keys, vault id",
+      "spec": "keys.md#4",
+      "op": "node",
+      "inputs": {
+        "root_key": "037e50459de612b5f50420500d84812bd86b191fa5e793fc2c5ab3e3fe151a0c",
+        "path": "acme/dev"
+      },
+      "expect": "success",
+      "outputs": {
+        "node_key": "09dc319f09af7030ee15679efdf3c675e24a27b03bd55ea415031b9f864e0479",
+        "gvk1": "gvk1_2KxoTNIL2OEvEh5YFLKHx8PIbrMu1L4wR2HbRTKVQD339GWpM",
+        "owner_sign_seed": "0ddfdb6e5fcc4c53f60a6b05505653c475d6499f1b73ad1fd57fa60f76179f9a",
+        "owner_sign_pub": "ea9c51662826dfe823a52a18201799f0f7199cb7ee68ca7b103e5ec5aa69d866",
+        "owner_box_secret": "37a25a3991b4645a86bcdef7eafa66f5b2decfeb19c7f248696ec0c60476f7f4",
+        "owner_box_pub": "7ea37b5bde9576a20df3fcb6c8c7814b0e779d708e36f17945962c8a5790d824",
+        "vault_id": "871c6232a26f535fea77da29506eb036"
+      }
+    },
+    {
+      "id": "keys-020",
+      "description": "the vault id of acme/prod's owner key",
+      "spec": "keys.md#5",
+      "op": "vault_id",
+      "inputs": {
+        "owner_sign_pub": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4"
+      },
+      "expect": "success",
+      "outputs": {
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d"
+      }
+    },
+    {
+      "id": "keys-021",
+      "description": "the vault id of 32 zero bytes (hashed, never checked as a point)",
+      "spec": "keys.md#5",
+      "op": "vault_id",
+      "inputs": {
+        "owner_sign_pub": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expect": "success",
+      "outputs": {
+        "vault_id": "2406eedc3ed16825f6685ade2c4677a4"
+      }
+    },
+    {
+      "id": "keys-022",
+      "description": "the first test token: its string and both keys",
+      "spec": "keys.md#6",
+      "op": "token",
+      "inputs": {
+        "token_id": "000102030405060708090a0b0c0d0e0f",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c"
+      },
+      "expect": "success",
+      "outputs": {
+        "token": "gvt1_003Vqjw7cu3hfvkU3qiqaQe8Gts1pLcPNXBMqxhmGeo3B7OcD1mdQin0y0zAmRfEKxtUpX00K8tScj6WxEtCHc1R47N4",
+        "auth_seed": "8a4dc2573dcecc43b81924d0642adb50bb60b11f8d1025c26f13064c69d53c36",
+        "auth_pub": "37748c5f02bcb0da999c537e561213f2616d8817f330281dae9beacf0fe65768",
+        "box_secret": "1f86b9a23c7037ffaf94d627cccd311a0f0c3deefb6d8f67167d65a5faf43b43",
+        "box_pub": "bfedb4a6feb1972f3eb302d1e1674d492b404828b9740afe10133b0e4de5862a"
+      }
+    },
+    {
+      "id": "keys-023",
+      "description": "all 0xff id, zero vault and secret: its string and both keys",
+      "spec": "keys.md#6",
+      "op": "token",
+      "inputs": {
+        "token_id": "ffffffffffffffffffffffffffffffff",
+        "vault_id": "00000000000000000000000000000000",
+        "secret": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expect": "success",
+      "outputs": {
+        "token": "gvt1_xR9fAlrdKvCIINsqEkJZSYIlTSCquBUonkERqEhoB7y8hvZYWvFXM1UZoqOObgOC7hdJpOXwClaIC7BBYao6To1Pk6YF",
+        "auth_seed": "a76b96ebceba3f5827ce24e5d0700877397f86cff49ffa4d43e6afe1d8a83669",
+        "auth_pub": "7d0c5e028842d7a9e08b63e9e3994e375a2679b2ca76f630d9d06331af454ccd",
+        "box_secret": "de0f066bc3924bf3a754b84bb1be5f0d8769d7791227c9eedb8532b7fb8d6907",
+        "box_pub": "7df264a3bb1585015d5bd758738a78d5fceea93996947b5e37d21384dd5ae578"
+      }
+    },
+    {
+      "id": "keys-024",
+      "description": "the same secret under another id: its string and both keys",
+      "spec": "keys.md#6",
+      "op": "token",
+      "inputs": {
+        "token_id": "0102030405060708090a0b0c0d0e0f10",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c"
+      },
+      "expect": "success",
+      "outputs": {
+        "token": "gvt1_0EVVlfzUdTIL8Rw7thB7zLBl7I3GNbi7aN9Tlolb2M7Fc2GyTChpiYaFS7VqhFBf86omtrlJ1xPSD09UZIvL3s4EikMk",
+        "auth_seed": "9f7a9906e1c4e911cf9ab6af6dd6c666610338a9e6f86f5ebe5ad3623561794d",
+        "auth_pub": "f606b58fa8a423d034da66b4fbf053d327b04602175db5698c7e33b74b88f8f0",
+        "box_secret": "fe20aff3bbdf00a5b5d53c4f9487ff987ecf4dd7bad40565e40e8b1a7a98379c",
+        "box_pub": "e71c3a354bf0eedc6bb57707eb786bc88c27ea6a1e0e610b154c8671a21b2c3e"
+      }
+    },
+    {
+      "id": "keys-025",
+      "description": "the name-index and name-encryption keys of a name key",
+      "spec": "keys.md#8",
+      "op": "name_keys",
+      "inputs": {
+        "name_key": "948ff913cd2e4d2389ea02a91400758af790db5cc8fa80f58a28ddfa75b0f447"
+      },
+      "expect": "success",
+      "outputs": {
+        "index_key": "eb35fc5e864c9fcbf5f0d4978c142edefc2ee55a42222b82f3ec5d44604aa112",
+        "enc_key": "cf439070d4cc6051dcb77e5e835770b6980b06cc645ab4abef463bc3472d34f8"
+      }
+    }
+  ]
+}

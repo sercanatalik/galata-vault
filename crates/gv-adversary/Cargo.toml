@@ -1,0 +1,25 @@
+[package]
+name = "gv-adversary"
+description = "Test-only: a malicious server. A real in-process gv-server behind a scriptable proxy that logs, replays, rewrites and serves stale responses."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+# Only ever a dev-dependency.
+publish = false
+
+[lints]
+workspace = true
+
+# The server side only: it links no client crypto. Tests that use it forge
+# material with the client crates they already depend on.
+[dependencies]
+galata-vault-server = { path = "../galata-vault-server" }
+galata-vault-store.workspace = true
+galata-vault-proto.workspace = true
+axum.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+ureq.workspace = true

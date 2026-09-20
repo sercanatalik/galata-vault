@@ -1,0 +1,32 @@
+[package]
+name = "galata-vault-store"
+description = "galata-vault storage interface and its SQLite implementation. Stores ciphertext, hashes and public keys only. Implementation detail of galata-vault: depend on `galata-vault`."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["galata-vault", "sqlite", "storage", "secrets"]
+categories = ["database"]
+# Sources, the README and the licence text only: tests and fixtures that
+# read the repository (testdata/, docs/spec/) stay in the workspace.
+# scripts/check-packaging.sh checks the list and the licence copies.
+include = ["/src/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+galata-vault-proto.workspace = true
+rusqlite.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

@@ -1,0 +1,48 @@
+[package]
+name = "galata-vault-proto"
+description = "The galata-vault protocol: formats, framing, checksums, API types, descriptors, record contexts, proof of work and audit hashing. Verifies signatures; holds no key and decrypts nothing. Implementation detail of galata-vault: depend on `galata-vault`."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["galata-vault", "protocol", "e2ee", "secrets"]
+categories = ["cryptography", "encoding"]
+# Sources, the README and the licence text only: tests and fixtures that
+# read the repository (testdata/, docs/spec/) stay in the workspace.
+# scripts/check-packaging.sh checks the list and the licence copies.
+include = ["/src/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[features]
+# The private test-vector runner (`galata_vault_proto::vectors`): pure, holds no key,
+# does no I/O. The crates' vector tests and the Python wheel's `_vectors`
+# enable it; nothing else does.
+vectors = []
+
+[dependencies]
+base64.workspace = true
+blake3.workspace = true
+crc32fast.workspace = true
+# Verification only (descriptors, bundles, records, requests). Signing keys
+# live in galata-vault-keys; nothing here can sign or decrypt.
+ed25519-dalek.workspace = true
+hex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+# The vector tests run this crate's runner (feature `vectors`).
+galata-vault-proto = { path = ".", features = ["vectors"] }
+proptest.workspace = true
+serde_json.workspace = true

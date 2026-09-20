@@ -1,0 +1,37 @@
+[build-system]
+requires = ["maturin>=1.12,<2"]
+build-backend = "maturin"
+
+[project]
+name = "galata-vault"
+description = "End-to-end encrypted secrets with no account: a token client for Python, and the gv command. Not independently audited; formats may change before 1.0."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = ["secrets", "encryption", "e2ee", "dotenv", "vault"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+    "Topic :: Security :: Cryptography",
+]
+dynamic = ["version"]
+
+# The same repository as Cargo.toml's [workspace.package] repository.
+[project.urls]
+Repository = "https://github.com/sercanatalik/galata-vault"
+Changelog = "https://github.com/sercanatalik/galata-vault/blob/main/CHANGELOG.md"
+"Security policy" = "https://github.com/sercanatalik/galata-vault/blob/main/SECURITY.md"
+
+[project.scripts]
+gv = "galata_vault._cli:main"
+
+[tool.maturin]
+module-name = "galata_vault._native"
+python-source = "python"
+bindings = "pyo3"
+# Only for the wheel: cargo check/clippy/test build without it.
+features = ["pyo3/extension-module"]

@@ -1,0 +1,147 @@
+/* galata-vault docs: typography and chrome on top of mdBook's theme.
+ * Loaded after the theme's own stylesheets (book.toml, additional-css). */
+
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+html {
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+    font-size: 1.7rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Headings in the serif, tight and unbolded. */
+.content h1,
+.content h2,
+.content h3 {
+    font-family: "Newsreader", Georgia, "Times New Roman", serif;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    text-wrap: pretty;
+}
+.content h1 { font-size: 3.6rem; margin-block-end: 0.6em; }
+.content h2 { font-size: 2.7rem; margin-block-start: 2.2em; }
+.content h3 { font-size: 2.15rem; }
+.content h4,
+.content h5 { font-family: "IBM Plex Sans", system-ui, sans-serif; font-weight: 600; }
+
+.content p,
+.content ol,
+.content ul { line-height: 1.6em; }
+.content p { text-wrap: pretty; }
+
+.content a { color: var(--links); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--links) 35%, transparent); text-underline-offset: 0.15em; }
+.content a:hover { text-decoration-color: var(--links); }
+
+/* Code: Plex Mono, ink block on both themes so samples look the same everywhere. */
+code {
+    font-family: var(--mono-font) !important;
+}
+:not(pre) > code {
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: var(--sidebar-bg);
+    color: var(--inline-code-color);
+}
+pre {
+    border-radius: 6px;
+}
+pre > .buttons button {
+    border-radius: 4px;
+}
+
+/* Blockquotes carry the "not audited" notice: warm tint, copper rule. */
+blockquote {
+    border-radius: 6px;
+    border-inline-start: 0;
+    border: 1px solid var(--quote-border);
+    background: var(--quote-bg);
+    padding: 0.9em 1.2em;
+}
+
+table {
+    border-collapse: collapse;
+}
+table td, table th { border-color: var(--table-border-color); }
+
+/* Menu bar: the mark before the title, title in the serif. */
+.menu-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500;
+    font-size: 2.2rem;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.menu-title .gv-mark {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: var(--fg);
+}
+.menu-title .gv-mark svg { display: block; width: 100%; height: 100%; }
+#menu-bar {
+    border-bottom: 1px solid var(--sidebar-spacer);
+    background: var(--bg);
+}
+#menu-bar.sticky {
+    box-shadow: none;
+}
+
+/* Sidebar: part titles as small caps mono, quieter items, an active bar. */
+.sidebar {
+    font-size: 0.9em;
+    border-right: 1px solid var(--sidebar-spacer);
+}
+.sidebar .part-title {
+    font-family: var(--mono-font);
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--icons);
+    margin-block-start: 1.6em;
+}
+.chapter { line-height: 2em; }
+.chapter li a {
+    border-radius: 5px;
+    padding-inline: 8px;
+    margin-inline: -8px;
+}
+.chapter li a.active {
+    background: var(--theme-hover);
+    font-weight: 600;
+}
+
+/* Landing link at the top of the sidebar, injected by galata.js. */
+.gv-home {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 4px 10px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--sidebar-spacer);
+    text-decoration: none;
+    color: var(--sidebar-fg);
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 1.9rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+.gv-home svg { width: 22px; height: 22px; flex-shrink: 0; }
+.gv-home small {
+    font-family: var(--mono-font);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--icons);
+    margin-inline-start: auto;
+}
+
+/* Search results in the body face, marks in the accent tint. */
+.searchresults-outer { font-family: "IBM Plex Sans", system-ui, sans-serif; }
+mark { background: var(--search-mark-bg); color: inherit; }

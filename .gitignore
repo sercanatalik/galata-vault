@@ -1,0 +1,24 @@
+/target
+# Local databases and their WAL/SHM files never belong in the tree.
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+# Recovery and delegation kits hold keys.
+*recovery*.txt
+*.gvkit
+# Python build output, and build and test caches.
+/crates/gv-py/target
+*.whl
+dist/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# The maintainer's local tooling.
+/.claude/
+/openspec/
+# macOS Finder metadata.
+.DS_Store

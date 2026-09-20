@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>galata vault</title>
+<meta name="description" content="End-to-end-encrypted secrets and config documents for software, with no accounts: a Rust SDK, the gv command line, a Python package, a server that cannot decrypt, and a metadata-only MCP server.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon-32.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --bg-2: #FBFAF7;
+    --panel: #EBE7DE;
+    --line: #D9D3C6;
+    --ink: #1A1917;
+    --ink-2: #3D3A34;
+    --muted: #5C5850;
+    --accent: #0E5E68;
+    --accent-ink: #F5F3EE;
+    --notice-bg: #F1E6D6;
+    --notice-line: #D8BFA2;
+    --copper: #8A4B2A;
+    --code-bg: #1A1917;
+    --code-fg: #ECE8E0;
+    --code-muted: #A9A399;
+    --stores: #6CC3CC;
+    --never: #D9A27E;
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181A;
+      --bg-2: #1F2124;
+      --panel: #1F2124;
+      --line: #33363B;
+      --ink: #ECE8E0;
+      --ink-2: #CFCAC0;
+      --muted: #A9A399;
+      --accent: #6CC3CC;
+      --accent-ink: #17181A;
+      --notice-bg: #2A2420;
+      --notice-line: #5A4636;
+      --copper: #D9A27E;
+      --code-bg: #0F1011;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181A;
+    --bg-2: #1F2124;
+    --panel: #1F2124;
+    --line: #33363B;
+    --ink: #ECE8E0;
+    --ink-2: #CFCAC0;
+    --muted: #A9A399;
+    --accent: #6CC3CC;
+    --accent-ink: #17181A;
+    --notice-bg: #2A2420;
+    --notice-line: #5A4636;
+    --copper: #D9A27E;
+    --code-bg: #0F1011;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  a:hover { color: var(--ink); }
+  h1, h2, h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  p { margin: 0; text-wrap: pretty; }
+  code, pre { font-family: var(--mono); }
+  .hero > *, .flow > * { min-width: 0; }
+  .wrap { max-width: 1152px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+  /* Header */
+  .top {
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 2;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+  .brand svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .nav { display: flex; align-items: center; gap: 22px; font-size: 15px; font-weight: 500; }
+  .nav a { color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+  .nav a:hover { color: var(--accent); }
+  .nav .hide-sm { display: none; }
+  @media (min-width: 720px) { .nav .hide-sm { display: inline-flex; } }
+
+  /* Hero */
+  .hero { padding: 56px 0 40px; display: grid; gap: 28px; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 7fr 5fr; gap: 48px; padding: 96px 0 64px; align-items: start; } }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .hero h1 { font-size: clamp(40px, 6vw, 68px); margin-top: 20px; }
+  .lead { font-size: 19px; color: var(--ink-2); max-width: 600px; margin-top: 20px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border-radius: 6px; font-size: 16px; font-weight: 600; text-decoration: none; flex: 1 1 auto; }
+  @media (min-width: 720px) { .btn { flex: 0 0 auto; } }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { color: var(--accent-ink); filter: brightness(1.08); }
+  .btn-ghost { border: 1.5px solid var(--ink); color: var(--ink); }
+  .btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+  .install { margin-top: 4px; }
+  @media (min-width: 900px) { .install { margin-top: 12px; } }
+  .install small { display: block; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  pre.shell {
+    margin: 0; padding: 20px 22px; border-radius: 8px;
+    background: var(--code-bg); color: var(--code-fg);
+    font-size: 14px; line-height: 1.8; overflow-x: auto;
+  }
+  pre.shell .p { color: var(--code-muted); user-select: none; }
+
+  /* Notice */
+  .notice {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 18px; border-radius: 6px;
+    background: var(--notice-bg); border: 1px solid var(--notice-line);
+    font-size: 15px;
+  }
+  .notice svg { flex-shrink: 0; width: 22px; height: 22px; color: var(--copper); margin-top: 2px; }
+
+  /* Sections */
+  section.block { padding-top: 72px; }
+  @media (min-width: 900px) { section.block { padding-top: 96px; } }
+  .block h2 { font-size: clamp(30px, 4vw, 40px); }
+  .block .sub { font-size: 17px; color: var(--ink-2); max-width: 720px; margin-top: 12px; }
+  .cards { display: grid; gap: 14px; margin-top: 32px; }
+  @media (min-width: 640px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 960px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+  .card { padding: 22px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg-2); display: flex; flex-direction: column; gap: 8px; }
+  .card .name { font-family: var(--mono); font-size: 14px; color: var(--accent); }
+  .card h3 { font-size: 23px; letter-spacing: -0.01em; }
+  .card p { font-size: 15px; color: var(--ink-2); }
+
+  .server { margin-top: 0; padding: 40px 24px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--line); color: #ECE8E0; display: grid; gap: 28px; }
+  @media (min-width: 900px) { .server { padding: 56px; grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .server .intro { grid-column: 1 / -1; max-width: 760px; }
+  .server h2 { color: #ECE8E0; }
+  .server .sub { color: #A9A399; }
+  .server .lab { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+  .server ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 16px; }
+  .server li { position: relative; padding-left: 20px; }
+  .server li::before { content: ""; position: absolute; left: 0; top: 11px; width: 8px; height: 2px; background: currentColor; }
+  .stores { color: var(--stores); } .stores li { color: #ECE8E0; } .stores li::before { background: var(--stores); }
+  .never { color: var(--never); } .never li { color: #ECE8E0; } .never li::before { background: var(--never); }
+
+  .flow { display: grid; gap: 28px; }
+  @media (min-width: 900px) { .flow { grid-template-columns: 5fr 7fr; gap: 48px; align-items: start; } }
+  .flow p { margin-top: 14px; color: var(--ink-2); }
+  .flow .more { display: inline-block; margin-top: 18px; font-weight: 600; text-decoration: none; }
+
+  footer { margin-top: 80px; border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 14px; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; }
+  footer .l { display: flex; align-items: center; gap: 10px; }
+  footer .l svg { width: 20px; height: 20px; color: var(--ink); flex-shrink: 0; }
+  footer nav { display: flex; gap: 20px; }
+  footer nav a { color: var(--ink); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  footer nav a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 64 64">
+    <circle cx="32" cy="4.2" r="1.6" fill="currentColor"/>
+    <path fill="currentColor" fill-rule="evenodd" d="M32 6.5L46.5 25.5H44.5V34H42V56H46V60H18V56H22V34H19.5V25.5H17.5ZM24.2 32V29.4A1.8 1.8 0 0 1 27.8 29.4V32ZM30.2 32V29.4A1.8 1.8 0 0 1 33.8 29.4V32ZM36.2 32V29.4A1.8 1.8 0 0 1 39.8 29.4V32ZM30.8 42V38.6A1.2 1.2 0 0 1 33.2 38.6V42ZM29.6 47.5A2.4 2.4 0 0 1 34.4 47.5A2.4 2.4 0 0 1 33.38 49.47L34.3 55H29.7L30.62 49.47A2.4 2.4 0 0 1 29.6 47.5Z"/>
+  </symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="galata vault, home">
+      <svg aria-hidden="true"><use href="#mark"/></svg>
+      <span>galata vault</span>
+    </a>
+    <nav class="nav" aria-label="Site">
+      <a href="docs/docs/guide.html">Guide</a>
+      <a class="hide-sm" href="docs/docs/spec/index.html">Specification</a>
+      <a class="hide-sm" href="docs/docs/threat-model.html">Threat model</a>
+      <a href="https://github.com/sercanatalik/galata-vault">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Rust SDK · gv command line · Python · server · MCP</div>
+      <h1>End-to-end-encrypted secrets and config, with no accounts.</h1>
+      <p class="lead">A project is a key you generate. Everything is encrypted and signed on your machine, and the server stores only ciphertext it cannot read, under signatures it cannot forge.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="docs/docs/guide.html">Read the guide</a>
+        <a class="btn btn-ghost" href="https://github.com/sercanatalik/galata-vault">Source on GitHub</a>
+      </div>
+    </div>
+    <div class="install">
+<pre class="shell"><span class="p">$ </span>cargo add galata-vault
+<span class="p">$ </span>cargo binstall galata-vault-cli
+<span class="p">$ </span>brew install sercanatalik/tap/galata-vault-cli
+<span class="p">$ </span>pip install galata-vault</pre>
+      <small>These lines work once 0.1.0 is published. Until then, build from a checkout.</small>
+    </div>
+  </section>
+
+  <aside class="notice" role="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4"/><path d="M12 17.5h.01"/></svg>
+    <span><strong>Not yet audited.</strong> galata-vault has not been independently audited. Its formats may change before 1.0. Use it at your own risk. See the <a href="docs/docs/threat-model.html">threat model</a> for what each actor can and cannot do.</span>
+  </aside>
+
+  <section class="block">
+    <h2>A library first. Everything else is built on it.</h2>
+    <p class="sub">The SDK owns the cryptography. The tools around it share one version and one set of formats, and none of them can do more than the key in your hand allows.</p>
+    <div class="cards">
+      <article class="card">
+        <div class="name">galata-vault</div>
+        <h3>The Rust SDK</h3>
+        <p>A token client, the owner API, and an embedded backend that runs the server's rules in-process with no socket and no async runtime.</p>
+      </article>
+      <article class="card">
+        <div class="name">gv</div>
+        <h3>The command line</h3>
+        <p>Init a project, add environments, set secrets, mint tokens for CI, and run a process with its secrets as environment variables.</p>
+      </article>
+      <article class="card">
+        <div class="name">pip install galata-vault</div>
+        <h3>The Python package</h3>
+        <p>The wheel runs the same Rust code as gv, and bundles gv itself.</p>
+      </article>
+      <article class="card">
+        <div class="name">gv-server</div>
+        <h3>A server that cannot decrypt</h3>
+        <p>The binary links no decryption code, and a CI guard fails the build if it ever does. On your machine it needs no configuration.</p>
+      </article>
+      <article class="card">
+        <div class="name">gv-mcp</div>
+        <h3>Metadata only, for AI agents</h3>
+        <p>An MCP server that can list, inspect and verify, and cannot read a value, for the same reason the server cannot.</p>
+      </article>
+      <article class="card">
+        <div class="name">gv ui</div>
+        <h3>The vault in your browser</h3>
+        <p>A local UI on loopback, with its own threat model in the docs.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="server">
+      <div class="intro">
+        <h2>What the server can and cannot see</h2>
+        <p class="sub">Requests are signed, the token string never crosses the wire, and every client pins a vault id before trusting anything. A server can withhold or delete data and see metadata. It cannot substitute a key, forge or move a record, or rewrite the tree unnoticed.</p>
+      </div>
+      <div class="stores">
+        <div class="lab">It stores</div>
+        <ul>
+          <li>Ciphertext, in age v1 envelopes</li>
+          <li>Signed records and owner-signed descriptors and bundles</li>
+          <li>HMAC name indexes, with encrypted names</li>
+          <li>Public keys and an audit hash chain</li>
+        </ul>
+      </div>
+      <div class="never">
+        <div class="lab">It never receives</div>
+        <ul>
+          <li>A plaintext name or value</li>
+          <li>A project or environment path</li>
+          <li>Any key that decrypts</li>
+          <li>The token string itself</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block flow">
+    <div>
+      <h2>From init to deploy</h2>
+      <p>Projects and environments are a key tree. Each environment key is derived from its parent with a one-way HKDF, so a kit for <code>acme/dev</code> has no path to <code>acme/prod</code>.</p>
+      <p>There is no account, email or operator reset. <code>gv init</code> will not finish until you confirm the recovery kit is stored.</p>
+      <a class="more" href="docs/docs/guide.html">Read about the key tree, delegation and rekey</a>
+    </div>
+<pre class="shell"><span class="p">$ </span>gv-server local
+<span class="p">$ </span>gv init acme --server http://127.0.0.1:8750
+<span class="p">$ </span>gv env add acme/prod
+<span class="p">$ </span>printf %s "$DATABASE_URL" | gv set DATABASE_URL --env acme/prod
+<span class="p">$ </span>gv run --env acme/prod -- ./deploy
+<span class="p">$ </span>gv token mint --scope read --env acme/prod
+<span class="p">$ </span>gv config set app --format toml --env acme/prod &lt; app.toml
+<span class="p">$ </span>gv ui</pre>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="l">
+      <svg aria-hidden="true"><use href="#mark"/></svg>
+      <span>Licensed MIT or Apache-2.0. The name Galata Vault is the project's; see the docs.</span>
+    </div>
+    <nav aria-label="Project">
+      <a href="docs/SECURITY.html">Security policy</a>
+      <a href="docs/CHANGELOG.html">Changelog</a>
+      <a href="docs/">All docs</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

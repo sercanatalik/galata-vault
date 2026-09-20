@@ -1,0 +1,94 @@
+[package]
+name = "galata-vault"
+description = "End-to-end-encrypted secrets and config documents with no accounts: the galata-vault Rust SDK. A token client and the owner API over a pluggable transport, with an optional in-process backend."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["secrets", "e2ee", "encryption", "vault", "config"]
+categories = ["cryptography", "config", "authentication"]
+# Sources, the README and the licence text only: tests and fixtures that
+# read the repository (testdata/, docs/spec/) stay in the workspace.
+# scripts/check-packaging.sh checks the list and the licence copies.
+include = ["/src/**", "/examples/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT"]
+
+[package.metadata.docs.rs]
+# Every documented feature; not `vectors` (a private runner) or
+# `adversary-plant` (test-only, refuses release builds).
+features = ["embedded", "platform-verifier", "test-util"]
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[lib]
+name = "galata_vault"
+
+[features]
+default = ["http"]
+# The HTTP transport. Without it no HTTP client (ureq, rustls, ring) is
+# linked, and a caller brings its own `Transport`.
+http = ["galata-vault-client/http"]
+# The operating system's trust store instead of the bundled roots.
+platform-verifier = ["http", "galata-vault-client/platform-verifier"]
+# In-memory key and state stores, the recording transport, and `testing`.
+test-util = ["galata-vault-client/test-util"]
+# The in-process backend (`galata_vault::embedded`): galata-vault-server-core over the
+# SQLite store in a data directory, with no socket, HTTP or async runtime.
+# It links galata-vault-server-core and galata-vault-store (and so rusqlite), and still no HTTP
+# server, runtime, S3 client or host-process code (scripts/check-sdk-linkage.sh).
+embedded = ["dep:galata-vault-server-core", "dep:galata-vault-store"]
+# The private test-vector runner (`galata_vault::__vectors`), which the Python
+# wheel exposes as `galata_vault._vectors`. Pure: it holds no key between
+# calls and does no I/O. Not a supported interface.
+vectors = ["galata-vault-proto/vectors", "galata-vault-keys/vectors", "galata-vault-seal/vectors"]
+# The adversarial suite's plant, for scripts/adversary-plant.sh only: with
+# GV_ADVERSARY_PLANT=skip-descriptor-signature set, the SDK accepts a
+# descriptor without checking the owner's signature, so the script can prove
+# the suite fails when that check is gone. It refuses to compile without
+# debug assertions (any release build), and nothing in the workspace enables
+# it; the script checks both.
+adversary-plant = []
+
+# A client: it links the crypto crates. It must not link keyring, rlimit,
+# rpassword, clap or pyo3 (scripts/check-sdk-linkage.sh); requests, request
+# signing and response mapping are galata-vault-client's.
+[dependencies]
+galata-vault-client.workspace = true
+galata-vault-proto.workspace = true
+galata-vault-keys.workspace = true
+galata-vault-seal.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+toml.workspace = true
+zeroize.workspace = true
+galata-vault-server-core = { workspace = true, optional = true }
+galata-vault-store = { workspace = true, optional = true }
+
+# The integration tests run a real server in-process.
+[dev-dependencies]
+galata-vault = { path = ".", features = ["test-util", "vectors"] }
+galata-vault-server = { path = "../galata-vault-server" }
+# Policies a configuration file cannot ask for, such as the proof-of-work
+# admission a third-party server may apply, for servers built in tests.
+galata-vault-server-core.workspace = true
+# The malicious-server harness (tests/adversary.rs).
+gv-adversary = { path = "../gv-adversary" }
+galata-vault-store.workspace = true
+axum.workspace = true
+tokio.workspace = true
+tempfile.workspace = true
+rlimit.workspace = true
+# The rotation and concurrency properties (tests/properties.rs).
+proptest.workspace = true
+
+# Only with the in-process backend: `cargo test -p galata-vault --features embedded`.
+[[test]]
+name = "embedded"
+required-features = ["embedded"]
+
+[[example]]
+name = "embedded"
+required-features = ["embedded"]

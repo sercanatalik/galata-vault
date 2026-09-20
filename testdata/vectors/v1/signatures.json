@@ -1,0 +1,447 @@
+{
+  "suite": "galata-vault test vectors",
+  "protocol": 2,
+  "construct": "signatures",
+  "spec": "signatures.md#1",
+  "generator": "scripts/vectors (independent Python: stdlib, cryptography, PyNaCl; age and BLAKE3 written out)",
+  "cases": [
+    {
+      "id": "signatures-001",
+      "description": "an owner's PUT under If-Match",
+      "spec": "signatures.md#2.1",
+      "op": "request",
+      "inputs": {
+        "signer": "owner",
+        "method": "PUT",
+        "path": "/v1/secrets/abababababababababababababababababababababababababababababababab",
+        "body": "7b2278223a317d",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "if_match": "2",
+        "if_none_match": null,
+        "node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "gv/v1/sig\nowner\nPUT\n/v1/secrets/abababababababababababababababababababababababababababababababab\n5041bf1f713df204784353e82f6a4a535931cb64f1f4b4a5aeaffcb720918b22\ne9cb749994ea300f5bbf5285cba1056d\n1757500000\nAAECAwQFBgcICQoLDA0ODw\n2\n",
+        "sig": "52ea8bb7325f5e866aeebe9a79d841cf62a25e34188048b0f3a10ee78c9f57d66a519bef43cac5acfb7447edbbe88298d9638111757ce9673a40741e57adff01",
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=UuqLtzJfXoZq7r6aedhBz2KiXjQYgEiw86EO54yfV9ZqUZvvQ8rFrPt0R-276IKY2WOBEXV86Wc6QHQeV63_AQ"
+      }
+    },
+    {
+      "id": "signatures-002",
+      "description": "a token's PUT under If-Match",
+      "spec": "signatures.md#2.1",
+      "op": "request",
+      "inputs": {
+        "signer": "token",
+        "method": "PUT",
+        "path": "/v1/secrets/abababababababababababababababababababababababababababababababab",
+        "body": "7b2278223a317d",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "if_match": "2",
+        "if_none_match": null,
+        "token_id": "000102030405060708090a0b0c0d0e0f",
+        "token_secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "gv/v1/sig\ntoken:000102030405060708090a0b0c0d0e0f\nPUT\n/v1/secrets/abababababababababababababababababababababababababababababababab\n5041bf1f713df204784353e82f6a4a535931cb64f1f4b4a5aeaffcb720918b22\ne9cb749994ea300f5bbf5285cba1056d\n1757500000\nAAECAwQFBgcICQoLDA0ODw\n2\n",
+        "sig": "c70cc3153dee6145961413680d08460dcb78f705875b8a599b5005d619a447b0fc42722353df251f64df1524475e09416ee1ba71001d9535ac725f72f81f4709",
+        "header": "GV-Sig v=1,actor=token,token=000102030405060708090a0b0c0d0e0f,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xwzDFT3uYUWWFBNoDQhGDct49wWHW4pZm1AF1hmkR7D8QnIjU98lH2TfFSRHXglBbuG6cQAdlTWscl9y-B9HCQ"
+      }
+    },
+    {
+      "id": "signatures-003",
+      "description": "a creation under If-None-Match: *",
+      "spec": "signatures.md#2.1",
+      "op": "request",
+      "inputs": {
+        "signer": "owner",
+        "method": "PUT",
+        "path": "/v1/secrets/abababababababababababababababababababababababababababababababab",
+        "body": "7b2278223a317d",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "if_match": null,
+        "if_none_match": "*",
+        "node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "gv/v1/sig\nowner\nPUT\n/v1/secrets/abababababababababababababababababababababababababababababababab\n5041bf1f713df204784353e82f6a4a535931cb64f1f4b4a5aeaffcb720918b22\ne9cb749994ea300f5bbf5285cba1056d\n1757500000\nAAECAwQFBgcICQoLDA0ODw\n\n*",
+        "sig": "37856e5da8651809cf4858de254752add84f92f6cb6fa8cde007d41679298b9cb9a09da0e11781b7905ffb68e362a7f599cf40a16a9ec4198f61b92a5c49690d",
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=N4VuXahlGAnPSFjeJUdSrdhPkvbLb6jN4AfUFnkpi5y5oJ2g4ReBt5Bf-2jjYqf1mc9AoWqexBmPYbkqXElpDQ"
+      }
+    },
+    {
+      "id": "signatures-004",
+      "description": "a GET: no body, and no precondition lines filled",
+      "spec": "signatures.md#2.1",
+      "op": "request",
+      "inputs": {
+        "signer": "token",
+        "method": "GET",
+        "path": "/v1/vault",
+        "body": "",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "if_match": null,
+        "if_none_match": null,
+        "token_id": "000102030405060708090a0b0c0d0e0f",
+        "token_secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "gv/v1/sig\ntoken:000102030405060708090a0b0c0d0e0f\nGET\n/v1/vault\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\ne9cb749994ea300f5bbf5285cba1056d\n1757500000\nAAECAwQFBgcICQoLDA0ODw\n\n",
+        "sig": "ad8d279693ad3f8ebd010fb6ef63d20d97a684185b24c04a9b76f7836fd6204a337e63a1a7b5a32d48b952b7c641892293f8fe08fd4818b69ef1058697b9c807",
+        "header": "GV-Sig v=1,actor=token,token=000102030405060708090a0b0c0d0e0f,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=rY0nlpOtP469AQ-272PSDZemhBhbJMBKm3b3g2_WIEozfmOhp7WjLUi5UrfGQYkik_j-CP1IGLae8QWGl7nIBw"
+      }
+    },
+    {
+      "id": "signatures-005",
+      "description": "a query string is signed as sent",
+      "spec": "signatures.md#2.1",
+      "op": "request",
+      "inputs": {
+        "signer": "owner",
+        "method": "GET",
+        "path": "/v1/audit?after=5&limit=1000",
+        "body": "",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "if_match": null,
+        "if_none_match": null,
+        "node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "gv/v1/sig\nowner\nGET\n/v1/audit?after=5&limit=1000\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\ne9cb749994ea300f5bbf5285cba1056d\n1757500000\nAAECAwQFBgcICQoLDA0ODw\n\n",
+        "sig": "f858dacc9b144bd39e3b68bcf1df00101925e1f2ebfb58c7e9ad7c19edb78e10f629092abff0c10bc0358c40f52dc782e9ba041f8ba25f79ac15b064043d030f",
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=-FjazJsUS9OeO2i88d8AEBkl4fLr-1jH6a18Ge23jhD2KQkqv_DBC8A1jED1LceC6boEH4uiX3msFbBkBD0DDw"
+      }
+    },
+    {
+      "id": "signatures-006",
+      "description": "the method is upper-cased before signing",
+      "spec": "signatures.md#2.1",
+      "op": "request",
+      "inputs": {
+        "signer": "owner",
+        "method": "delete",
+        "path": "/v1/vault",
+        "body": "",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "if_match": null,
+        "if_none_match": null,
+        "node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "gv/v1/sig\nowner\nDELETE\n/v1/vault\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\ne9cb749994ea300f5bbf5285cba1056d\n1757500000\nAAECAwQFBgcICQoLDA0ODw\n\n",
+        "sig": "e56a340670446dc1b76e1c127eabe172ac513cebae6be997d5353413a2b06ff8845993804b2fd51b94e80aa4500eedd02b3ead0227e748890dc00fb304f0ea01",
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=5Wo0BnBEbcG3bhwSfqvhcqxRPOuua-mX1TU0E6Kwb_iEWZOASy_VG5ToCqRQDu3QKz6tAifnSIkNwA-zBPDqAQ"
+      }
+    },
+    {
+      "id": "signatures-007",
+      "description": "an owner's header",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw"
+      },
+      "expect": "success",
+      "outputs": {
+        "actor": "owner",
+        "token": null,
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "sig": "c6918d9ecb0db8c81fb5b76ac6ae816df50c62fc7c2926b931912d676f5c72d323c25a59877728d6afe6122f96457d01f09e768f5bc5d59d067358600df00f0b"
+      }
+    },
+    {
+      "id": "signatures-008",
+      "description": "a token's header",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=token,token=000102030405060708090a0b0c0d0e0f,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw"
+      },
+      "expect": "success",
+      "outputs": {
+        "actor": "token",
+        "token": "000102030405060708090a0b0c0d0e0f",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "ts": 1757500000,
+        "nonce": "000102030405060708090a0b0c0d0e0f",
+        "sig": "c6918d9ecb0db8c81fb5b76ac6ae816df50c62fc7c2926b931912d676f5c72d323c25a59877728d6afe6122f96457d01f09e768f5bc5d59d067358600df00f0b"
+      }
+    },
+    {
+      "id": "signatures-009",
+      "description": "GV-Sig v=2",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=2,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw"
+      },
+      "expect": "unknown_version"
+    },
+    {
+      "id": "signatures-010",
+      "description": "a bearer credential",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "Bearer gvt1_abc"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "signatures-011",
+      "description": "a parameter twice",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw,ts=1757500000"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "signatures-012",
+      "description": "an unknown parameter",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw,extra=1"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "signatures-013",
+      "description": "no signature",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "signatures-014",
+      "description": "a token actor without its id",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=token,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0ODw,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "signatures-015",
+      "description": "a 15-byte nonce",
+      "spec": "signatures.md#2.2",
+      "op": "header",
+      "inputs": {
+        "header": "GV-Sig v=1,actor=owner,vault=e9cb749994ea300f5bbf5285cba1056d,ts=1757500000,nonce=AAECAwQFBgcICQoLDA0O,sig=xpGNnssNuMgftbdqxq6BbfUMYvx8KSa5MZEtZ29cctMjwlpZh3co1q_mEi-WRX0B8J52j1vF1Z0Gc1hgDfAPCw"
+      },
+      "expect": "bad_encoding"
+    },
+    {
+      "id": "signatures-016",
+      "description": "the owner signs frame(gv/v1/descriptor, descriptor)",
+      "spec": "signatures.md#3",
+      "op": "descriptor",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "descriptor": "01e9cb749994ea300f5bbf5285cba1056d00000001856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f1452c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc734247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f00000000000000000000000000000000000000000000000000000000000000000000000068c15260"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f64657363726970746f720001e9cb749994ea300f5bbf5285cba1056d00000001856fb1912ebe030807b625f62204d4e57e70b49f050c759792dfea95761f3f1452c3f7b18884ce532bc8f837b1d9cb7361cc54559bc86c4e2dd886f98833264c0257155b05f105dc68a23dc6bf784623dbfc23a9d4f7012b530ce59796643bc734247b4dabf63a44aac4f088de96e3c065aa22dea22370ab4262eaf0d8df6e8f00000000000000000000000000000000000000000000000000000000000000000000000068c15260",
+        "sig": "01be3fb338176602f9b68afe6b29651f6564ed4d4dc263ddd992e187bcfce77d6e35e211e5dde0959952191420b403be7adc8042c6d8cb75711e542e58b1e003"
+      }
+    },
+    {
+      "id": "signatures-017",
+      "description": "the owner signs a read token's sealed bundle",
+      "spec": "signatures.md#4",
+      "op": "bundle",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "token_id": "abababababababababababababababab",
+        "scope_code": 3,
+        "generation": 1,
+        "sealed": "a968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f62756e646c6500e9cb749994ea300f5bbf5285cba1056dabababababababababababababababab03000000010f7657b4b9f103aa4bbff6067eafa1acd59de6c53a27b06e244f6b31d7cb1694",
+        "sig": "aa95453d5042b4d26757eff26b67fd13896d95fd7c0848cbf9aefefa4a8a9726ae882c35d09ab98cbbb37a69222c4f46f62bd9e74071ffdcba95cda0a10c0b05"
+      }
+    },
+    {
+      "id": "signatures-018",
+      "description": "the owner signs its own bundle: token id zero, scope code 0",
+      "spec": "signatures.md#4",
+      "op": "bundle",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "token_id": "00000000000000000000000000000000",
+        "scope_code": 0,
+        "generation": 1,
+        "sealed": "a968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4ea968c424506cee9a27ab03f53226dafc0241a8f28e6c46f76dbd025b771a8a4e"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f62756e646c6500e9cb749994ea300f5bbf5285cba1056d0000000000000000000000000000000000000000010f7657b4b9f103aa4bbff6067eafa1acd59de6c53a27b06e244f6b31d7cb1694",
+        "sig": "0bb256b2d810ab89414c2981206c1a2d5a1c53e27e07ca9266538a82665d34047c28c6378544702f81dbe6b8ebe5f2370946179fe98e503d12905083ddc1e702"
+      }
+    },
+    {
+      "id": "signatures-019",
+      "description": "the owner signs the children record at version 2",
+      "spec": "signatures.md#6",
+      "op": "children",
+      "inputs": {
+        "owner_node_key": "cde3e391e8ac271b784b0f8a03209cd109a651e1fdcb87cdc8b663667734602e",
+        "version": 2,
+        "ct": "747987079c43064c3e703118692d01a2540c61a59cbf694a70dfee9b317723df747987079c43064c3e703118692d01a2540c61a59cbf694a70dfee9b317723df747987079c43064c3e703118692d01a2540c61a59cbf694a70dfee9b317723df"
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f6368696c6472656e00e9cb749994ea300f5bbf5285cba1056d000000000000000238b44a89da58fb017db276bca814012fefb9f8b7e905cf9a0f654f0f7acd4047",
+        "sig": "905b3a7f236dc68ec6f118cab13a58133233251ccbc9513d2789c765ddedce138dc7d4d2e6db28ec1cfbb224c9e5ebcb1293c05369122f0b835068675a583506"
+      }
+    },
+    {
+      "id": "signatures-020",
+      "description": "a token-auth key signs frame(gv/v1/report, token_id ‖ ts)",
+      "spec": "signatures.md#7",
+      "op": "report",
+      "inputs": {
+        "token_id": "000102030405060708090a0b0c0d0e0f",
+        "vault_id": "e9cb749994ea300f5bbf5285cba1056d",
+        "token_secret": "5d343f4ecbef5cafafce27a44e3627dde9ebbc660bb9099e85a4e135ba7c9f3c",
+        "ts": 1757500000
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f513b63e59f4fbd83afae027b2ee6bfdbeb0fb31becca0edde989c1f02b583b0c"
+      }
+    },
+    {
+      "id": "signatures-021",
+      "description": "a token-auth key signs frame(gv/v1/report, token_id ‖ ts)",
+      "spec": "signatures.md#7",
+      "op": "report",
+      "inputs": {
+        "token_id": "ffffffffffffffffffffffffffffffff",
+        "vault_id": "00000000000000000000000000000000",
+        "token_secret": "0000000000000000000000000000000000000000000000000000000000000000",
+        "ts": 1757500000
+      },
+      "expect": "success",
+      "outputs": {
+        "signing_input": "67762f76312f7265706f727400ffffffffffffffffffffffffffffffff0000000068c15260",
+        "sig": "38ce5f30db1fd0f7c8d93bb4b1ef08caea6ad50750da1358e9c41b7b30f24938a64651f4d27b493236d7325de8a578ea1f2e74279f0f031d6a1ebcebc0a9b50b"
+      }
+    },
+    {
+      "id": "signatures-022",
+      "description": "a signature verifies under its key",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "37748c5f02bcb0da999c537e561213f2616d8817f330281dae9beacf0fe65768",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f513b63e59f4fbd83afae027b2ee6bfdbeb0fb31becca0edde989c1f02b583b0c"
+      },
+      "expect": "success",
+      "outputs": {}
+    },
+    {
+      "id": "signatures-023",
+      "description": "a flipped signature bit",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "37748c5f02bcb0da999c537e561213f2616d8817f330281dae9beacf0fe65768",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f513b63e59f4fbd83aeae027b2ee6bfdbeb0fb31becca0edde989c1f02b583b0c"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "signatures-024",
+      "description": "another message",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "37748c5f02bcb0da999c537e561213f2616d8817f330281dae9beacf0fe65768",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c1526000",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f513b63e59f4fbd83afae027b2ee6bfdbeb0fb31becca0edde989c1f02b583b0c"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "signatures-025",
+      "description": "another key",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "e3a51ec7bc42ac4025c5356e3889bcb35819243169b19bd71090c0788db549a4",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f513b63e59f4fbd83afae027b2ee6bfdbeb0fb31becca0edde989c1f02b583b0c"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "signatures-026",
+      "description": "s + L: the same scalar, not reduced (RFC 8032 requires s < L)",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "37748c5f02bcb0da999c537e561213f2616d8817f330281dae9beacf0fe65768",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f3e0f5942bab2cfdb854bfa1d0de09ef0eb0fb31becca0edde989c1f02b583b1c"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "signatures-027",
+      "description": "a small-order public key (the identity point) accepting anything",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "0100000000000000000000000000000000000000000000000000000000000000",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "c41ee7a0f79924df80e0b6ddee428071695b75a0d3818ff29c2a0809a2fed1c87c777a37dd054c568184cf0ba85b4ff389baeb0add9e1ad61768706373dd0003"
+      },
+      "expect": "bad_signature"
+    },
+    {
+      "id": "signatures-028",
+      "description": "a public key that is not a curve point",
+      "spec": "signatures.md#1",
+      "op": "verify",
+      "inputs": {
+        "public_key": "0200000000000000000000000000000000000000000000000000000000000000",
+        "message": "67762f76312f7265706f727400000102030405060708090a0b0c0d0e0f0000000068c15260",
+        "sig": "b25b077b69b81dffd0d3c3cf7459fc89e381e3536798bb0ed021ba6a2c8bc91f513b63e59f4fbd83afae027b2ee6bfdbeb0fb31becca0edde989c1f02b583b0c"
+      },
+      "expect": "bad_signature"
+    }
+  ]
+}

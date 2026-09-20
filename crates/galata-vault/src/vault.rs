@@ -1393,8 +1393,27 @@ impl Handle {
                     ),
                 ));
             }
-            let secrets = self.all_versions(&v, RecordKind::Secret)?;
-            let configs = self.all_versions(&v, RecordKind::Config)?;
+            // The guard above and this gather are not one step. A rotation
+            // that lands in between re-indexes every record under its own
+            // name key, so generation `v`'s index answers 404 and a record
+            // this handle just listed vanishes. Rebuild, exactly as for a
+            // revision conflict: the next turn's guard sees the new
+            // generation and reports it as stale, instead of letting a 404
+            // surface as though a secret had been lost. A concurrent write
+            // that pruned an old version arrives here too, and wants the
+            // same rebuild. `VaultNotFound` is a different matter and goes
+            // on through.
+            let gathered = self
+                .all_versions(&v, RecordKind::Secret)
+                .and_then(|secrets| {
+                    self.all_versions(&v, RecordKind::Config)
+                        .map(|configs| (secrets, configs))
+                });
+            let (secrets, configs) = match gathered {
+                Ok(both) => both,
+                Err(Error::NotFound { .. }) => continue,
+                Err(e) => return Err(e),
+            };
             let rotation = build_rotation(
                 owner,
                 &status,

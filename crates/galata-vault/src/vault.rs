@@ -813,7 +813,14 @@ impl Handle {
         let index = v.bundle.name_key().index(kind, name);
         let list = match self.api.versions(self.auth(), kind, &index) {
             Ok(a) => self.take(a),
-            Err(e) if e.code() == Some(ErrorCode::NotFound) => return Ok(Vec::new()),
+            // Empty is a legitimate answer for a name that never existed, and
+            // the wrong answer for one this view can no longer index.
+            Err(e) if e.code() == Some(ErrorCode::NotFound) => {
+                return match self.moved_on(v) {
+                    Some(moved) => Err(moved),
+                    None => Ok(Vec::new()),
+                };
+            }
             Err(e) => return Err(self.server_err(e)),
         };
         for m in &list.versions {
@@ -832,6 +839,32 @@ impl Handle {
         Ok(list.versions)
     }
 
+    /// A name index is derived from the generation's name key, so after a
+    /// rotation this view has not adopted, every index it computes is one the
+    /// server has never seen. The answer is then a 404 for a record that
+    /// exists, or an empty history for a record with versions -- which would
+    /// tell a caller a secret is gone when the vault has merely moved on.
+    ///
+    /// So a miss is checked against the vault's generation before it is
+    /// reported: `Some` is what actually happened. One extra request, only on
+    /// a miss. `Handle::refresh` adopts the new generation.
+    fn moved_on(&self, v: &View) -> Option<Error> {
+        // If the generation cannot be confirmed either way, say nothing and
+        // let the miss be reported as it came, rather than guess.
+        let status = self.refresh_status().ok()?;
+        if status.generation == v.descriptor.generation {
+            return None;
+        }
+        Some(Error::stale(
+            &self.label,
+            format!(
+                "{}: the vault moved to generation {} since this handle was opened, so its \
+                 records are under new keys; refresh it",
+                self.label, status.generation
+            ),
+        ))
+    }
+
     fn fetch(
         &self,
         v: &View,
@@ -843,6 +876,9 @@ impl Handle {
         let record = match self.api.record(self.auth(), kind, &index, version) {
             Ok(a) => self.take(a),
             Err(e) if e.code() == Some(ErrorCode::NotFound) => {
+                if let Some(moved) = self.moved_on(v) {
+                    return Err(moved);
+                }
                 return Err(Error::not_found(match version {
                     Some(n) => format!("{}: {} {name} has no version {n}", self.label, noun(kind)),
                     None => format!("{}: no {} named {name}", self.label, noun(kind)),

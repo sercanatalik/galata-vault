@@ -40,7 +40,6 @@ TABLE: list[tuple[str | None, list[tuple[str, str]]]] = [
         ("Threat model", "docs/threat-model.md"),
         ("Architecture", "ARCHITECTURE.md"),
         ("The local UI", "docs/local-ui.md"),
-        ("The local UI", "docs/review/local-ui.md"),
         ("Running a server", "deploy/README.md"),
     ]),
     ("Specification", [
@@ -74,8 +73,6 @@ TABLE: list[tuple[str | None, list[tuple[str, str]]]] = [
         ("Releasing", "RELEASING.md"),
         ("Contributing", "CONTRIBUTING.md"),
         ("Code of conduct", "CODE_OF_CONDUCT.md"),
-        ("Trademarks", "TRADEMARKS.md"),
-        ("Fuzzing", "fuzz/README.md"),
     ]),
 ]
 
@@ -125,7 +122,7 @@ def summary(parts) -> str:
     return "\n".join(out) + "\n"
 
 
-def rewrite_links(text: str, rel: str, book: set[str]) -> str:
+def rewrite_links(text: str, rel: str, book: set[str], dangling: list) -> str:
     base = Path(rel).parent
 
     def resolve(target: str) -> str | None:
@@ -152,6 +149,10 @@ def rewrite_links(text: str, rel: str, book: set[str]) -> str:
         elif node.is_file():
             kind = "blob"
         else:
+            # Neither a chapter nor a file: rewriting it to the GitHub tree
+            # would only move the 404. Collect it and fail the build, so the
+            # promise above ("nothing on the site is a dead link") holds.
+            dangling.append((rel, target))
             return None
         url = f"{GITHUB}/{kind}/{BRANCH}/{joined}"
         return url + (f"#{frag}" if frag else "")
@@ -177,12 +178,21 @@ def main() -> int:
     if SRC.exists():
         shutil.rmtree(SRC)
     SRC.mkdir(parents=True)
+    dangling: list[tuple[str, str]] = []
     for rel in sorted(book):
         text = (REPO / rel).read_text(encoding="utf-8")
         dest = SRC / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(rewrite_links(text, rel, book), encoding="utf-8")
+        dest.write_text(rewrite_links(text, rel, book, dangling), encoding="utf-8")
     (SRC / "SUMMARY.md").write_text(summary(parts), encoding="utf-8")
+    if dangling:
+        for source, target in dangling:
+            print(f"{source}: links to {target}, which is not in the tree", file=sys.stderr)
+        print(
+            f"{len(dangling)} dead link(s): write the target, or remove the link.",
+            file=sys.stderr,
+        )
+        return 1
     print(f"staged {len(book)} chapters under {SRC.relative_to(REPO)}")
     return 0
 

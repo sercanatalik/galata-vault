@@ -311,7 +311,7 @@ fn unknown_paths_and_methods_are_refused_as_the_router_refused_them() {
     let dir = tempfile::tempdir().unwrap();
     let f = open(dir.path());
     for (method, path, status, error) in [
-        ("GET", "/v1/vault", 404, "not_found"),
+        ("GET", "/v2/vault", 404, "not_found"),
         ("GET", "/v1/secrets/", 404, "not_found"),
         ("GET", "/v1/tokens", 400, "invalid_request"),
         ("DELETE", "/v1/tokens/self", 400, "invalid_request"),

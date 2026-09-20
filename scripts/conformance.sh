@@ -45,7 +45,12 @@ mkdir -m 700 "$work/http"
 server_pid=$!
 url="http://127.0.0.1:$port"
 up=0
-for _ in $(seq 1 100); do
+# 60s, not 10: the build above may have just relinked gv-server, and the
+# first execution of a fresh binary pays for signature validation and a cold
+# page-in (measured at 7.5s on macOS, against a 10s budget). A server that
+# genuinely fails still reports in milliseconds, because the loop leaves as
+# soon as the process is gone.
+for _ in $(seq 1 600); do
     if curl -s -m 1 -o /dev/null "$url/v1/capabilities" 2>/dev/null; then
         up=1
         break

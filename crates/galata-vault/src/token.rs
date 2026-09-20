@@ -2,12 +2,13 @@
 
 use std::path::Path;
 
-use galata_vault_client::{Api, Pre};
+use galata_vault_client::{Api, Pre, Warning};
 use galata_vault_keys::TokenKeys;
 use galata_vault_proto::FormatError;
 use galata_vault_proto::api::{Scope, VaultStatus, VersionMeta};
 use galata_vault_proto::audit::ChainHead;
 use galata_vault_proto::children::is_reserved_name;
+use galata_vault_proto::ids::TokenId;
 use zeroize::Zeroizing;
 
 use crate::audit::{self, AuditReport};
@@ -267,6 +268,98 @@ impl Vault {
     /// The vault's status, fetched now, its descriptor verified.
     pub fn status(&self) -> Result<VaultStatus, Error> {
         self.inner.refresh_status()
+    }
+
+    /// This vault's tokens, for an `admin` token: the same view the owner
+    /// gets from [`crate::owner::Environment::tokens`], with a read token's
+    /// allow-list names decrypted where this credential can read them.
+    ///
+    /// The server sends the list to the owner and to `admin` and to nobody
+    /// else (`docs/spec/http-api.md#2`), so every other scope is refused
+    /// here by name rather than shown an empty list, which would say the
+    /// vault has no tokens.
+    pub fn tokens(&self) -> Result<Vec<crate::owner::TokenInfo>, Error> {
+        if self.scope != Scope::Admin {
+            return Err(Error::forbidden(format!(
+                "{}: listing tokens needs an admin token; this one is {}",
+                self.label(),
+                self.scope
+            )));
+        }
+        let status = self.inner.refresh_status()?;
+        // Absent is not empty: an admin credential should have been sent the
+        // list, so a missing one is the server withholding it, not a vault
+        // without tokens.
+        let summaries = status.tokens.ok_or_else(|| {
+            Error::other(format!(
+                "{}: the server did not send this vault's token list",
+                self.label()
+            ))
+        })?;
+        let names: std::collections::HashMap<_, _> = self
+            .inner
+            .list()?
+            .into_iter()
+            .map(|i| (i.hmac, i.name))
+            .collect();
+        Ok(summaries
+            .into_iter()
+            .map(|t| crate::owner::TokenInfo {
+                id: t.token_id,
+                scope: t.scope,
+                created_at: t.created_at,
+                expires_at: t.expires_at,
+                only: t.allow_list.map(|l| {
+                    l.iter()
+                        .map(|h| names.get(h).cloned().unwrap_or_else(|| "?".into()))
+                        .collect()
+                }),
+            })
+            .collect())
+    }
+
+    /// Revoke token `id`, for an `admin` token. The server drops it at once;
+    /// this cannot rotate, so the revocation is always forward-only and the
+    /// keys the token's bundle held keep working on whatever its holder
+    /// already copied. Rotation needs the owner key
+    /// ([`crate::owner::Environment::revoke`] with `rotate`).
+    ///
+    /// The scope is read from the vault's token list first, so the returned
+    /// [`crate::owner::Revocation`] can name what the revoked token held,
+    /// and a [`Warning::ForwardOnlyRevocation`] is raised for every scope
+    /// but `meta`, exactly as the owner path raises it.
+    pub fn revoke(&self, id: &TokenId) -> Result<crate::owner::Revocation, Error> {
+        if self.scope != Scope::Admin {
+            return Err(Error::forbidden(format!(
+                "{}: revoking a token needs an admin token; this one is {}",
+                self.label(),
+                self.scope
+            )));
+        }
+        let status = self.inner.refresh_status()?;
+        let scope = status
+            .tokens
+            .as_ref()
+            .and_then(|ts| ts.iter().find(|t| t.token_id == *id))
+            .map(|t| t.scope.clone())
+            .ok_or_else(|| Error::not_found(format!("{}: has no token {id}", self.label())))?;
+        self.inner.revoke(id)?;
+        let revocation = crate::owner::Revocation {
+            scope,
+            rotated_to: None,
+        };
+        if revocation.forward_only() {
+            self.inner
+                .api()
+                .events()
+                .warning(&Warning::ForwardOnlyRevocation {
+                    path: self.label().to_owned(),
+                    token: id.to_hex(),
+                    scope: revocation.scope.to_string(),
+                    held: revocation.held_keys(),
+                });
+        }
+        Ok(revocation)
     }
 
     // ------------------------------------------------------------ integrity

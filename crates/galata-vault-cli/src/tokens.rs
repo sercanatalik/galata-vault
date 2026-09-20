@@ -14,7 +14,7 @@ use zeroize::Zeroizing;
 
 use crate::context::Context;
 use crate::kit;
-use crate::secrets::Target;
+use crate::secrets::{Opened, Target};
 use crate::select::selected_env;
 use crate::util::{fmt_time, parse_ttl};
 
@@ -49,10 +49,15 @@ pub fn mint(
 
 pub fn ls(ctx: &mut Context, env: Option<&str>) -> anyhow::Result<()> {
     let mut target = Target::select(ctx, env)?;
-    target.owner_only(ctx, "listing tokens")?;
-    let vault = target.open_owner()?;
-    let rows = vault.tokens()?;
-    target.done_owner(vault)?;
+    // Not owner-only: the protocol gives the token list to the owner and to
+    // an admin token (docs/spec/http-api.md#2), and the SDK refuses every
+    // other scope by name.
+    let opened = target.open()?;
+    let rows = match &opened {
+        Opened::Owner(env) => env.tokens()?,
+        Opened::Token(vault) => vault.tokens()?,
+    };
+    target.done(opened)?;
     for t in rows {
         let only = t
             .only
@@ -74,11 +79,26 @@ pub fn revoke(ctx: &mut Context, env: Option<&str>, id: &str, rotate: bool) -> a
         anyhow::anyhow!("a token id is 32 hexadecimal characters (see {bin} token ls)")
     })?;
     let mut target = Target::select(ctx, env)?;
-    target.owner_only(ctx, "revoking a token")?;
-    let vault = target.open_owner()?;
-    let label = vault.label().to_owned();
-    let revocation = vault.revoke(&id, rotate)?;
-    target.done_owner(vault)?;
+    // Not owner-only: `admin` may revoke (docs/spec/http-api.md#2). Rotating
+    // still is, so an admin token is told which half it cannot do rather
+    // than being refused the whole command.
+    let opened = target.open()?;
+    let label = opened.label().to_owned();
+    let revocation = match &opened {
+        Opened::Owner(env) => env.revoke(&id, rotate)?,
+        Opened::Token(vault) => {
+            if rotate {
+                bail!(
+                    "--rotate needs the environment's owner key: rotation re-encrypts every \
+                     record and reseals every bundle, which only the owner can do. An admin \
+                     token may revoke without it (unset {} to act as the owner).",
+                    ctx.branding().var("TOKEN")
+                );
+            }
+            vault.revoke(&id)?
+        }
+    };
+    target.done(opened)?;
     if let Some(generation) = revocation.rotated_to {
         ctx.say(&format!(
             "revoked token {id} and rotated {label} to generation {generation}.\n\

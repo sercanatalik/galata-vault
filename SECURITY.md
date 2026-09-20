@@ -25,11 +25,20 @@ package on PyPI, and the `gv`, `gv-server` and `gv-mcp` release binaries.
 
 ## Reporting a vulnerability
 
-**Report privately, through GitHub private vulnerability reporting only:**
+**Report privately, through GitHub private vulnerability reporting:**
 <https://github.com/sercanatalik/galata-vault/security/advisories/new>, the
-"Report a vulnerability" button on the repository's Security tab. Do not open a public
-issue, pull request or discussion, and do not post details anywhere else
-until a fix is released.
+"Report a vulnerability" button on the repository's Security tab. That is the
+preferred route: it keeps the report, the discussion and the advisory in one
+private place.
+
+**If that is unavailable to you**, or you get no acknowledgement within a
+week, mail <sercanatalik@gmail.com> instead. Say only that you have a
+galata-vault security report and how to reach you; wait for a reply before
+sending details, since that mailbox is ordinary email and not end-to-end
+encrypted.
+
+Either way: do not open a public issue, pull request or discussion, and do
+not post details anywhere else until a fix is released.
 
 Please include:
 - the affected crate, package or binary, and its version or commit;

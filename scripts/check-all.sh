@@ -67,12 +67,16 @@ run "adversarial harness (malicious server vs the SDK, gv and gv-mcp)" \
 run "adversarial plant (the suite fails with descriptor signatures unchecked)" \
     "$ROOT/scripts/adversary-plant.sh" "$ROOT"
 run "guards" "$ROOT/scripts/test-guards.sh" "$ROOT"
-# Every published crate built from its own .crate, offline, as `cargo
-# publish` would (the packaging guard above checks the lists and licences
-# without building). Then the documentation with rustdoc warnings denied:
-# broken intra-doc links, and missing docs where a crate warns on them.
-run "packaging (every published crate builds from its package, offline)" \
-    "$ROOT/scripts/check-packaging.sh" verify "$ROOT"
+# Every published crate built from its own .crate, offline, as `cargo publish`
+# would. Skipped until the crates are published, because it cannot resolve an
+# unpublished sibling from a registry; the packaging guard above still checks
+# the lists and the licences. Called directly, not through `run`, so its own
+# line is seen -- a skip reported as "ok" would be a lie.
+if ! "$ROOT/scripts/check-packaging.sh" verify "$ROOT"; then
+    failed=$((failed + 1))
+fi
+# The documentation with rustdoc warnings denied: broken intra-doc links, and
+# missing docs where a crate warns on them.
 run "docs (rustdoc warnings denied, every feature)" \
     env RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --all-features
 

@@ -541,10 +541,19 @@ fn tool_output_never_carries_token_material_or_values() {
     }
 }
 
-fn read_responses(stdout: std::process::ChildStdout) -> std::sync::mpsc::Receiver<String> {
+/// gv-mcp opens every vault before it serves anything, and its own HTTP
+/// client waits up to `galata_vault_mcp::env::TIMEOUT` (60s) for each. A
+/// test deadline shorter than the deadline of the thing under test turns a
+/// slow open into a failure with the child still alive and silent, so the
+/// startup budget here must exceed the child's own.
+const STARTUP: Duration = Duration::from_secs(90);
+/// Once it is serving, a metadata call is local work over an open pipe.
+const REPLY: Duration = Duration::from_secs(20);
+
+fn read_lines<R: std::io::Read + Send + 'static>(r: R) -> std::sync::mpsc::Receiver<String> {
     let (tx, rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
-        for line in BufReader::new(stdout).lines() {
+        for line in BufReader::new(r).lines() {
             let Ok(line) = line else { break };
             if tx.send(line).is_err() {
                 break;
@@ -554,11 +563,25 @@ fn read_responses(stdout: std::process::ChildStdout) -> std::sync::mpsc::Receive
     rx
 }
 
+/// Wait for the readiness line gv-mcp prints once every vault is open, so
+/// the protocol exchange is never racing startup. Draining stderr also
+/// keeps its pipe from filling if the binary ever grows chattier.
+fn wait_until_serving(err: &std::sync::mpsc::Receiver<String>) {
+    let deadline = std::time::Instant::now() + STARTUP;
+    loop {
+        let left = deadline.saturating_duration_since(std::time::Instant::now());
+        match err.recv_timeout(left) {
+            Ok(line) if line.contains("serving metadata") => return,
+            // Another diagnostic: keep it for the failure message and read on.
+            Ok(_) => continue,
+            Err(e) => panic!("gv-mcp never reported itself serving: {e:?}"),
+        }
+    }
+}
+
 fn response_for(rx: &std::sync::mpsc::Receiver<String>, id: u64) -> serde_json::Value {
     loop {
-        let line = rx
-            .recv_timeout(Duration::from_secs(20))
-            .expect("gv-mcp answered");
+        let line = rx.recv_timeout(REPLY).expect("gv-mcp answered");
         let v: serde_json::Value = serde_json::from_str(&line)
             .unwrap_or_else(|_| panic!("stdout carries only JSON-RPC: {line}"));
         if v["id"] == id {
@@ -591,7 +614,9 @@ fn the_binary_speaks_mcp_on_stdio_and_listens_on_nothing() {
         .stderr(Stdio::piped())
         .spawn()
         .unwrap();
-    let rx = read_responses(child.stdout.take().unwrap());
+    let err = read_lines(child.stderr.take().unwrap());
+    let rx = read_lines(child.stdout.take().unwrap());
+    wait_until_serving(&err);
     let mut stdin = child.stdin.take().unwrap();
     let mut send = |v: serde_json::Value| {
         writeln!(stdin, "{v}").unwrap();

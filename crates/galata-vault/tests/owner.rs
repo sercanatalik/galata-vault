@@ -697,3 +697,55 @@ fn an_admin_token_revokes_and_is_warned_that_it_cannot_rotate() {
     // And the victim still works, so nothing was sent.
     assert!(Vault::new(victim.expose(), &server.url).is_ok());
 }
+
+/// A name index comes from the generation's name key, so a handle that has
+/// not refreshed after a rotation computes indexes the server has never
+/// seen. Those misses must be reported as what they are -- the vault moved --
+/// and never as a secret that is gone, or as a history with no versions.
+#[test]
+fn a_stale_handle_is_told_the_vault_moved_not_that_its_secrets_vanished() {
+    let server = start();
+    let (_m, mut owner) = project(&server.url, &["acme/dev"]);
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    env.set_secret("S", b"v1").unwrap();
+    let admin = env.mint(Scope::Admin, 0, &[]).unwrap();
+    owner.close(env).unwrap();
+
+    let handle = Vault::new(admin.expose(), &server.url).unwrap();
+    assert_eq!(handle.secret("S").unwrap().expose(), b"v1");
+    assert_eq!(handle.history("S").unwrap().len(), 1);
+    // A name that never existed is a plain miss, before any rotation.
+    assert_eq!(
+        handle.secret("GONE").unwrap_err().kind(),
+        ErrorKind::NotFound
+    );
+    assert!(handle.history("GONE").unwrap().is_empty());
+
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    assert_eq!(env.rotate().unwrap(), 2);
+    owner.close(env).unwrap();
+
+    // Reading an existing secret: the vault moved, not "no secret named S".
+    let e = handle.secret("S").unwrap_err();
+    assert_eq!(e.code(), code::STALE_GENERATION, "{e}");
+    assert!(e.to_string().contains("refresh"), "{e}");
+
+    // Its history: an error, not a silent empty list that says it has none.
+    let e = handle.history("S").unwrap_err();
+    assert_eq!(e.code(), code::STALE_GENERATION, "{e}");
+
+    // A name that never existed is still reported as stale here, because this
+    // handle cannot tell the two apart: its indexes answer for neither.
+    let e = handle.secret("GONE").unwrap_err();
+    assert_eq!(e.code(), code::STALE_GENERATION, "{e}");
+
+    // And refreshing makes every one of them right again.
+    handle.refresh().unwrap();
+    assert_eq!(handle.secret("S").unwrap().expose(), b"v1");
+    assert_eq!(handle.history("S").unwrap().len(), 1);
+    assert_eq!(
+        handle.secret("GONE").unwrap_err().kind(),
+        ErrorKind::NotFound
+    );
+    assert!(handle.history("GONE").unwrap().is_empty());
+}

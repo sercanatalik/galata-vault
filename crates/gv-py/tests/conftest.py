@@ -40,7 +40,11 @@ def start_server(base: Path):
         stderr=subprocess.STDOUT,
     )
     url = f"http://127.0.0.1:{port}"
-    deadline = time.time() + 30
+    # Generous: the suite builds a wheel first, so this binary may have just
+    # been relinked, and a fresh binary's first execution pays for signature
+    # validation and a cold page-in. A server that genuinely fails still
+    # reports at once, through the `proc.poll()` branch below.
+    deadline = time.time() + 120
     while True:
         try:
             urllib.request.urlopen(url + "/healthz", timeout=1)
@@ -49,7 +53,12 @@ def start_server(base: Path):
             if proc.poll() is not None:
                 raise RuntimeError((base / "server.log").read_text())
             if time.time() > deadline:
-                raise
+                # Alive but never listening: its log says more than the
+                # connection error does.
+                raise RuntimeError(
+                    f"gv-server did not answer on {url} within 120s; its log:\n"
+                    + (base / "server.log").read_text()
+                )
             time.sleep(0.05)
     return url, data, proc, log
 

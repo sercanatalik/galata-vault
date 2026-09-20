@@ -1,0 +1,37 @@
+# `cargo deny check`: advisories, banned crates, licences and sources, against
+# the policy in deny.toml.
+#
+# Its own workflow, not part of the gate: it wants the advisory database and
+# therefore a network, while scripts/check-all.sh is offline and fast. That
+# split is deny.toml's own decision, recorded there.
+#
+# It also runs on a schedule, because an advisory can appear against a pinned
+# dependency with nothing in the repository changing — which is exactly how
+# RUSTSEC-2026-0285 reached this project.
+#
+# Actions are pinned to commit SHAs, per RELEASING.md.
+
+name: Dependencies
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Daily. An advisory that lands on a Friday should not wait for a commit.
+    - cron: "17 6 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  deny:
+    name: cargo deny check
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2
+        with:
+          # All four sections, as deny.toml's header states. A vulnerable
+          # dependency in a secrets service is a stop, not a warning.
+          command: check

@@ -1,0 +1,65 @@
+# The project's own gate, which scripts/check-all.sh defines: structural
+# guards, format, lints, tests, the adversarial harness, packaging, rustdoc,
+# the specification tables, vectors, conformance and the Python suite.
+#
+# The script discovers its guards rather than listing them, so a new
+# scripts/check-*.sh runs here without this file changing. `cargo deny` is
+# deliberately not part of it (it needs the advisory database, and therefore a
+# network): see deny.yml, as deny.toml describes.
+#
+# Actions are pinned to commit SHAs, per RELEASING.md.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A newer push supersedes an in-flight run of the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: scripts/check-all.sh
+    runs-on: ubuntu-24.04
+    # Both suites skip themselves when their tooling is missing. CI is the
+    # place where a skip is a failure instead.
+    env:
+      GV_REQUIRE_VECTORS: 1
+      GV_REQUIRE_PYTHON: 1
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      # The toolchain comes from rust-toolchain.toml (1.98.1, with rustfmt and
+      # clippy); rustup installs it on the first cargo invocation.
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+
+      # scripts/python-suite.sh builds a wheel and tests it against the oldest
+      # and newest supported CPython (GV_PYTHONS, default "3.11 3.14").
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: |
+            3.11
+            3.14
+
+      # uv: the vector generator's dependencies (scripts/vectors.sh) and the
+      # Python suite's virtual environments. maturin: the wheel itself.
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+      - name: Install maturin
+        run: uv tool install maturin
+
+      # The semver check is advisory in the script and skips when absent; CI
+      # installs it so it reports.
+      - uses: taiki-e/install-action@94c31af3204a9f15ab40b35ad084410b905bbc73 # v2
+        with:
+          tool: cargo-semver-checks
+
+      - name: Run the gate
+        run: ./scripts/check-all.sh

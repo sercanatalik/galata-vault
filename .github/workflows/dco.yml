@@ -1,0 +1,50 @@
+# The Developer Certificate of Origin, which CONTRIBUTING.md requires of
+# every commit: a `Signed-off-by` trailer naming the commit's author.
+#
+# Checked here rather than by convention, and deliberately without a
+# third-party action: the rule is three lines of git.
+#
+# Actions are pinned to commit SHAs, per RELEASING.md.
+
+name: DCO
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  signed-off:
+    name: Every commit is signed off
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # The whole range, so the base commit is present to diff against.
+          fetch-depth: 0
+
+      - name: Check the trailers
+        # Through the environment, never interpolated into the script: a
+        # branch name is attacker-controlled on a fork pull request.
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          missing=0
+          for c in $(git rev-list "$BASE..$HEAD"); do
+              author="$(git show -s --format='%an <%ae>' "$c")"
+              subject="$(git show -s --format='%s' "$c")"
+              if git show -s --format='%B' "$c" | grep -qiF "Signed-off-by: $author"; then
+                  continue
+              fi
+              echo "::error::${c:0:12} \"$subject\" has no 'Signed-off-by: $author'"
+              missing=$((missing + 1))
+          done
+          if (( missing > 0 )); then
+              echo "$missing commit(s) are not signed off. Sign off with 'git commit -s'," >&2
+              echo "or 'git rebase --signoff $BASE' for a branch (CONTRIBUTING.md)." >&2
+              exit 1
+          fi
+          echo "every commit in $BASE..$HEAD carries its author's sign-off"

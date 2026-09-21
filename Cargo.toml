@@ -44,6 +44,10 @@ license = "MIT"
 # 2026-09-15). The same URL is in crates/gv-py/pyproject.toml
 # ([project.urls]) and release-plz.toml (repo_url).
 repository = "https://github.com/sercanatalik/galata-vault"
+# The documentation site, published from site/ by .github/workflows/pages.yml.
+# dist needs it for the Homebrew formula, and crates.io shows it beside the
+# repository link.
+homepage = "https://sercanatalik.github.io/galata-vault/"
 
 # Every path entry carries the workspace version, so a packaged manifest
 # names a registry version. They move together (release-plz.toml).

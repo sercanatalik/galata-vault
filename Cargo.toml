@@ -115,6 +115,14 @@ sha2 = "0.11"
 thiserror = "2"
 zeroize = "1.9"
 
+# The profile dist builds release binaries with (`dist build --profile dist`).
+# `dist generate` writes the workflow but not this section -- only `dist init`
+# does -- and without it every build-local-artifacts job fails with
+# "profile `dist` is not defined".
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
 [workspace.lints.rust]
 unsafe_code = "forbid"
 

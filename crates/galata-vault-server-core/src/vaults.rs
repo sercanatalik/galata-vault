@@ -5,7 +5,7 @@ use galata_vault_proto::api::{
     ChallengeRequest, CreateVaultRequest, CreateVaultResponse, DescriptorList, ErrorCode,
     OWNER_SCOPE_CODE, OWNER_TOKEN_ID, PutSecretResponse, TokenSummary, VaultStatus,
 };
-use galata_vault_proto::audit::AuditAction;
+use galata_vault_proto::audit::{AuditAction, AuditEvent, AuditResult};
 use galata_vault_proto::children::ChildrenBlob;
 use galata_vault_proto::ids::VaultId;
 use galata_vault_proto::sig::{SigActor, SigParams};
@@ -115,6 +115,24 @@ pub(crate) fn status(core: &Core, caller: &Caller) -> Result<CoreResponse, CoreE
     let v = &caller.vault;
     let tokens = if caller.can(Need::Manage) {
         let rows = core.store().tokens(v.pk)?;
+        // A credential other than the owner key receiving the token list is
+        // worth a row: it names every token's id, scope and box key. The
+        // owner's own reads are not recorded, because an environment opens
+        // with one and the chain would fill with them; and a lesser scope
+        // reading status is not an attempt to list, so it is not a refusal
+        // either. Best effort, as `Core::refuse` is: an audit write failing
+        // must not turn a served status into a 500.
+        if !caller.is_owner() {
+            let event = AuditEvent::simple(
+                caller.actor(),
+                AuditAction::TokenList,
+                None,
+                AuditResult::Ok,
+            );
+            if let Err(e) = core.store().record(v.pk, event, core.now()) {
+                core.warn(&format!("could not audit a token listing: {e}"));
+            }
+        }
         Some(
             rows.into_iter()
                 .map(|t| {

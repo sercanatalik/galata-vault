@@ -37,7 +37,7 @@ DESCRIPTOR_VERSION = 1
 AUDIT_CONTEXT = "galata-vault v1 audit row"
 AUDIT_ACTIONS = {
     "vault_create": 1, "vault_rotate": 2, "vault_delete": 4, "vault_expire": 5,
-    "children_write": 6, "token_mint": 10, "token_revoke": 11, "token_report": 12,
+    "children_write": 6, "token_mint": 10, "token_revoke": 11, "token_report": 12, "token_list": 13,
     "secret_put": 20, "secret_delete": 21, "secret_read": 22,
     "config_write": 30, "config_delete": 31, "config_read": 32,
 }

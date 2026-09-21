@@ -63,6 +63,7 @@ pub enum AuditAction {
     TokenMint,
     TokenRevoke,
     TokenReport,
+    TokenList,
     SecretPut,
     SecretDelete,
     SecretRead,
@@ -84,6 +85,7 @@ impl AuditAction {
             AuditAction::TokenMint => 10,
             AuditAction::TokenRevoke => 11,
             AuditAction::TokenReport => 12,
+            AuditAction::TokenList => 13,
             AuditAction::SecretPut => 20,
             AuditAction::SecretDelete => 21,
             AuditAction::SecretRead => 22,
@@ -93,7 +95,7 @@ impl AuditAction {
         }
     }
 
-    pub const ALL: [AuditAction; 14] = [
+    pub const ALL: [AuditAction; 15] = [
         AuditAction::VaultCreate,
         AuditAction::VaultRotate,
         AuditAction::VaultDelete,
@@ -102,6 +104,7 @@ impl AuditAction {
         AuditAction::TokenMint,
         AuditAction::TokenRevoke,
         AuditAction::TokenReport,
+        AuditAction::TokenList,
         AuditAction::SecretPut,
         AuditAction::SecretDelete,
         AuditAction::SecretRead,
@@ -126,6 +129,7 @@ impl AuditAction {
             AuditAction::TokenMint => "token_mint",
             AuditAction::TokenRevoke => "token_revoke",
             AuditAction::TokenReport => "token_report",
+            AuditAction::TokenList => "token_list",
             AuditAction::SecretPut => "secret_put",
             AuditAction::SecretDelete => "secret_delete",
             AuditAction::SecretRead => "secret_read",

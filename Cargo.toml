@@ -36,7 +36,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.98"
 license = "MIT"
@@ -52,17 +52,17 @@ homepage = "https://sercanatalik.github.io/galata-vault/"
 # Every path entry carries the workspace version, so a packaged manifest
 # names a registry version. They move together (release-plz.toml).
 [workspace.dependencies]
-galata-vault-proto = { version = "0.1.0", path = "crates/galata-vault-proto" }
-galata-vault-keys = { version = "0.1.0", path = "crates/galata-vault-keys" }
-galata-vault-seal = { version = "0.1.0", path = "crates/galata-vault-seal" }
-galata-vault-store = { version = "0.1.0", path = "crates/galata-vault-store" }
-galata-vault-server-core = { version = "0.1.0", path = "crates/galata-vault-server-core" }
+galata-vault-proto = { version = "0.1.1", path = "crates/galata-vault-proto" }
+galata-vault-keys = { version = "0.1.1", path = "crates/galata-vault-keys" }
+galata-vault-seal = { version = "0.1.1", path = "crates/galata-vault-seal" }
+galata-vault-store = { version = "0.1.1", path = "crates/galata-vault-store" }
+galata-vault-server-core = { version = "0.1.1", path = "crates/galata-vault-server-core" }
 # No default features here: a member names `http` when it wants the HTTP
 # transport (galata-vault-mcp does; the SDK forwards it as its own default feature).
-galata-vault-client = { version = "0.1.0", path = "crates/galata-vault-client", default-features = false }
-galata-vault = { version = "0.1.0", path = "crates/galata-vault" }
-galata-vault-server = { version = "0.1.0", path = "crates/galata-vault-server" }
-galata-vault-cli = { version = "0.1.0", path = "crates/galata-vault-cli" }
+galata-vault-client = { version = "0.1.1", path = "crates/galata-vault-client", default-features = false }
+galata-vault = { version = "0.1.1", path = "crates/galata-vault" }
+galata-vault-server = { version = "0.1.1", path = "crates/galata-vault-server" }
+galata-vault-cli = { version = "0.1.1", path = "crates/galata-vault-cli" }
 
 age = "0.12"
 anyhow = "1"

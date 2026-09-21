@@ -69,6 +69,7 @@ opt(x)  =  0x00 when absent, 0x01 ‖ x when present
 | 10 | `token_mint` |
 | 11 | `token_revoke` |
 | 12 | `token_report` |
+| 13 | `token_list` |
 | 20 | `secret_put` |
 | 21 | `secret_delete` |
 | 22 | `secret_read` |

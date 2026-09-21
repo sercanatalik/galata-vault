@@ -12,7 +12,30 @@ marker guarantees.
 
 ## [Unreleased]
 
-Nothing has been released yet. This section is what 0.1.0 will carry.
+Version 0.1.1 in the tree, not released. Every published crate shares it.
+
+### Added
+
+- The audit chain records a token receiving the vault's token list, as
+  `token_list` (code 13). The owner's own status reads are not recorded --
+  an environment opens with one, and the chain would fill with them -- and a
+  lesser scope reading status is not an attempt to list, so it is not a
+  refusal either.
+
+### Changed
+
+- `scripts/check-packaging.sh verify` builds every published crate from its
+  own `.crate` again. It was skipped for 0.1.0 because verification resolves
+  each crate's siblings from a registry, and they were not published yet.
+  It no longer passes `--offline`: a machine that has only built this
+  workspace has never downloaded these crates, because the workspace uses
+  path dependencies.
+
+## [0.1.0] - 2026-09-21
+
+The first release. Ten crates on crates.io, the `galata-vault` package on
+PyPI, and `gv`, `gv-server` and `gv-mcp` binaries with installers and build
+attestations on the GitHub release.
 
 ### Fixed
 
@@ -59,4 +82,5 @@ Nothing has been released yet. This section is what 0.1.0 will carry.
   other than your own, and what this build deliberately does not implement.
 - This changelog, and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-[Unreleased]: https://github.com/sercanatalik/galata-vault/commits/main
+[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.1.0

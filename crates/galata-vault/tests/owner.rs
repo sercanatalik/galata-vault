@@ -13,8 +13,8 @@ use galata_vault::owner::{GrantsSubtreeOwnership, Kit, KitKind, Owner, RetiresAl
 use galata_vault::state::MemoryStateStore;
 use galata_vault::store::MemoryKeyStore;
 use galata_vault::{
-    ClientBuilder, EnvPath, Error, ErrorKind, Events, FileStateStore, Progress, Scope, StateStore,
-    Vault, Warning, code,
+    Actor, AuditReport, ClientBuilder, EnvPath, Error, ErrorKind, Events, FileStateStore, Progress,
+    Scope, StateStore, Vault, Warning, code,
 };
 use galata_vault_server::journal::FileJournal;
 use galata_vault_server::{AppState, Core, Policy, ServerConfig, SystemClock, router};
@@ -774,4 +774,57 @@ fn a_vault_with_no_tokens_lists_none_rather_than_refusing() {
     // The same from the token side, once its own is the only one left.
     let admin = Vault::new(first.expose(), &server.url).unwrap();
     assert_eq!(admin.tokens().unwrap().len(), 1);
+}
+
+/// A token receiving the list leaves a row; the owner's own status reads do
+/// not, or every environment open would fill the chain (`docs/spec/audit.md#3`).
+#[test]
+fn a_token_listing_tokens_is_audited_and_the_owners_reads_are_not() {
+    let server = start();
+    let (_m, mut owner) = project(&server.url, &["acme/dev"]);
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    env.set_secret("A", b"a").unwrap();
+    let admin = env.mint(Scope::Admin, 0, &[]).unwrap();
+    let meta = env.mint(Scope::Meta, 0, &[]).unwrap();
+    owner.close(env).unwrap();
+
+    let count = |report: &AuditReport| {
+        report
+            .entries
+            .iter()
+            .filter(|e| e.action == "token_list")
+            .count()
+    };
+
+    // Opening and closing the environment reads status as the owner each
+    // time, and none of that is recorded.
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    owner.close(env).unwrap();
+    let admin_vault = Vault::new(admin.expose(), &server.url).unwrap();
+    assert_eq!(
+        count(&admin_vault.verify_audit(None).unwrap()),
+        0,
+        "the owner's status reads are not audited"
+    );
+
+    // A meta token reading status is not an attempt to list.
+    let meta_vault = Vault::new(meta.expose(), &server.url).unwrap();
+    meta_vault.status().unwrap();
+    assert_eq!(
+        count(&admin_vault.verify_audit(None).unwrap()),
+        0,
+        "a scope that is sent no list is not audited"
+    );
+
+    // The admin token receiving the list is.
+    admin_vault.tokens().unwrap();
+    let report = admin_vault.verify_audit(None).unwrap();
+    assert_eq!(count(&report), 1, "{:?}", report.entries);
+    let row = report
+        .entries
+        .iter()
+        .find(|e| e.action == "token_list")
+        .unwrap();
+    assert!(matches!(row.actor, Actor::Token(_)), "{row:?}");
+    assert!(!row.refused);
 }

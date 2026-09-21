@@ -749,3 +749,29 @@ fn a_stale_handle_is_told_the_vault_moved_not_that_its_secrets_vanished() {
     );
     assert!(handle.history("GONE").unwrap().is_empty());
 }
+
+/// An empty token list is a real answer, and must survive the change that
+/// made an ABSENT one an error: a vault with no tokens has none, and saying
+/// so is not the same as refusing to say.
+#[test]
+fn a_vault_with_no_tokens_lists_none_rather_than_refusing() {
+    let server = start();
+    let (_m, mut owner) = project(&server.url, &["acme/dev"]);
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    env.set_secret("S", b"v").unwrap();
+
+    // Never minted anything: the server sends `tokens: []`, not null.
+    assert!(env.tokens().unwrap().is_empty());
+    // And the mint guard, which now fails closed on an absent list, still
+    // lets a first mint through on an empty one.
+    let first = env.mint(Scope::Admin, 0, &[]).unwrap();
+    owner.close(env).unwrap();
+
+    let env = owner.environment(&p("acme/dev")).unwrap();
+    assert_eq!(env.tokens().unwrap().len(), 1);
+    owner.close(env).unwrap();
+
+    // The same from the token side, once its own is the only one left.
+    let admin = Vault::new(first.expose(), &server.url).unwrap();
+    assert_eq!(admin.tokens().unwrap().len(), 1);
+}

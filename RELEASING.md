@@ -25,13 +25,22 @@ version`) and releases together. In 0.x, a `0.y` bump is breaking and a
 |---|---|---|---|
 | `release` | GitHub environment, required reviewer: a maintainer | | `release-plz.yml` (`release` job) |
 | `pypi` | GitHub environment, required reviewer: a maintainer | | `wheels.yml` (`publish` job) |
-| crates.io trusted publisher | per crate: this repository, `release-plz.yml`, environment `release` | publish | `release` job, through `rust-lang/crates-io-auth-action` |
+| `CARGO_REGISTRY_TOKEN` | secret: crates.io API token | publish | the `release` job, **today**. Trusted publishing cannot create a crate, so this stands in until every name exists |
+| crates.io trusted publisher | per crate: this repository, `release-plz.yml`, environment `release` | publish | the `release` job **once the crates exist**, through `rust-lang/crates-io-auth-action`; delete the secret then |
 | PyPI trusted publisher | project `galata-vault`: this repository, `wheels.yml`, environment `pypi` | upload | `publish` job |
 | `RELEASE_PLZ_TOKEN` | secret: GitHub App or fine-grained token | contents and pull requests: write, this repository only | release-plz. The default `GITHUB_TOKEN` cannot be used: a tag it pushes starts no workflow |
 | `HOMEBREW_TAP_TOKEN` | secret: fine-grained token | contents: write, the tap repository only | dist's `publish-homebrew-formula` job |
 
-No crates.io or PyPI API token is stored anywhere. The one exception is the
-first crates.io publish, below.
+No PyPI token is stored: that upload is OIDC only, and its trusted publisher
+names `wheels.yml` and the `pypi` environment.
+
+crates.io is the exception, and it is the documented one: trusted publishing
+cannot create a crate, so a `CARGO_REGISTRY_TOKEN` secret carries the first
+publish of each name. A long-lived token in a secret is the weaker
+arrangement -- it does not expire on its own, and it is not bound to a
+workflow the way a trusted publisher is -- so the `release` environment's
+required reviewer stands in for that binding, and the secret is deleted once
+every crate exists and the trusted publisher takes over.
 
 ## Placeholders to set before the first release
 

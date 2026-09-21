@@ -1,0 +1,103 @@
+# The `galata-vault` package on PyPI: one abi3 wheel per platform plus an
+# sdist, built by maturin (RELEASING.md, crates/gv-py/pyproject.toml).
+#
+# Started by the `v<version>` tag release-plz pushes, so the wheels follow the
+# crates without a second decision. `workflow_dispatch` with `publish` set
+# reruns an upload by hand; PyPI refuses a file it already has, so nothing is
+# overwritten (RELEASING.md, "Recovering from a partial publish").
+#
+# The wheel is abi3 for CPython 3.11 and later (`pyo3/abi3-py311`), so one
+# wheel per platform serves every supported interpreter. Platforms follow the
+# package's own classifiers -- macOS and Linux, no Windows -- on the runners
+# dist-workspace.toml already settled on.
+#
+# No PyPI token is stored: the `publish` job's OIDC identity is the credential,
+# which is why the trusted publisher on PyPI names this repository, this
+# workflow file and the `pypi` environment. That environment's required
+# reviewer is the gate.
+#
+# Actions are pinned to commit SHAs, per RELEASING.md.
+
+name: wheels
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Upload to PyPI (otherwise build only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  wheels:
+    name: Wheel (${{ matrix.target }} on ${{ matrix.runner }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { runner: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+          - { runner: macos-14, target: aarch64-apple-darwin }
+          - { runner: macos-15-intel, target: x86_64-apple-darwin }
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1
+        with:
+          working-directory: crates/gv-py
+          target: ${{ matrix.target }}
+          # The oldest manylinux the toolchain supports; ignored on macOS.
+          manylinux: auto
+          args: --release --out dist
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wheel-${{ matrix.target }}
+          path: crates/gv-py/dist/*.whl
+          if-no-files-found: error
+
+  sdist:
+    name: Source distribution
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1
+        with:
+          working-directory: crates/gv-py
+          command: sdist
+          args: --out dist
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sdist
+          path: crates/gv-py/dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    # A tag publishes; a manual run only when asked. A build that is not going
+    # to be uploaded still runs the two jobs above, which is the point of
+    # `publish: false`.
+    if: github.event_name == 'push' || inputs.publish
+    needs: [wheels, sdist]
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      # The credential: no stored token.
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          packages-dir: dist

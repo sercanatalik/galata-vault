@@ -1,0 +1,50 @@
+# release-plz: the crates on crates.io (RELEASING.md).
+#
+# It keeps a release pull request open with the next version and the
+# CHANGELOG.md entry; merging it publishes every crate whose version is not
+# on crates.io yet and pushes `v<version>`, which is what starts dist
+# (release.yml) and the wheels (wheels.yml).
+#
+# The three unpublished crates -- gv-py, gv-adversary and gv-conformance --
+# carry `publish = false` in their own manifests, so release-plz leaves them
+# alone without being told to here. That list stays in one place.
+#
+# NOTE: this file has not been exercised. release-plz is not installed in the
+# working environment, so it is written from its documented schema rather than
+# validated by a run. `release-plz --help` on the workflow's pinned version is
+# the check to make before the first release.
+
+[workspace]
+# One version for every published crate, moving together, as
+# `[workspace.package] version` and the workspace manifest's comment say.
+shared_version = true
+
+# The repository release-plz links to from the changelog and the release.
+repo_url = "https://github.com/sercanatalik/galata-vault"
+
+# Keep CHANGELOG.md, whose Unreleased section is written by hand between
+# releases. release-plz rewrites the section it owns and leaves the rest.
+changelog_update = true
+
+# Tag and GitHub release for the workspace version; dist attaches the
+# binaries and installers to that release afterwards.
+git_tag_enable = true
+git_release_enable = true
+
+# cargo-semver-checks on the release pull request, so a breaking change to a
+# published API cannot ride a patch bump. CI runs it on every pull request
+# too (ci.yml, the `semver` job); this is the release-time backstop.
+semver_check = true
+
+# Do not touch dependency versions as part of a release: Cargo.lock moves in
+# its own commit, reviewed like any other (see the rustls bump in the
+# history).
+dependencies_update = false
+
+# The tree must be clean. A release built from uncommitted work is not
+# reproducible from the tag it claims to be.
+allow_dirty = false
+
+[changelog]
+# Keep a Changelog, matching CHANGELOG.md as it is written today.
+protect_breaking_commits = true

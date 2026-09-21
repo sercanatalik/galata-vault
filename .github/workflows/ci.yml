@@ -63,3 +63,33 @@ jobs:
 
       - name: Run the gate
         run: ./scripts/check-all.sh
+
+  semver:
+    name: Public API against semver
+    # Pull requests only: the check needs a baseline to compare against, and
+    # until 0.1.0 is on crates.io the base branch is the only one there is.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # The baseline revision has to be in the clone.
+          fetch-depth: 0
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+      - uses: taiki-e/install-action@94c31af3204a9f15ab40b35ad084410b905bbc73 # v2
+        with:
+          tool: cargo-semver-checks
+
+      # RELEASING.md: a breaking change to a published API must not ride a
+      # bump that says it is compatible. cargo-semver-checks knows 0.x rules,
+      # where a `0.y` bump may break and a `0.y.z` bump may not.
+      - name: Compare against the base branch
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          cargo semver-checks \
+            --baseline-rev "$BASE" \
+            -p galata-vault \
+            -p galata-vault-cli \
+            -p galata-vault-proto

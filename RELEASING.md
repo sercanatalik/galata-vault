@@ -28,7 +28,7 @@ version`) and releases together. In 0.x, a `0.y` bump is breaking and a
 | `CARGO_REGISTRY_TOKEN` | secret: crates.io API token | publish | the `release` job, **today**. Trusted publishing cannot create a crate, so this stands in until every name exists |
 | crates.io trusted publisher | per crate: this repository, `release-plz.yml`, environment `release` | publish | the `release` job **once the crates exist**, through `rust-lang/crates-io-auth-action`; delete the secret then |
 | PyPI trusted publisher | project `galata-vault`: this repository, `wheels.yml`, environment `pypi` | upload | `publish` job |
-| `RELEASE_PLZ_TOKEN` | secret: GitHub App or fine-grained token | contents and pull requests: write, this repository only | release-plz. The default `GITHUB_TOKEN` cannot be used: a tag it pushes starts no workflow |
+| `RELEASE_PLZ_TOKEN` | secret: GitHub App or fine-grained token | contents and pull requests: write, this repository only | release-plz, **not set up yet**. Until it is, `release-plz.yml` is manual-only and releases are cut by hand (below). The default `GITHUB_TOKEN` cannot stand in: a tag it pushes starts no workflow, so `release.yml` and `wheels.yml` would never run. A fine-grained token expires; when it does, release-plz stops and the failure looks like a workflow bug, so set a reminder or use a GitHub App |
 | `HOMEBREW_TAP_TOKEN` | secret: fine-grained token | contents: write, the tap repository only | dist's `publish-homebrew-formula` job |
 
 No PyPI token is stored: that upload is OIDC only, and its trusted publisher
@@ -114,7 +114,24 @@ the repository is public.
 9. The next release, 0.1.1, goes through the automated path, with a
    maintainer watching, to prove trusted publishing end to end.
 
-## A routine release
+## How a release is cut today
+
+`RELEASE_PLZ_TOKEN` does not exist, so `release-plz.yml` runs only when
+dispatched by hand and refuses immediately without the secret. Until that
+changes, every release follows "The first release" below: the version is
+bumped in a commit, the crates are published with `cargo publish` in
+dependency order, and `v<version>` is pushed by a person.
+
+That last part matters. A tag pushed by a person **does** start `release.yml`
+and `wheels.yml`; a tag pushed by a workflow using the built-in
+`GITHUB_TOKEN` does not. So the binaries and the wheels follow a hand-pushed
+tag exactly as they would follow an automated one.
+
+The `release` environment is already configured, with a maintainer as
+required reviewer and deployments restricted to `main`. It is unused while
+crates are published from a laptop, and is waiting for the automated path.
+
+## A routine release, once release-plz is wired up
 
 1. Merged changes accumulate; release-plz keeps a release PR open with the
    next version, the `CHANGELOG.md` entry and cargo-semver-checks' report.

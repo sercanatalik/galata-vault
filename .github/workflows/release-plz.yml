@@ -1,6 +1,13 @@
 # The crates on crates.io, through release-plz (RELEASING.md, release-plz.toml).
 #
-# Two jobs, both on a push to main:
+# NOT IN USE YET. Releases are cut by hand while RELEASE_PLZ_TOKEN does not
+# exist: the version is bumped in a commit, `v<version>` is pushed by a human,
+# and the crates are published with `cargo publish` in dependency order. A tag
+# pushed by a person does start release.yml and wheels.yml; a tag pushed with
+# the built-in GITHUB_TOKEN does not, which is the whole reason this workflow
+# needs a token of its own.
+#
+# Two jobs, both intended to run on a push to main once it is turned on:
 #
 #   release-pr  keeps a pull request open with the next version and the
 #               changelog entry. Nothing is published by it.
@@ -24,11 +31,11 @@
 
 name: release-plz
 
+# DORMANT: manual only, until RELEASE_PLZ_TOKEN exists. It is deliberately
+# not on `push: branches: [main]` -- without the token every merge would fail
+# this workflow, and a red mark that everyone learns to ignore is worse than
+# no automation. Add the trigger back with the secret.
 on:
-  push:
-    branches: [main]
-  # Recovering from a partial publish: a rerun skips versions already on
-  # crates.io and continues (RELEASING.md).
   workflow_dispatch:
 
 permissions:
@@ -46,6 +53,17 @@ jobs:
       group: release-plz-${{ github.ref }}
       cancel-in-progress: false
     steps:
+      - name: Refuse without the token
+        env:
+          TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}
+        run: |
+          if [[ -z "$TOKEN" ]]; then
+            echo "::error::RELEASE_PLZ_TOKEN is not set. Releases are cut by hand" \
+                 "until it is; see RELEASING.md. The built-in GITHUB_TOKEN cannot" \
+                 "stand in: a tag it pushes starts no workflow."
+            exit 1
+          fi
+
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           # release-plz reads the history to work out what changed.

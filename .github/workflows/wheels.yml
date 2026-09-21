@@ -1,10 +1,11 @@
 # The `galata-vault` package on PyPI: one abi3 wheel per platform plus an
 # sdist, built by maturin (RELEASING.md, crates/gv-py/pyproject.toml).
 #
-# Started by the `v<version>` tag release-plz pushes, so the wheels follow the
-# crates without a second decision. `workflow_dispatch` with `publish` set
-# reruns an upload by hand; PyPI refuses a file it already has, so nothing is
-# overwritten (RELEASING.md, "Recovering from a partial publish").
+# Started by the `v<version>` tag, the same tag that starts the crates
+# (crates.yml) and the binaries (release.yml), so the three follow one
+# decision. `workflow_dispatch` with `publish` set reruns an upload by hand;
+# PyPI refuses a file it already has, so nothing is overwritten
+# (RELEASING.md, "When a release goes wrong").
 #
 # The wheel is abi3 for CPython 3.11 and later (`pyo3/abi3-py311`), so one
 # wheel per platform serves every supported interpreter. Platforms follow the
@@ -13,8 +14,8 @@
 #
 # No PyPI token is stored: the `publish` job's OIDC identity is the credential,
 # which is why the trusted publisher on PyPI names this repository, this
-# workflow file and the `pypi` environment. That environment's required
-# reviewer is the gate.
+# workflow file and the `pypi` environment. That environment's deployments
+# are restricted to `v*` tags: pushing the tag is the gate.
 #
 # Actions are pinned to commit SHAs, per RELEASING.md.
 
@@ -34,6 +35,17 @@ permissions:
   contents: read
 
 jobs:
+  version:
+    name: Tag and tree agree
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - if: github.event_name == 'push'
+        env:
+          GV_EXPECT_VERSION: ${{ github.ref_name }}
+        run: |
+          GV_EXPECT_VERSION="${GV_EXPECT_VERSION#v}" scripts/check-version.sh
+
   wheels:
     name: Wheel (${{ matrix.target }} on ${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
@@ -86,7 +98,7 @@ jobs:
     # to be uploaded still runs the two jobs above, which is the point of
     # `publish: false`.
     if: github.event_name == 'push' || inputs.publish
-    needs: [wheels, sdist]
+    needs: [version, wheels, sdist]
     runs-on: ubuntu-24.04
     environment: pypi
     permissions:

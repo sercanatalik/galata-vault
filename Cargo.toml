@@ -42,7 +42,7 @@ rust-version = "1.98"
 license = "MIT"
 # The repository the crates are released from (maintainer input,
 # 2026-09-15). The same URL is in crates/gv-py/pyproject.toml
-# ([project.urls]) and release-plz.toml (repo_url).
+# ([project.urls]).
 repository = "https://github.com/sercanatalik/galata-vault"
 # The documentation site, published from site/ by .github/workflows/pages.yml.
 # dist needs it for the Homebrew formula, and crates.io shows it beside the
@@ -50,7 +50,8 @@ repository = "https://github.com/sercanatalik/galata-vault"
 homepage = "https://sercanatalik.github.io/galata-vault/"
 
 # Every path entry carries the workspace version, so a packaged manifest
-# names a registry version. They move together (release-plz.toml).
+# names a registry version. They move together, and scripts/check-version.sh
+# is what says so.
 [workspace.dependencies]
 galata-vault-proto = { version = "0.2.0", path = "crates/galata-vault-proto" }
 galata-vault-keys = { version = "0.2.0", path = "crates/galata-vault-keys" }

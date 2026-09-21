@@ -1,6 +1,6 @@
 # dist (https://github.com/axodotdev/cargo-dist): the gv, gv-server and gv-mcp
 # release binaries, built by .github/workflows/release.yml when a version tag
-# is pushed (release-plz pushes `v<version>`; RELEASING.md). Regenerate the
+# is pushed (`scripts/release.sh` makes the tag; RELEASING.md). Regenerate the
 # workflow with `dist generate` after changing this file; CI's `plan` step
 # fails if the two disagree.
 #

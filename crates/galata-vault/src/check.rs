@@ -169,10 +169,13 @@ mod tests {
         let token = TokenKeys::generate(galata_vault_proto::ids::VaultId([3; 16])).token_string();
         let line = format!("token = \"{}\"", token.as_str());
         assert!(scan_literals(line.as_bytes()).is_err());
-        // A mistyped token is not a token.
+        // A mistyped token is not a token. The replacement has to differ from
+        // what it replaces: a token ends in one of 62 characters, so pushing a
+        // fixed 'x' left the token untouched about one run in sixty-two, and
+        // the assertion below then failed on a token that really was one.
         let mut bad = token.as_str().to_owned();
-        bad.pop();
-        bad.push('x');
+        let last = bad.pop().expect("a token is not empty");
+        bad.push(if last == 'x' { 'y' } else { 'x' });
         assert!(scan_literals(format!("t = \"{bad}\"").as_bytes()).is_ok());
     }
 }

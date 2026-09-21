@@ -46,7 +46,16 @@ jobs:
       - name: Build
         run: ./site/build.sh
 
-      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      # Deploys only. This asks the Pages API about the site, so on a pull
+      # request it fails for a repository where Pages is not enabled -- while
+      # the build above, which is the whole point of running on a pull
+      # request, has already passed. Nothing here consumes its outputs either:
+      # book.toml sets `site-url` itself.
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+
+      # Uploaded on a pull request too, so the built site can be downloaded
+      # and looked at before it is published.
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: site/_build

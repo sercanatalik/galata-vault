@@ -1,8 +1,8 @@
 # Releasing galata-vault
 
 How a release is cut, how to recover when one goes wrong, and which
-credentials exist. Nothing here has run yet: the first publish needs the
-repository to be public.
+credentials exist. The repository is public; nothing here has run yet, and
+the workflows below have never been exercised on a runner.
 
 ## What is released, and by what
 
@@ -39,12 +39,18 @@ The repository (`https://github.com/sercanatalik/galata-vault`) and the
 Homebrew tap (`sercanatalik/homebrew-tap`) are set; both must exist before
 the first release. Still marked `TBD` in the tree:
 
-- the response time in `SECURITY.md`, and the contact address in
-  `CODE_OF_CONDUCT.md`;
-- commit SHAs for the actions still on version tags (`release-plz.yml`,
-  `wheels.yml`, the `deny` job in `ci.yml`);
+- the response time in `SECURITY.md`;
+- `.github/workflows/release.yml`, which is generated: run `dist generate`
+  against `dist-workspace.toml` and commit the result. It is deliberately not
+  written by hand, because the `plan` step compares the two and fails when
+  they disagree;
 - the `RELEASE_PLZ_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets, which can exist
-  only once the repository and the tap do.
+  only once the repository and the tap do;
+- the `release` and `pypi` environments, each with a maintainer as required
+  reviewer, and the two trusted publishers that name them.
+
+The contact address in `CODE_OF_CONDUCT.md` is set, and every action in every
+workflow is pinned to a commit SHA.
 
 ## The first release, 0.1.0 (by hand)
 

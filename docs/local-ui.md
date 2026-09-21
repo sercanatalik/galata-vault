@@ -4,6 +4,23 @@
 surface. The client cryptography it relies on is covered by
 [threat-model.md](threat-model.md) and is unchanged.
 
+## What it looks like
+
+![The secrets of one environment: names, versions, sizes and times, with
+every value masked until it is revealed](images/gv-ui-secrets.png)
+
+Names and metadata are decrypted in `gv` and sent to the page. A value is
+not: the dots stay dots until a reveal asks for one, and that reveal is
+audited like any other read. Copying puts the value on the clipboard from the
+`gv` process, never through the page, and clears it after 30 seconds.
+
+![The audit tab: the chain verified to its head, with names decrypted
+locally](images/gv-ui-audit.png)
+
+The audit chain is verified in `gv` against the head this machine stored, so
+a server that dropped or reordered a row is caught here rather than
+believed. The server holds only the hashes of the names in those rows.
+
 ## Shape
 
 ```

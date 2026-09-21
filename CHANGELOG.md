@@ -12,7 +12,12 @@ marker guarantees.
 
 ## [Unreleased]
 
-Version 0.1.1 in the tree, not released. Every published crate shares it.
+## [0.2.0] - 2026-09-21
+
+The `gv ui` screenshots in the README and `docs/local-ui.md`, a logo, and
+package badges. Version bumped as a minor release at the maintainer's
+request: the changes below are additive, so a 0.1.x would also have been
+accurate.
 
 ### Added
 
@@ -82,5 +87,6 @@ attestations on the GitHub release.
   other than your own, and what this build deliberately does not implement.
 - This changelog, and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.2.0
 [0.1.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.1.0

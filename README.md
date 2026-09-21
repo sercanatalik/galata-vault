@@ -1,4 +1,15 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/logo-on-dark.svg">
+  <img src="site/assets/logo.svg" alt="" width="72" align="right">
+</picture>
+
 # galata-vault
+
+[![crates.io](https://img.shields.io/crates/v/galata-vault.svg)](https://crates.io/crates/galata-vault)
+[![docs.rs](https://img.shields.io/docsrs/galata-vault)](https://docs.rs/galata-vault)
+[![PyPI](https://img.shields.io/pypi/v/galata-vault.svg)](https://pypi.org/project/galata-vault/)
+[![CI](https://github.com/sercanatalik/galata-vault/actions/workflows/ci.yml/badge.svg)](https://github.com/sercanatalik/galata-vault/actions/workflows/ci.yml)
+[![MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE-MIT)
 
 End-to-end-encrypted secrets and config documents for software, with no
 accounts. A project is a key you generate. Everything is encrypted and signed
@@ -78,6 +89,18 @@ gv config set app --format toml --env acme/prod < app.toml
 gv ui                                            # the vault in your browser, on loopback
 ```
 
+### `gv ui`
+
+![The secrets of one environment in gv ui: names, versions, sizes and times,
+with every value masked](docs/images/gv-ui-secrets.png)
+
+`gv ui` serves the vault to a browser tab from the `gv` process itself, on
+loopback, behind a single-use link. No key or token ever reaches the page: it
+gets names and metadata, and a value only for the one reveal that asked for
+it. Minting, revoking, rotating and deleting wait for `y` in the terminal
+that started it, with a four-digit code shown on both sides. What it does and
+what it refuses to do is [docs/local-ui.md](docs/local-ui.md).
+
 The concepts behind it (the key tree, delegation and rekey, tokens and what
 revocation means, config documents, durability, the local UI, the MCP
 server) are in [docs/guide.md](docs/guide.md). `galata-vault-cli` is also a
@@ -142,6 +165,10 @@ maps them.
 - [docs/guide.md](docs/guide.md): concepts and the command line
 - [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md),
   [RELEASING.md](RELEASING.md)
+
+All of it is also on the documentation site,
+<https://sercanatalik.github.io/galata-vault/>, built from this repository by
+`.github/workflows/pages.yml`.
 
 ## Contributing and licence
 

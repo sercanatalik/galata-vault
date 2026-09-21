@@ -1345,7 +1345,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "galata-vault",
@@ -1369,7 +1369,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-cli"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1401,7 +1401,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-client"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "galata-vault-client",
@@ -1420,7 +1420,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-keys"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "chacha20poly1305 0.11.0",
  "crypto_box",
@@ -1441,7 +1441,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-mcp"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1466,7 +1466,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-proto"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "blake3",
@@ -1484,7 +1484,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-seal"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "age",
  "bech32",
@@ -1501,7 +1501,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-server"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1525,7 +1525,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-server-core"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "galata-vault-keys",
  "galata-vault-proto",
@@ -1539,7 +1539,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault-store"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "galata-vault-proto",
  "rusqlite",
@@ -1618,7 +1618,7 @@ dependencies = [
 
 [[package]]
 name = "gv-adversary"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "galata-vault-proto",
@@ -1633,7 +1633,7 @@ dependencies = [
 
 [[package]]
 name = "gv-conformance"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "galata-vault",
@@ -1650,7 +1650,7 @@ dependencies = [
 
 [[package]]
 name = "gv-py"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "galata-vault",
  "galata-vault-cli",

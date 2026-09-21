@@ -78,6 +78,14 @@ TABLE: list[tuple[str | None, list[tuple[str, str]]]] = [
 
 # Markdown link targets: `](target)` and `](target "title")`, not images.
 LINK_RE = re.compile(r"(?<!!)\]\(([^)\s]+)(\s+\"[^\"]*\")?\)")
+# Every reference to a file, whatever the syntax: a Markdown image, and the
+# src/srcset/href of the HTML that Markdown carries. README.md uses HTML for
+# the logo, because that is the only way to give it a dark variant.
+ASSET_RE = re.compile(
+    r"!\[[^\]]*\]\(([^)\s]+)|<[^>]*?\b(?:src|srcset)\s*=\s*\"([^\"]+)\"",
+    re.IGNORECASE,
+)
+ASSET_SUFFIXES = {".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico"}
 # Reference-style definitions: `[name]: target`.
 REF_RE = re.compile(r"^(\[[^\]]+\]:\s+)(\S+)", re.MULTILINE)
 
@@ -178,12 +186,32 @@ def main() -> int:
     if SRC.exists():
         shutil.rmtree(SRC)
     SRC.mkdir(parents=True)
+    copied: set[str] = set()
+    # Images the chapters point at are copied into the book at the same
+    # relative path, so the reference keeps working. Rewriting them to the
+    # GitHub tree would not: a blob URL renders a page, not an image.
+    for rel in sorted(book):
+        text = (REPO / rel).read_text(encoding="utf-8")
+        base = Path(rel).parent
+        for md, html in ASSET_RE.findall(text):
+            for candidate in (md,) if md else (c.strip().split()[0] for c in html.split(",") if c.strip()):
+                if re.match(r"^[a-z][a-z0-9+.-]*:", candidate):
+                    continue
+                joined = os.path.normpath((base / candidate.split("#")[0]).as_posix())
+                source = REPO / joined
+                if Path(joined).suffix.lower() not in ASSET_SUFFIXES or not source.is_file():
+                    continue
+                dest = SRC / joined
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, dest)
+                copied.add(joined)
+
     dangling: list[tuple[str, str]] = []
     for rel in sorted(book):
         text = (REPO / rel).read_text(encoding="utf-8")
         dest = SRC / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(rewrite_links(text, rel, book, dangling), encoding="utf-8")
+        dest.write_text(rewrite_links(text, rel, book | copied, dangling), encoding="utf-8")
     (SRC / "SUMMARY.md").write_text(summary(parts), encoding="utf-8")
     if dangling:
         for source, target in dangling:
@@ -193,7 +221,7 @@ def main() -> int:
             file=sys.stderr,
         )
         return 1
-    print(f"staged {len(book)} chapters under {SRC.relative_to(REPO)}")
+    print(f"staged {len(book)} chapters and {len(copied)} asset(s) under {SRC.relative_to(REPO)}")
     return 0
 
 

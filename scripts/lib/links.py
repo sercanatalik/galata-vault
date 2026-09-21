@@ -7,8 +7,9 @@ does not keep, and the README is where a reader meets it first.
 Two sources are checked:
 
 - **Markdown**, every `.md` outside the excluded directories: inline links
-  and images, `](target)` and `](target "title")`, and reference
-  definitions, `[name]: target`. A `#fragment` is dropped before the file is
+  and images, `](target)` and `](target "title")`, reference definitions,
+  `[name]: target`, and the `src`, `srcset` and `href` of any HTML it
+  carries. A `#fragment` is dropped before the file is
   resolved: this checks that the document exists, not that a heading inside
   it does.
 - **Cargo manifests**, the `readme` and `license-file` paths, which are what
@@ -31,6 +32,9 @@ LINK_RE = re.compile(r"\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 REF_RE = re.compile(r"^\[[^\]]+\]:\s+(\S+)", re.MULTILINE)
 # `readme = "…"` / `license-file = "…"` in a manifest.
 MANIFEST_RE = re.compile(r'^\s*(?:readme|license-file)\s*=\s*"([^"]+)"', re.MULTILINE)
+# Markdown carries HTML, and a `<img src>` or `<source srcset>` is as much a
+# published reference as a `](…)` link is. README.md uses one for the logo.
+HTML_RE = re.compile(r'<[^>]*?\b(?:src|srcset|href)\s*=\s*"([^"]+)"', re.IGNORECASE)
 
 # Generated, vendored, or not source.
 SKIP_DIRS = {
@@ -83,6 +87,9 @@ def dead(root: Path) -> list[tuple[str, str]]:
         text = (root / rel).read_text(encoding="utf-8", errors="replace")
         base = Path(rel).parent
         targets = LINK_RE.findall(text) + REF_RE.findall(text)
+        # A srcset may list several candidates, each with a descriptor.
+        for attr in HTML_RE.findall(text):
+            targets += [c.strip().split()[0] for c in attr.split(",") if c.strip()]
         for target in targets:
             if external(target):
                 continue

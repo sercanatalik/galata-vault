@@ -11,8 +11,6 @@ build if it ever does.
 
 ## Install
 
-After 0.1.0 is published:
-
 ```sh
 cargo install galata-vault-server      # the gv-server binary
 ```

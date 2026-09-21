@@ -23,10 +23,6 @@ latest `0.y` release ([SECURITY.md](SECURITY.md)).
 
 ## Install
 
-**Not yet published: these lines work after 0.1.0 is published.** Until
-then, build from a checkout (`cargo build --release -p galata-vault-cli
---features ui` for `gv`, `-p galata-vault-server` for `gv-server`).
-
 ```sh
 cargo add galata-vault                  # the Rust SDK
 cargo binstall galata-vault-cli         # gv, prebuilt (or: cargo install galata-vault-cli --features ui)

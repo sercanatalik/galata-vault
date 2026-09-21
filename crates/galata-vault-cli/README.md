@@ -11,8 +11,6 @@ server does not hold. It is also a library: another binary can flatten the
 
 ## Install
 
-After 0.1.0 is published:
-
 ```sh
 cargo binstall galata-vault-cli                  # a prebuilt gv, with `gv ui`
 cargo install galata-vault-cli --features ui     # or build it

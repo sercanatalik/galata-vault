@@ -22,8 +22,6 @@ Two ways in:
 
 ## Install
 
-After 0.1.0 is published:
-
 ```toml
 [dependencies]
 galata-vault = "0.1"

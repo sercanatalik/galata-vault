@@ -15,8 +15,6 @@ record signatures behind every listed name, and the audit chain.
 
 ## Install and use
 
-After 0.1.0 is published:
-
 ```sh
 cargo install galata-vault-mcp     # the gv-mcp binary
 gv mcp setup acme                  # mints one meta token per environment

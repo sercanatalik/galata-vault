@@ -24,12 +24,18 @@ targets = [
     "x86_64-unknown-linux-gnu",
     "x86_64-pc-windows-msvc",
 ]
-installers = ["shell", "powershell", "homebrew"]
-# The tap repository: `brew install sercanatalik/tap/<formula>`.
-# The publish job needs the HOMEBREW_TAP_TOKEN secret, scoped to that
-# repository only.
-tap = "sercanatalik/homebrew-tap"
-publish-jobs = ["homebrew"]
+installers = ["shell", "powershell"]
+# No Homebrew for 0.1.0: the tap repository does not exist, and a release that
+# advertises `brew install` and then fails its publish job is worse than one
+# that does not offer it. To add it back, create the tap and its
+# HOMEBREW_TAP_TOKEN (contents: write, that repository only), then restore:
+#
+#   installers = ["shell", "powershell", "homebrew"]
+#   tap = "sercanatalik/homebrew-tap"
+#   publish-jobs = ["homebrew"]
+#
+# and regenerate release.yml with `dist generate`. The install lines in
+# README.md and crates/galata-vault-cli/README.md come back at the same time.
 # Provenance: a GitHub artifact attestation for every artifact, and the
 # dependency list embedded in every binary (`cargo audit bin` reads it).
 github-attestations = true

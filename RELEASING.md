@@ -9,7 +9,7 @@ the workflows below have never been exercised on a runner.
 | What | Where | Built and published by |
 |---|---|---|
 | `galata-vault` and the nine `galata-vault-*` crates, one shared version | crates.io | release-plz (`release-plz.toml`, `.github/workflows/release-plz.yml`) |
-| `gv`, `gv-server`, `gv-mcp` binaries, installers, Homebrew formulae | GitHub release, the Homebrew tap | dist (`dist-workspace.toml`, `.github/workflows/release.yml`) |
+| `gv`, `gv-server`, `gv-mcp` binaries and installers | GitHub release | dist (`dist-workspace.toml`, `.github/workflows/release.yml`) |
 | The `galata-vault` Python package (wheels and sdist) | PyPI | maturin (`.github/workflows/wheels.yml`) |
 
 `gv-py`, `gv-adversary` and `gv-conformance` are `publish = false` and never
@@ -29,7 +29,7 @@ version`) and releases together. In 0.x, a `0.y` bump is breaking and a
 | crates.io trusted publisher | per crate: this repository, `release-plz.yml`, environment `release` | publish | the `release` job **once the crates exist**, through `rust-lang/crates-io-auth-action`; delete the secret then |
 | PyPI trusted publisher | project `galata-vault`: this repository, `wheels.yml`, environment `pypi` | upload | `publish` job |
 | `RELEASE_PLZ_TOKEN` | secret: GitHub App or fine-grained token | contents and pull requests: write, this repository only | release-plz, **not set up yet**. Until it is, `release-plz.yml` is manual-only and releases are cut by hand (below). The default `GITHUB_TOKEN` cannot stand in: a tag it pushes starts no workflow, so `release.yml` and `wheels.yml` would never run. A fine-grained token expires; when it does, release-plz stops and the failure looks like a workflow bug, so set a reminder or use a GitHub App |
-| `HOMEBREW_TAP_TOKEN` | secret: fine-grained token | contents: write, the tap repository only | dist's `publish-homebrew-formula` job |
+| `HOMEBREW_TAP_TOKEN` | secret: fine-grained token | contents: write, the tap repository only | dist's `publish-homebrew-formula` job — **not needed for 0.1.0**, which ships no Homebrew formula (`dist-workspace.toml` says how to add it back) |
 
 No PyPI token is stored: that upload is OIDC only, and its trusted publisher
 names `wheels.yml` and the `pypi` environment.
@@ -44,17 +44,18 @@ every crate exists and the trusted publisher takes over.
 
 ## Placeholders to set before the first release
 
-The repository (`https://github.com/sercanatalik/galata-vault`) and the
-Homebrew tap (`sercanatalik/homebrew-tap`) are set; both must exist before
-the first release. Still marked `TBD` in the tree:
+The repository (`https://github.com/sercanatalik/galata-vault`) exists. The
+Homebrew tap does not, and 0.1.0 does not need it: the formula is switched
+off in `dist-workspace.toml`, and neither README offers `brew install`. Still
+to set:
 
 - the response time in `SECURITY.md`;
 - `.github/workflows/release.yml`, which is generated: run `dist generate`
   against `dist-workspace.toml` and commit the result. It is deliberately not
   written by hand, because the `plan` step compares the two and fails when
   they disagree;
-- the `RELEASE_PLZ_TOKEN` and `HOMEBREW_TAP_TOKEN` secrets, which can exist
-  only once the repository and the tap do;
+- the `RELEASE_PLZ_TOKEN` secret, when the automated path is wired up;
+  `HOMEBREW_TAP_TOKEN` only if the tap comes back;
 - the `release` and `pypi` environments, each with a maintainer as required
   reviewer, and the two trusted publishers that name them.
 
@@ -105,8 +106,8 @@ the repository is public.
    repository, `wheels.yml`, environment `pypi`), then run `wheels` by hand
    with `publish` set. A pending publisher does not reserve the name, so do
    this the same day.
-8. Push the tag `v0.1.0`. dist builds the binaries, installers and Homebrew
-   formulae, attests them and creates the GitHub release. Then verify:
+8. Push the tag `v0.1.0`. dist builds the binaries and installers, attests
+   them and creates the GitHub release. Then verify:
    - `gh attestation verify <binary> --repo sercanatalik/galata-vault` for
      each binary;
    - `cargo audit bin <binary>` lists the dependencies;

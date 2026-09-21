@@ -30,7 +30,6 @@ then, build from a checkout (`cargo build --release -p galata-vault-cli
 ```sh
 cargo add galata-vault                  # the Rust SDK
 cargo binstall galata-vault-cli         # gv, prebuilt (or: cargo install galata-vault-cli --features ui)
-brew install sercanatalik/tap/galata-vault-cli   # gv from the project's Homebrew tap
 pip install galata-vault                # the Python package, with gv
 curl --proto '=https' --tlsv1.2 -LsSf \
   https://github.com/sercanatalik/galata-vault/releases/latest/download/galata-vault-cli-installer.sh | sh

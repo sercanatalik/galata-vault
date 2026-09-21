@@ -15,7 +15,6 @@ After 0.1.0 is published:
 
 ```sh
 cargo binstall galata-vault-cli                  # a prebuilt gv, with `gv ui`
-brew install sercanatalik/tap/galata-vault-cli   # or from the Homebrew tap
 cargo install galata-vault-cli --features ui     # or build it
 ```
 

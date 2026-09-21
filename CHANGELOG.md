@@ -12,6 +12,32 @@ marker guarantees.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-21
+
+### Changed
+
+- **A release is now a tag, and nothing else.** `scripts/release.sh <version>`
+  sets the version everywhere it is written down, dates the changelog entry,
+  runs the gate, commits and tags; pushing that tag publishes the crates
+  (`.github/workflows/crates.yml`, one `cargo publish --workspace`), the
+  wheels and the binaries, in parallel, with nothing left to approve. Both
+  uploads authenticate as their workflow through OIDC, so no publishing token
+  is stored. release-plz and its release pull request are gone, along with
+  the by-hand dependency order the ten crates used to be published in --
+  cargo works that out itself. [`RELEASING.md`](RELEASING.md) is the whole
+  procedure.
+
+### Added
+
+- `scripts/check-version.sh`, which fails the build when the workspace
+  version, the versions its path dependencies carry and the newest changelog
+  entry disagree -- or, in a release workflow, when they disagree with the
+  tag that started it. The tree is no longer bumped ahead of a release: it
+  carries the released version, and notes wait under `## [Unreleased]`.
+- `scripts/trusted-publishers.sh`, which registers this repository as the
+  trusted publisher of every published crate on crates.io in one pass,
+  reading the crate list from the workspace.
+
 ## [0.2.0] - 2026-09-21
 
 The `gv ui` screenshots in the README and `docs/local-ui.md`, a logo, and
@@ -87,6 +113,7 @@ attestations on the GitHub release.
   other than your own, and what this build deliberately does not implement.
 - This changelog, and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.3.0
 [0.2.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.2.0
 [0.1.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.1.0

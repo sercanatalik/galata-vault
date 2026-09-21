@@ -1964,3 +1964,83 @@ fn kits_and_tokens_of_another_version_are_refused() {
     assert!(server.seen().is_empty(), "{:?}", server.seen());
     assert!(!gv.home_file("config.toml").exists());
 }
+
+/// Listing and revoking are the owner's *and* an `admin` token's, as
+/// `docs/spec/http-api.md#2` says. Rotating alongside a revocation is still
+/// the owner's alone, and is refused on its own terms rather than by
+/// refusing the whole command.
+#[test]
+fn an_admin_token_lists_and_revokes_from_the_command_line() {
+    let server = Server::start();
+    let gv = project(&server);
+    let admin = gv
+        .ok(
+            &["token", "mint", "--scope", "admin", "--env", "acme/prod"],
+            b"",
+        )
+        .trim()
+        .to_owned();
+    let meta = gv
+        .ok(
+            &["token", "mint", "--scope", "meta", "--env", "acme/prod"],
+            b"",
+        )
+        .trim()
+        .to_owned();
+
+    let ci = Gv::new(&server);
+    let as_admin = [
+        ("GV_TOKEN", admin.as_str()),
+        ("GV_SERVER", server.url.as_str()),
+    ];
+
+    // The admin token sees both tokens, without the owner key anywhere.
+    let out = ci.run_with(&["token", "ls"], b"", &as_admin);
+    let listed = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert_eq!(listed.lines().count(), 2, "{listed}");
+
+    // Rotating is still the owner's, and says so about the rotation rather
+    // than about the command.
+    let meta_id = listed
+        .lines()
+        .find(|l| l.contains("meta"))
+        .and_then(|l| l.split_whitespace().next())
+        .expect("the meta token is listed")
+        .to_owned();
+    let out = ci.run_with(&["token", "revoke", &meta_id, "--rotate"], b"", &as_admin);
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(!out.status.success(), "--rotate must need the owner key");
+    assert!(
+        err.contains("owner key") && err.contains("admin token"),
+        "{err}"
+    );
+
+    // Without --rotate it goes through, and the token really is gone.
+    // A lesser scope is refused by naming the scope it lacks, not the owner key.
+    let as_meta = [
+        ("GV_TOKEN", meta.as_str()),
+        ("GV_SERVER", server.url.as_str()),
+    ];
+    let out = ci.run_with(&["token", "ls"], b"", &as_meta);
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(!out.status.success(), "a meta token may not list");
+    assert!(err.contains("admin"), "{err}");
+
+    let out = ci.run_with(&["token", "revoke", &meta_id], b"", &as_admin);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let listed = ci.run_with(&["token", "ls"], b"", &as_admin);
+    assert_eq!(String::from_utf8_lossy(&listed.stdout).lines().count(), 1);
+
+    // And the revoked token really is refused by the server now.
+    let out = ci.run_with(&["token", "ls"], b"", &as_meta);
+    assert!(!out.status.success(), "a revoked token opens nothing");
+}

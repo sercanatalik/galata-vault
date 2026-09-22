@@ -35,8 +35,8 @@ run() {
 }
 
 run "format" cargo fmt --all --check
-# Default features (galata-vault-cli without `ui`, as an embedding binary builds it),
-# then everything on (`ui`, `test-util`, `platform-verifier`).
+# Default features (the `cli` module without `ui`, as an embedding binary
+# builds it), then everything on (`ui`, `test-util`, `platform-verifier`).
 run "lints" cargo clippy --workspace --all-targets -- -D warnings
 run "lints (all features)" cargo clippy --workspace --all-targets --all-features -- -D warnings
 # One server build, and the SDK with its in-process backend, which must also
@@ -47,20 +47,22 @@ run "build (galata-vault, embedded without http)" \
     cargo build -p galata-vault --no-default-features --features embedded
 # gv-py is a Python extension: it links against Python only when maturin
 # builds the wheel, so its tests are the pytest suite (scripts/python-suite.sh).
-# `ui` is off by default in galata-vault-cli; every
-# gv we release enables it, so the suite does too. Its lib tests also run
-# without it, where `gv ui` must refuse by naming the feature.
-run "tests" cargo test --workspace --exclude gv-py --features galata-vault-cli/ui
-run "tests (galata-vault-cli without ui)" cargo test -p galata-vault-cli --lib
+# `ui` is off by default; every gv we release enables it, so the suite does
+# too. The lib tests also run without it, where `gv ui` must refuse by naming
+# the feature. `adversary-plant` is deliberately NOT in this set: it disables
+# the descriptor-signature check, and only scripts/adversary-plant.sh may
+# turn it on.
+run "tests" cargo test --workspace --exclude gv-py --features gv/ui,galata-vault/ui,galata-vault/server,galata-vault/mcp,galata-vault/embedded,galata-vault/test-util,galata-vault/vectors
+run "tests (the cli module without ui)" cargo test -p galata-vault --lib --features cli
 # The embedded backend (the conformance list over both transports) runs only
 # with its feature.
-run "tests (galata-vault, embedded)" cargo test -p galata-vault --features embedded
+run "tests (galata-vault, embedded)" cargo test -p galata-vault --features embedded,test-util --test embedded
 run "tests (gv-conformance, embedded target)" cargo test -p gv-conformance --features embedded
 # The adversarial harness: a real server behind a proxy that
 # forges, replays and rolls back. Also part of "tests"; named here so a
 # regression shows up as what it is. The Python half runs in the suite below.
 run "adversarial harness (malicious server vs the SDK, gv and gv-mcp)" \
-    cargo test -p galata-vault -p galata-vault-cli -p galata-vault-mcp --test adversary
+    cargo test -p galata-vault -p gv -p gv-mcp --features gv/ui,galata-vault/ui,galata-vault/server,galata-vault/mcp,galata-vault/embedded,galata-vault/test-util,galata-vault/vectors --test adversary --test cli_adversary --test mcp_adversary
 # The harness proved able to fail, as the guards are below: with the SDK's
 # descriptor-signature check planted away (debug builds only), the
 # key-substitution tests must fail, and a release build must refuse the plant.
@@ -84,11 +86,11 @@ run "docs (rustdoc warnings denied, every feature)" \
 # response-type guards ran first with the other check-*.sh; these are also
 # part of "tests", named here so a drift shows up as what it is.
 run "spec: error table (http-api.md#5.2) is ErrorCode; every vector anchor exists" \
-    cargo test -p galata-vault-proto --test spec_tables
+    cargo test -p galata-vault --test proto_spec_tables
 run "spec: endpoint table (http-api.md#2) is the route table" \
-    cargo test -p galata-vault-server-core --test route_table
+    cargo test -p galata-vault --features server --test server_core_route_table
 run "vectors: every construct in the Rust crates" \
-    cargo test -p galata-vault-proto -p galata-vault-keys -p galata-vault-seal -p galata-vault --test vectors
+    cargo test -p galata-vault --features vectors,test-util --test vectors --test proto_vectors --test keys_vectors --test seal_vectors
 # The committed vectors against the independent generator (and its age
 # against C2SP CCTV). Without uv it prints SKIPPED; CI requires it.
 if ! "$ROOT/scripts/vectors.sh" "$ROOT"; then

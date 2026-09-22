@@ -3,11 +3,11 @@
 # The crate boundaries ARE the security design. scripts/ checks them against
 # the resolved dependency graph:
 #
-#   galata-vault-server-core,   never link galata-vault-keys, galata-vault-seal,
-#   galata-vault-server         age or crypto_box. The server cannot decrypt,
+#   the server feature set      never links the keys or seal modules,
+#                               age or crypto_box. The server cannot decrypt,
 #                               because the code is not in it. The core links
 #                               no HTTP stack or async runtime either.
-#   galata-vault-mcp            never links galata-vault-seal or age. The MCP
+#   the mcp feature set         never links the seal module or age. The MCP
 #                               server cannot read a value, for the same reason.
 #
 # Published to crates.io (RELEASING.md): every galata-vault-* crate and the
@@ -18,17 +18,11 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/galata-vault-proto",
-    "crates/galata-vault-keys",
-    "crates/galata-vault-seal",
-    "crates/galata-vault-store",
-    "crates/galata-vault-server-core",
-    "crates/galata-vault-server",
-    "crates/galata-vault-client",
-    "crates/galata-vault-cli",
-    "crates/galata-vault-mcp",
     "crates/gv-py",
     "crates/galata-vault",
+    "crates/gv",
+    "crates/gv-server",
+    "crates/gv-mcp",
     # Test-only: the malicious-server harness (a dev-dependency, never shipped).
     "crates/gv-adversary",
     # Unpublished: the black-box conformance suite for servers (docs/spec/README.md#6).
@@ -53,17 +47,9 @@ homepage = "https://sercanatalik.github.io/galata-vault/"
 # names a registry version. They move together, and scripts/check-version.sh
 # is what says so.
 [workspace.dependencies]
-galata-vault-proto = { version = "0.3.0", path = "crates/galata-vault-proto" }
-galata-vault-keys = { version = "0.3.0", path = "crates/galata-vault-keys" }
-galata-vault-seal = { version = "0.3.0", path = "crates/galata-vault-seal" }
-galata-vault-store = { version = "0.3.0", path = "crates/galata-vault-store" }
-galata-vault-server-core = { version = "0.3.0", path = "crates/galata-vault-server-core" }
 # No default features here: a member names `http` when it wants the HTTP
-# transport (galata-vault-mcp does; the SDK forwards it as its own default feature).
-galata-vault-client = { version = "0.3.0", path = "crates/galata-vault-client", default-features = false }
+# transport (the `mcp` feature does; the SDK forwards it as its own default feature).
 galata-vault = { version = "0.3.0", path = "crates/galata-vault" }
-galata-vault-server = { version = "0.3.0", path = "crates/galata-vault-server" }
-galata-vault-cli = { version = "0.3.0", path = "crates/galata-vault-cli" }
 
 age = "0.12"
 anyhow = "1"
@@ -75,7 +61,7 @@ keyring = "4.2"
 rlimit = "0.11"
 rpassword = "7.5"
 ureq = { version = "3.4", default-features = false, features = ["rustls"] }
-# `gv ui` (crates/galata-vault-cli, feature `ui`): a small blocking HTTP server on
+# `gv ui` (the `cli` module, feature `ui`): a small blocking HTTP server on
 # loopback, templates that escape by default, and Ctrl-C handling.
 tiny_http = "0.12"
 maud = "0.27"

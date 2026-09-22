@@ -13,7 +13,7 @@ The tag is the decision. Nothing after it is approved or clicked.
 
 | What | Where | Built and published by |
 |---|---|---|
-| `galata-vault` and the nine `galata-vault-*` crates, one shared version | crates.io | `cargo publish --workspace` (`.github/workflows/crates.yml`) |
+| `galata-vault`, the one published crate | crates.io | `cargo publish --workspace` (`.github/workflows/crates.yml`) |
 | `gv`, `gv-server`, `gv-mcp` binaries and installers | the GitHub release | dist (`dist-workspace.toml`, `.github/workflows/release.yml`) |
 | The `galata-vault` Python package (wheels and sdist) | PyPI | maturin (`.github/workflows/wheels.yml`) |
 
@@ -21,10 +21,10 @@ The three run in parallel off the same `v<version>` tag, and each one checks
 that the tag and the tree name the same version before it uploads anything
 (`scripts/check-version.sh`, which CI runs on every push too).
 
-`gv-py`, `gv-adversary` and `gv-conformance` are `publish = false` and never
-reach crates.io. Cargo works out the order of the rest itself and waits for
-each crate to appear in the index, so no dependency list is maintained by
-hand anywhere.
+Everything else in the workspace is `publish = false` and never reaches
+crates.io: `gv`, `gv-server` and `gv-mcp` (thin wrappers that exist so dist
+can give each binary its own target list), `gv-py`, `gv-adversary` and
+`gv-conformance`. `cargo publish --workspace` skips them without being told.
 
 ## Credentials
 
@@ -46,9 +46,9 @@ publisher takes over and the secret goes.
 
 ### Registering the trusted publishers
 
-Ten crates means ten configurations. `scripts/trusted-publishers.sh` makes
-them all from the workspace, so a new published crate is registered by
-rerunning it:
+One published crate means one configuration.
+`scripts/trusted-publishers.sh` makes it from the workspace, so if a second
+crate is ever published it is registered by rerunning this:
 
 ```sh
 scripts/trusted-publishers.sh                       # what it would register

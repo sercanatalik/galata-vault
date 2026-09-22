@@ -36,12 +36,13 @@ latest `0.y` release ([SECURITY.md](SECURITY.md)).
 
 ```sh
 cargo add galata-vault                  # the Rust SDK
-cargo binstall galata-vault-cli         # gv, prebuilt (or: cargo install galata-vault-cli --features ui)
 pip install galata-vault                # the Python package, with gv
 curl --proto '=https' --tlsv1.2 -LsSf \
-  https://github.com/sercanatalik/galata-vault/releases/latest/download/galata-vault-cli-installer.sh | sh
+  https://github.com/sercanatalik/galata-vault/releases/latest/download/gv-installer.sh | sh
 ```
 
+`gv` is a binary, not a published crate, so it comes from that installer, the
+Python package, or `cargo install --git https://github.com/sercanatalik/galata-vault gv`.
 Each [GitHub release](https://github.com/sercanatalik/galata-vault/releases)
 also carries a PowerShell installer for `gv`, and shell installers for
 `gv-server` and `gv-mcp`. Every binary has a GitHub artifact attestation:
@@ -103,9 +104,9 @@ what it refuses to do is [docs/local-ui.md](docs/local-ui.md).
 
 The concepts behind it (the key tree, delegation and rekey, tokens and what
 revocation means, config documents, durability, the local UI, the MCP
-server) are in [docs/guide.md](docs/guide.md). `galata-vault-cli` is also a
+server) are in [docs/guide.md](docs/guide.md). The `cli` module is also a
 library: another binary can carry the `gv` command tree under its own name
-([crates/galata-vault-cli/README.md](crates/galata-vault-cli/README.md)).
+(`galata_vault::cli`).
 
 ## Python
 
@@ -136,26 +137,38 @@ cannot do.
 machines you trust, run a configured `gv-server` behind a TLS-terminating
 proxy: [deploy/README.md](deploy/README.md).
 
-## Crates
+## One crate, and what is in it
 
-| Crate | On crates.io | Role |
+`galata-vault` is the only published crate. What used to be ten crates are
+its modules, each behind the feature that needs it, so a build gets the code
+it asked for and no more.
+
+| Module | Feature | Role |
 |---|---|---|
-| `galata-vault` | yes | the SDK: the token client, the owner API, the `embedded` backend |
-| `galata-vault-cli` | yes | `gv`, and a library another binary can brand and extend |
-| `galata-vault-server` | yes | `gv-server`: the HTTP API, an axum shell over the core |
-| `galata-vault-mcp` | yes | `gv-mcp`: the metadata-only MCP server |
-| `galata-vault-proto` | yes, internal | formats, API types, descriptors, audit chain, signature verification |
-| `galata-vault-keys` | yes, internal | key tree, owner, token and writer keys, bundles, name key |
-| `galata-vault-seal` | yes, internal | age envelopes, signed records, rotation; client-only |
-| `galata-vault-client` | yes, internal | the client transport and request signing; no value decryption |
-| `galata-vault-store` | yes, internal | SQLite storage and journal records |
-| `galata-vault-server-core` | yes, internal | the server's rules, with no HTTP, async or decryption code |
-| `gv-py` | no (PyPI: `galata-vault`) | the Python package |
-| `gv-adversary`, `gv-conformance` | no | the malicious-server harness, the conformance suite |
+| `proto` | always | formats, API types, descriptors, audit chain, signature verification |
+| `keys` | `sdk` | key tree, owner, token and writer keys, bundles, name key |
+| `seal` | `sdk` | age envelopes, signed records, rotation; the only value decryption |
+| `client` | `sdk` | the client transport and request signing; no value decryption |
+| the root | `sdk` | the token client, the owner API, `embedded` |
+| `backend` | `storage` | SQLite storage and journal records |
+| `server_core` | `server-core` | the server's rules, with no HTTP, async or decryption code |
+| `server` | `server` | the HTTP API, an axum shell over the core |
+| `cli` | `cli`, `ui` | `gv`, and a library another binary can brand and extend |
+| `mcp` | `mcp` | the metadata-only MCP server |
 
-"Internal" crates are implementation details, with no semver promise beyond
-the shared version: depend on `galata-vault`. [ARCHITECTURE.md](ARCHITECTURE.md)
-maps them.
+The split is load-bearing, not cosmetic: `server` does not enable `sdk`, so a
+server build links no value or name crypto at all, and the SDK's default
+build links no database, HTTP server or async runtime.
+[`scripts/check-linkage.sh`](scripts/check-linkage.sh) proves both from the
+dependency graph, and checks that the serving modules name no client-side
+crypto.
+
+The three binaries live in unpublished crates that wrap those modules
+(`crates/gv`, `crates/gv-server`, `crates/gv-mcp`), which is how each keeps
+its own release target list. `gv-py` is the Python package (PyPI:
+`galata-vault`); `gv-adversary` and `gv-conformance` are the malicious-server
+harness and the conformance suite. [ARCHITECTURE.md](ARCHITECTURE.md) maps
+it all.
 
 ## Documentation
 

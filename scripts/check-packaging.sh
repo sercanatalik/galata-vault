@@ -41,7 +41,7 @@ case "$VERB" in
     targets)
         echo "Cargo.toml"
         echo "LICENSE-MIT"
-        echo "crates/galata-vault-seal/LICENSE-MIT"
+        echo "crates/galata-vault/LICENSE-MIT"
         echo "scripts/sync-licenses.sh"
         echo "scripts/lib/packaging.py"
         exit 0
@@ -49,15 +49,15 @@ case "$VERB" in
     plant)
         # A published crate that lost its licence text: its package would ship
         # without the licence it claims.
-        rm -f "$ROOT/crates/galata-vault-seal/LICENSE-MIT"
+        rm -f "$ROOT/crates/galata-vault/LICENSE-MIT"
         exit 0
         ;;
     expect)
         # The version is read, never written here: a hardcoded one turns every
         # release into a guard failure, which is how 0.1.1 broke this.
         version=$(grep -m1 '^version = ' "$ROOT/Cargo.toml" | cut -d'"' -f2)
-        echo "crates/galata-vault-seal/LICENSE-MIT"
-        echo "galata-vault-seal-$version.crate lacks LICENSE-MIT"
+        echo "crates/galata-vault/LICENSE-MIT"
+        echo "galata-vault-$version.crate lacks LICENSE-MIT"
         exit 0
         ;;
 esac

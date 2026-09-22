@@ -9,8 +9,8 @@
 
 use std::sync::Arc;
 
-use galata_vault_proto::ids::{TokenId, VaultId};
-use galata_vault_proto::path::EnvPath;
+use crate::proto::ids::{TokenId, VaultId};
+use crate::proto::path::EnvPath;
 use zeroize::Zeroizing;
 
 /// A key store or state store failed. The message names what, never the

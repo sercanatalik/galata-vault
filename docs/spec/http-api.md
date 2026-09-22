@@ -358,7 +358,7 @@ capabilities advertise support for it.
 A client MUST ignore a field it does not know in any response body, except an
 audit row: every field of a row is hashed, so a row with an unknown field is
 malformed and a new row field comes with a new row format (`audit.md#4`). A
-`galata-vault-proto` unit test (`every_response_tolerates_an_unknown_field`) parses
+`galata_vault::proto` unit test (`every_response_tolerates_an_unknown_field`) parses
 every response body with an unknown field added at every level.
 
 <a id="7.3"></a>

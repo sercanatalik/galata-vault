@@ -2,7 +2,7 @@
 #
 # Responses are tolerant (docs/spec/http-api.md#7.2): a newer server may add a
 # field to any response, and an older client must read the rest. So in the
-# protocol crate, galata-vault-proto, `deny_unknown_fields` may appear only on the types
+# protocol module, `proto`, `deny_unknown_fields` may appear only on the types
 # allowed below, and on no response type:
 #
 #   - request bodies, which are strict (http-api.md#7.1);
@@ -33,8 +33,8 @@ fi
 
 case "$VERB" in
     targets)
-        echo "crates/galata-vault-proto/src"
-        echo "crates/galata-vault-proto/src/api.rs"
+        echo "crates/galata-vault/src/proto"
+        echo "crates/galata-vault/src/proto/api.rs"
         echo "scripts/lib/response_types.py"
         exit 0
         ;;
@@ -46,13 +46,13 @@ case "$VERB" in
         # A response type made strict: an older client would refuse a newer
         # server's vault status outright.
         perl -0pi -e 's/\npub struct VaultStatus \{/\n#[serde(deny_unknown_fields)]\npub struct VaultStatus {/' \
-            "$ROOT/crates/galata-vault-proto/src/api.rs"
+            "$ROOT/crates/galata-vault/src/proto/api.rs"
         exit 0
         ;;
 esac
 
 if ! out=$(python3 "$HERE/lib/response_types.py" "$ROOT"); then
-    echo "response types: a galata-vault-proto type outside the allow-list refuses unknown fields" >&2
+    echo "response types: a `proto` type outside the allow-list refuses unknown fields" >&2
     sed 's/^/  /' <<<"$out" >&2
     exit 1
 fi

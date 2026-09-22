@@ -5,7 +5,7 @@
 use std::path::PathBuf;
 
 use galata_vault::__vectors::{CONSTRUCTS, run_op};
-use galata_vault_proto::vectors::check_file;
+use galata_vault::proto::vectors::check_file;
 
 fn dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../testdata/vectors/v1")

@@ -1,7 +1,7 @@
 //! One vault, opened by its owner key or by a token: every
 //! server operation the token client and the owner API need, with
 //! verification, encryption and decryption on this side, over
-//! [`galata_vault_client::Api`].
+//! [`crate::client::Api`].
 //!
 //! Opening a vault verifies it from a vault id the client pins itself
 //!: the owner derives it from the node
@@ -19,24 +19,24 @@ use std::collections::{BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, RwLock};
 
-use galata_vault_client::{Answer, Api, ApiError, Auth, Pre, Progress, now};
-use galata_vault_keys::{
+use crate::client::{Answer, Api, ApiError, Auth, Pre, Progress, now};
+use crate::keys::{
     Bundle, ConfigSecret, FullBundle, NodeKey, OwnerKeys, TokenKeys, VaultSecret, WriterKey,
     seal_child_key, seal_for_scope, seal_owner_bundle,
 };
-use galata_vault_proto::api::{
+use crate::proto::api::{
     ChallengePurpose, CreateVaultRequest, ErrorCode, RegisterTokenRequest, RegisterTokenResponse,
     ReportTokenRequest, RevokeResponse, Scope, SecretVersion, TokenSelf, VaultStatus, VersionMeta,
 };
-use galata_vault_proto::audit::{AuditRow, ChainHead, RowStop, verify_chain, verify_rows};
-use galata_vault_proto::children::{ChildEntry, ChildMode, ChildrenRecord};
-use galata_vault_proto::descriptor::{Descriptor, SignedDescriptor};
-use galata_vault_proto::ids::{B64, Hash32, Key32, NameHmac, TokenId, VaultId};
-use galata_vault_proto::integrity::IntegrityError;
-use galata_vault_proto::path::Segment;
-use galata_vault_proto::pow;
-use galata_vault_proto::record::RecordKind;
-use galata_vault_seal::{
+use crate::proto::audit::{AuditRow, ChainHead, RowStop, verify_chain, verify_rows};
+use crate::proto::children::{ChildEntry, ChildMode, ChildrenRecord};
+use crate::proto::descriptor::{Descriptor, SignedDescriptor};
+use crate::proto::ids::{B64, Hash32, Key32, NameHmac, TokenId, VaultId};
+use crate::proto::integrity::IntegrityError;
+use crate::proto::path::Segment;
+use crate::proto::pow;
+use crate::proto::record::RecordKind;
+use crate::seal::{
     ConfigFormat, Opened, OpenedConfig, OpenedRecord, Writer, WrittenRecord, build_rotation,
     open_config_record, open_name, open_secret, verify_listed, verify_meta,
 };
@@ -82,7 +82,6 @@ impl Pins {
             RecordKind::Secret => &mut self.secrets,
             RecordKind::Config => &mut self.configs,
             // A handle only ever reads the two kinds it has keys for.
-            _ => unreachable!("record kind {} has no pins in this client", kind.code()),
         }
     }
 }
@@ -139,7 +138,6 @@ fn noun(kind: RecordKind) -> &'static str {
     match kind {
         RecordKind::Secret => "secret",
         RecordKind::Config => "config",
-        _ => "record",
     }
 }
 
@@ -231,9 +229,9 @@ compile_error!(
 
 #[cfg(all(feature = "adversary-plant", debug_assertions))]
 mod plant {
-    use galata_vault_proto::descriptor::{Descriptor, SignedDescriptor};
-    use galata_vault_proto::ids::{Key32, VaultId};
-    use galata_vault_proto::integrity::IntegrityError;
+    use crate::proto::descriptor::{Descriptor, SignedDescriptor};
+    use crate::proto::ids::{Key32, VaultId};
+    use crate::proto::integrity::IntegrityError;
 
     /// The variable, and the one weakening it selects.
     pub(super) const VAR: &str = "GV_ADVERSARY_PLANT";
@@ -581,7 +579,7 @@ impl Handle {
     }
 
     #[cfg(feature = "test-util")]
-    pub fn name_key(&self) -> galata_vault_keys::NameKey {
+    pub fn name_key(&self) -> crate::keys::NameKey {
         self.view().bundle.name_key().clone()
     }
 
@@ -620,13 +618,6 @@ impl Handle {
         match kind {
             RecordKind::Secret => v.bundle.secret_writer(),
             RecordKind::Config => v.bundle.config_writer(),
-            _ => {
-                return Err(Error::unsupported(format!(
-                    "{}: record kind {} is not one this client knows",
-                    self.label,
-                    kind.code()
-                )));
-            }
         }
         .ok_or_else(|| {
             Error::forbidden(format!(
@@ -905,7 +896,7 @@ impl Handle {
                 // Verify before the pin moves: a forged answer must be
                 // refused without leaving its version behind, or one bad
                 // response would lock the genuine record out.
-                galata_vault_seal::verify_version(&v.descriptor, kind, &record).map_err(|e| {
+                crate::seal::verify_version(&v.descriptor, kind, &record).map_err(|e| {
                     Error::seal(
                         e,
                         // By index, never by name: the error names what the
@@ -956,11 +947,6 @@ impl Handle {
                 record,
             )
             .map_err(|e| Error::seal(e, what())),
-            _ => Err(Error::unsupported(format!(
-                "{}: record kind {} is not one this client knows",
-                self.label,
-                kind.code()
-            ))),
         }
     }
 
@@ -1040,10 +1026,6 @@ impl Handle {
             (RecordKind::Config, None) => {
                 w.config(name, ConfigFormat::Text, body, version, written_at)
             }
-            (other, _) => Err(galata_vault_seal::SealError::UnsupportedByClient(format!(
-                "record kind {} is not one this client knows",
-                other.code()
-            ))),
         }
         .map_err(|e| {
             Error::seal(
@@ -1313,7 +1295,7 @@ impl Handle {
         Ok(status)
     }
 
-    fn audit_page(&self, after: u64) -> Result<galata_vault_proto::api::AuditPage, Error> {
+    fn audit_page(&self, after: u64) -> Result<crate::proto::api::AuditPage, Error> {
         match self.api.audit(self.auth(), after) {
             Ok(a) => Ok(self.take(a)),
             Err(e) if e.code() == Some(ErrorCode::Forbidden) => Err(Error::forbidden(format!(
@@ -1339,7 +1321,7 @@ impl Handle {
             if page.stop.is_some() {
                 return Ok((rows, page.head, page.stop));
             }
-            if n < galata_vault_client::AUDIT_PAGE || until.is_some_and(|u| after >= u) {
+            if n < crate::client::AUDIT_PAGE || until.is_some_and(|u| after >= u) {
                 return Ok((rows, page.head, None));
             }
         }
@@ -1584,13 +1566,13 @@ mod tests {
         VersionMeta::new(
             version,
             0,
-            galata_vault_proto::audit::Actor::Owner,
+            crate::proto::audit::Actor::Owner,
             0,
             tombstone,
             1,
             Hash32([0; 32]),
             Hash32([0; 32]),
-            galata_vault_proto::ids::Sig64([0; 64]),
+            crate::proto::ids::Sig64([0; 64]),
         )
     }
 

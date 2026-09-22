@@ -7,9 +7,9 @@
 //! renders and parses kits; storing one is the caller's business (`gv`
 //! writes a 0600 file).
 
-use galata_vault_keys::NodeKey;
-use galata_vault_proto::codec::FormatError;
-use galata_vault_proto::path::EnvPath;
+use crate::keys::NodeKey;
+use crate::proto::codec::FormatError;
+use crate::proto::path::EnvPath;
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, Zeroizing};
 
@@ -174,7 +174,7 @@ impl Kit {
         if kit.v != KIT_VERSION {
             return Err(KitFault::Version(kit.v));
         }
-        galata_vault_proto::url::validate_server_url(&kit.server).map_err(KitFault::Server)?;
+        crate::proto::url::validate_server_url(&kit.server).map_err(KitFault::Server)?;
         NodeKey::parse(&kit.key).map_err(KitFault::Key)?;
         if kit.kind == KitKind::Recovery && !kit.path.is_project() {
             return Err(KitFault::NotAProject(kit.path.to_string()));
@@ -238,7 +238,7 @@ mod tests {
 
     #[test]
     fn a_key_of_another_version_is_refused() {
-        let other = galata_vault_proto::codec::encode_checked("gvk2_", &[5u8; 32]);
+        let other = crate::proto::codec::encode_checked("gvk2_", &[5u8; 32]);
         let text = format!(
             "v = 1\nkind = \"recovery\"\npath = \"acme\"\nserver = \"https://vault.example\"\nkey = \"{}\"\n",
             other.as_str()

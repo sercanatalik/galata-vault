@@ -7,7 +7,7 @@
 //! [`crate::Vault::verify_audit`]), and moves only when the whole fetched
 //! range verifies: a failure is an integrity error and leaves it unchanged.
 
-use galata_vault_proto::audit::{Actor, AuditResult, ChainHead, RowStop};
+use crate::proto::audit::{Actor, AuditResult, ChainHead, RowStop};
 
 use crate::error::Error;
 use crate::state::LocalState;

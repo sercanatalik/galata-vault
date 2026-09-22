@@ -18,7 +18,7 @@ include = ["/src/**", "/examples/**", "/Cargo.toml", "/README.md", "/LICENSE-MIT
 [package.metadata.docs.rs]
 # Every documented feature; not `vectors` (a private runner) or
 # `adversary-plant` (test-only, refuses release builds).
-features = ["embedded", "platform-verifier", "test-util"]
+features = ["embedded", "platform-verifier", "test-util", "server", "cli", "mcp", "ui"]
 rustdoc-args = ["--cfg", "docsrs"]
 
 [lints]
@@ -28,23 +28,43 @@ workspace = true
 name = "galata_vault"
 
 [features]
-default = ["http"]
+default = ["sdk", "http"]
+
+# The SDK: the owner API, the token client and the client-side crypto. It is
+# what pulls in `keys` and `seal`, and so every value- and name-crypto
+# dependency. A build without it -- `--no-default-features --features server`
+# -- links none of them, which scripts/check-linkage.sh checks by walking the
+# dependency graph rather than by reading the code.
+sdk = ["dep:age", "dep:bech32",  "dep:thiserror", "dep:getrandom", "dep:chacha20poly1305", "dep:crypto_box", "dep:hkdf", "dep:hmac", "dep:toml"]
 # The HTTP transport. Without it no HTTP client (ureq, rustls, ring) is
 # linked, and a caller brings its own `Transport`.
-http = ["galata-vault-client/http"]
+http = ["sdk", "dep:ureq"]
 # The operating system's trust store instead of the bundled roots.
-platform-verifier = ["http", "galata-vault-client/platform-verifier"]
+platform-verifier = ["http", "ureq/platform-verifier"]
 # In-memory key and state stores, the recording transport, and `testing`.
-test-util = ["galata-vault-client/test-util"]
-# The in-process backend (`galata_vault::embedded`): galata-vault-server-core over the
-# SQLite store in a data directory, with no socket, HTTP or async runtime.
-# It links galata-vault-server-core and galata-vault-store (and so rusqlite), and still no HTTP
-# server, runtime, S3 client or host-process code (scripts/check-sdk-linkage.sh).
-embedded = ["dep:galata-vault-server-core", "dep:galata-vault-store"]
-# The private test-vector runner (`galata_vault::__vectors`), which the Python
-# wheel exposes as `galata_vault._vectors`. Pure: it holds no key between
-# calls and does no I/O. Not a supported interface.
-vectors = ["galata-vault-proto/vectors", "galata-vault-keys/vectors", "galata-vault-seal/vectors"]
+test-util = ["sdk"]
+
+# The SQLite store (`backend`), and the serving logic over it
+# (`server_core`): no HTTP, no async runtime, no socket.
+storage = ["dep:rusqlite"]
+server-core = ["storage"]
+# The in-process backend (`galata_vault::embedded`): the SDK talking to
+# `server_core` directly, with no socket, HTTP or async runtime.
+embedded = ["sdk", "server-core"]
+# The HTTP server (`server`), which crates/gv-server turns into gv-server.
+# Note what it does NOT enable: `sdk`, and so no value or name crypto.
+server = ["server-core", "dep:axum", "dep:tokio", "dep:anyhow", "dep:thiserror", "dep:tracing", "dep:tracing-subscriber", "dep:toml"]
+
+# The two binaries' libraries; crates/gv and crates/gv-mcp wrap them.
+cli = ["sdk", "http", "dep:anyhow", "dep:rlimit", "dep:clap", "dep:keyring", "dep:rpassword", "dep:toml"]
+mcp = ["sdk", "http", "dep:rmcp", "dep:tokio", "dep:anyhow", "dep:rlimit", "dep:toml"]
+# The local UI (`gv ui`): a loopback HTTP server and its templates.
+ui = ["cli", "dep:tiny_http", "dep:maud", "dep:signal-hook", "dep:getrandom"]
+
+# The private test-vector runner (`galata_vault::__vectors`), which the
+# Python wheel exposes as `galata_vault._vectors`. Pure: it holds no key
+# between calls and does no I/O. Not a supported interface.
+vectors = ["sdk"]
 # The adversarial suite's plant, for scripts/adversary-plant.sh only: with
 # GV_ADVERSARY_PLANT=skip-descriptor-signature set, the SDK accepts a
 # descriptor without checking the owner's signature, so the script can prove
@@ -55,41 +75,137 @@ adversary-plant = []
 
 # A client: it links the crypto crates. It must not link keyring, rlimit,
 # rpassword, clap or pyo3 (scripts/check-sdk-linkage.sh); requests, request
-# signing and response mapping are galata-vault-client's.
+# signing and response mapping are the `client` module's.
 [dependencies]
-galata-vault-client.workspace = true
-galata-vault-proto.workspace = true
-galata-vault-keys.workspace = true
-galata-vault-seal.workspace = true
+age = { workspace = true, optional = true }
+anyhow = { workspace = true, optional = true }
+axum = { workspace = true, optional = true }
+base64.workspace = true
+bech32 = { workspace = true, optional = true }
+blake3.workspace = true
+chacha20poly1305 = { workspace = true, optional = true }
+clap = { workspace = true, optional = true }
+crc32fast.workspace = true
+crypto_box = { workspace = true, optional = true }
+ed25519-dalek.workspace = true
+getrandom = { workspace = true, optional = true }
+hex.workspace = true
+hkdf = { workspace = true, optional = true }
+hmac = { workspace = true, optional = true }
+keyring = { workspace = true, optional = true }
+maud = { workspace = true, optional = true }
+rlimit = { workspace = true, optional = true }
+rmcp = { workspace = true, optional = true }
+rpassword = { workspace = true, optional = true }
+rusqlite = { workspace = true, optional = true }
 serde.workspace = true
 serde_json.workspace = true
-toml.workspace = true
+sha2.workspace = true
+signal-hook = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+tiny_http = { workspace = true, optional = true }
+tokio = { workspace = true, features = ["io-std", "rt"], optional = true }
+toml = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+ureq = { workspace = true, optional = true }
 zeroize.workspace = true
-galata-vault-server-core = { workspace = true, optional = true }
-galata-vault-store = { workspace = true, optional = true }
 
 # The integration tests run a real server in-process.
 [dev-dependencies]
-galata-vault = { path = ".", features = ["test-util", "vectors"] }
-galata-vault-server = { path = "../galata-vault-server" }
-# Policies a configuration file cannot ask for, such as the proof-of-work
-# admission a third-party server may apply, for servers built in tests.
-galata-vault-server-core.workspace = true
-# The malicious-server harness (tests/adversary.rs).
-gv-adversary = { path = "../gv-adversary" }
-galata-vault-store.workspace = true
-axum.workspace = true
-tokio.workspace = true
-tempfile.workspace = true
+# The crate's own unit tests use the recording transport, which is behind
+# `test-util`. A dev-dependency on itself is how a crate turns a feature on
+# for its tests only: `cargo test` gets it, a published build never does.
+galata-vault = { path = ".", features = ["test-util"] }
 rlimit.workspace = true
-# The rotation and concurrency properties (tests/properties.rs).
+gv-adversary = { path = "../gv-adversary" }
+http-body-util.workspace = true
 proptest.workspace = true
+rustls = { version = "0.23", features = ["ring", "std"], default-features = false }
+tempfile.workspace = true
+tower.workspace = true
 
-# Only with the in-process backend: `cargo test -p galata-vault --features embedded`.
-[[test]]
-name = "embedded"
-required-features = ["embedded"]
+[[example]]
+name = "branded"
+required-features = ["cli"]
+
+[[example]]
+name = "config_document"
+
+[[example]]
+name = "custom_transport"
 
 [[example]]
 name = "embedded"
-required-features = ["embedded"]
+required-features = ["test-util"]
+
+[[example]]
+name = "owner_workflow"
+
+[[example]]
+name = "pow_calibrate"
+
+[[example]]
+name = "token_read"
+
+# Each test names the features its module needs, so a default-feature build
+# skips it instead of failing to compile it.
+[[test]]
+name = "adversary"
+required-features = ["test-util"]
+
+[[test]]
+name = "backend_concurrency"
+required-features = ["storage"]
+
+[[test]]
+name = "backend_store"
+required-features = ["storage"]
+
+[[test]]
+name = "client_transport"
+required-features = ["test-util", "storage", "server"]
+
+[[test]]
+name = "embedded"
+required-features = ["test-util", "storage", "server-core", "server"]
+
+[[test]]
+name = "hostile"
+required-features = ["test-util", "storage", "server"]
+
+[[test]]
+name = "keys_vectors"
+required-features = ["vectors"]
+
+[[test]]
+name = "owner"
+required-features = ["test-util", "storage", "server"]
+
+[[test]]
+name = "properties"
+required-features = ["test-util", "storage", "server"]
+
+[[test]]
+name = "proto_vectors"
+required-features = ["vectors"]
+
+[[test]]
+name = "sdk"
+required-features = ["test-util", "storage", "server-core", "server"]
+
+[[test]]
+name = "seal_vectors"
+required-features = ["vectors"]
+
+[[test]]
+name = "server_core_core"
+required-features = ["storage", "server-core"]
+
+[[test]]
+name = "server_core_route_table"
+required-features = ["server-core"]
+
+[[test]]
+name = "vectors"
+required-features = ["vectors"]

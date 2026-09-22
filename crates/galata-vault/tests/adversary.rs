@@ -11,23 +11,23 @@
 //! attacker holds everything the server stores and sees, plus, where a test
 //! says so, a token's own bundle.
 
-use galata_vault::testing::RawVault as Core;
-use galata_vault::{Api, ClientBuilder};
-use galata_vault::{Error, ErrorKind, NewConfig, Scope, Vault, code};
-use galata_vault_keys::{FullBundle, NameContext, NodeKey, TokenKeys, WriterKey, seal_for_scope};
-use galata_vault_proto::api::{
+use galata_vault::keys::{FullBundle, NameContext, NodeKey, TokenKeys, WriterKey, seal_for_scope};
+use galata_vault::proto::api::{
     PutSecretRequest, PutSecretResponse, SecretList, SecretVersion, TokenSelf, VaultStatus,
 };
-use galata_vault_proto::audit::Actor;
-use galata_vault_proto::children::{ChildrenBlob, ChildrenRecord};
-use galata_vault_proto::codec::TokenString;
-use galata_vault_proto::ids::{B64, Hash32, Sig64, VaultId};
-use galata_vault_proto::record::{RecordContext, RecordKind};
-use galata_vault_proto::sig::SignedRequest;
-use galata_vault_seal::{
+use galata_vault::proto::audit::Actor;
+use galata_vault::proto::children::{ChildrenBlob, ChildrenRecord};
+use galata_vault::proto::codec::TokenString;
+use galata_vault::proto::ids::{B64, Hash32, Sig64, VaultId};
+use galata_vault::proto::record::{RecordContext, RecordKind};
+use galata_vault::proto::sig::SignedRequest;
+use galata_vault::seal::{
     ConfigFormat, EnvelopeContext, SealError, new_vault_keypair, open_value, seal_config,
     seal_value,
 };
+use galata_vault::testing::RawVault as Core;
+use galata_vault::{Api, ClientBuilder};
+use galata_vault::{Error, ErrorKind, NewConfig, Scope, Vault, code};
 use gv_adversary::{Adversary, Logged, Matcher};
 
 // ------------------------------------------------------------------ setup
@@ -865,7 +865,7 @@ fn a_stripped_or_altered_signature_is_refused() {
 #[test]
 fn a_token_of_another_version_is_refused() {
     let w = world();
-    let other = galata_vault_proto::codec::encode_checked("gvt2_", &[7u8; 48]);
+    let other = galata_vault::proto::codec::encode_checked("gvt2_", &[7u8; 48]);
     let before = w.adv.log().len();
     let e = Vault::new(&other, w.adv.url()).unwrap_err();
     assert_eq!(e.code(), code::INVALID_TOKEN, "{e}");

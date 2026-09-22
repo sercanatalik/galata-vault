@@ -5,12 +5,12 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use galata_vault::backend::{SqliteStore, StoreConfig};
 use galata_vault::client::{Request, Response, Transport, TransportError};
-use galata_vault_server::journal::FileJournal;
-use galata_vault_server::{
+use galata_vault::server::journal::FileJournal;
+use galata_vault::server::{
     AppState, Core as ServerCore, Policy, ServerConfig, SystemClock, router,
 };
-use galata_vault_store::{SqliteStore, StoreConfig};
 use gv_conformance::{Target, Verdict, is_loopback, run};
 
 fn assert_passes(report: &gv_conformance::Report, skipped: &[&str]) {

@@ -62,14 +62,14 @@ case "$VERB" in
         ;;
     expect)
         echo "$PLANTED"
-        [[ "${GV_GUARD_PLANT:-changelog}" == dependency ]] && echo "galata-vault-proto"
+        [[ "${GV_GUARD_PLANT:-changelog}" == dependency ]] && echo "galata-vault"
         exit 0
         ;;
     plant)
         case "${GV_GUARD_PLANT:-changelog}" in
             dependency)
                 # A path dependency left behind at a version of its own.
-                perl -0pi -e 's/^(galata-vault-proto = \{ version = ")[^"]+/${1}'"$PLANTED"'/m' \
+                perl -0pi -e 's/^(galata-vault = \{ version = ")[^"]+/${1}'"$PLANTED"'/m' \
                     "$ROOT/Cargo.toml"
                 ;;
             *)

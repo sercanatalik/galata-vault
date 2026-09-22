@@ -18,9 +18,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use galata_vault_proto::audit::ChainHead;
-use galata_vault_proto::ids::VaultId;
-use galata_vault_proto::path::EnvPath;
+use crate::proto::audit::ChainHead;
+use crate::proto::ids::VaultId;
+use crate::proto::path::EnvPath;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
@@ -434,7 +434,7 @@ impl StateStore for MemoryStateStore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use galata_vault_proto::ids::Hash32;
+    use crate::proto::ids::Hash32;
 
     fn p(s: &str) -> EnvPath {
         s.parse().unwrap()

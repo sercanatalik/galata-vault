@@ -12,6 +12,35 @@ marker guarantees.
 
 ## [Unreleased]
 
+### Changed
+
+- **Ten published crates became one.** `galata-vault` is now the only crate on
+  crates.io; `galata_vault::proto`, `::keys`, `::seal`, `::client`,
+  `::backend` (was `galata-vault-store`), `::server_core`, `::server`,
+  `::cli` and `::mcp` are its modules, each behind the feature that needs it.
+  Code that depended on `galata-vault` and used its re-exports is unaffected.
+  Code that depended on one of the nine directly moves to the matching
+  module: `galata_vault_proto::api::Scope` becomes
+  `galata_vault::proto::api::Scope`, and so on. The nine names stay on
+  crates.io at 0.2.0 and are not updated again.
+- **The separation the crates enforced is now enforced by features, and
+  checked.** `server` does not enable `sdk`, so a server build compiles no
+  value- or name-crypto code and links none of those crates; the SDK's
+  default build links no database, HTTP server or async runtime. The four
+  linkage guards are replaced by one, `scripts/check-linkage.sh`, which
+  reads the dependency graph per feature set *and* reads the source for a
+  serving module that names `crate::keys`, `crate::seal` or `crate::client`
+  -- the half the compiler used to do for free.
+- **The binaries moved to unpublished crates** (`crates/gv`,
+  `crates/gv-server`, `crates/gv-mcp`), thin wrappers that exist so each
+  keeps its own release target list. `gv` is therefore no longer installable
+  with `cargo install galata-vault-cli`: use the installer from a release,
+  the Python package, or `cargo install --git`.
+- Match arms that existed only because an enum was `#[non_exhaustive]` in
+  another crate are gone; inside one crate the compiler proves them
+  unreachable, and a new variant now fails the build at each site instead of
+  falling into a fallback.
+
 ## [0.3.0] - 2026-09-21
 
 ### Changed
@@ -90,7 +119,7 @@ attestations on the GitHub release.
   and two callers flattened that away. One of them was the guard that
   refuses to mint while a token of a scope this client does not know exists
   — so it waved everything through in exactly the case it was written for.
-- `galata-vault-mcp`'s stdio test gave `gv-mcp` 20 seconds to answer while
+- `galata_vault::mcp`'s stdio test gave `gv-mcp` 20 seconds to answer while
   `gv-mcp` itself allows 60 for the vault opens it does first, so a slow
   open failed the test rather than the code. It now waits for the readiness
   line before speaking the protocol.

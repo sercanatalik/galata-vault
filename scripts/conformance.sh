@@ -17,7 +17,7 @@ ROOT="$(cd "${1:-$(dirname "${BASH_SOURCE[0]}")/..}" && pwd)"
 cd "$ROOT"
 
 # The embedded target is gv-conformance's opt-in `embedded` feature.
-if ! out=$(cargo build -q -p galata-vault-server -p gv-conformance --features gv-conformance/embedded 2>&1); then
+if ! out=$(cargo build -q -p gv-server -p gv-conformance --features gv-conformance/embedded 2>&1); then
     echo "conformance: FAILED, the binaries do not build" >&2
     echo "$out" | tail -40 >&2
     exit 1

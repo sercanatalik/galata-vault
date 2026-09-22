@@ -14,12 +14,12 @@
 
 use std::sync::Arc;
 
-use galata_vault_client::{ApiError, Pre};
-use galata_vault_keys::KeyError;
-use galata_vault_proto::api::ErrorCode;
-use galata_vault_proto::audit::ChainError;
-use galata_vault_proto::integrity::IntegrityError;
-use galata_vault_seal::SealError;
+use crate::client::{ApiError, Pre};
+use crate::keys::KeyError;
+use crate::proto::api::ErrorCode;
+use crate::proto::audit::ChainError;
+use crate::proto::integrity::IntegrityError;
+use crate::seal::SealError;
 
 use crate::store::StoreError;
 
@@ -331,10 +331,8 @@ impl From<&IntegrityError> for IntegrityFailure {
             }
             IntegrityError::GenerationRollback { known, got } => {
                 IntegrityFailure::GenerationRollback { known, got }
-            }
-            // An integrity failure galata-vault-proto names that this build does not:
-            // still an integrity failure.
-            _ => IntegrityFailure::BindingMismatch("integrity check"),
+            } // An integrity failure galata-vault-proto names that this build does not:
+              // still an integrity failure.
         }
     }
 }
@@ -675,11 +673,9 @@ impl Error {
     }
 
     #[cfg(feature = "http")]
-    pub(crate) fn build(e: galata_vault_client::BuildError) -> Error {
+    pub(crate) fn build(e: crate::client::BuildError) -> Error {
         match e {
-            galata_vault_client::BuildError::InvalidServer(m) => {
-                Error::local(code::INVALID_SERVER, m)
-            }
+            crate::client::BuildError::InvalidServer(m) => Error::local(code::INVALID_SERVER, m),
             other => Error::local(code::INVALID_PROXY, other.to_string()),
         }
     }
@@ -855,11 +851,11 @@ mod tests {
     #[test]
     fn an_unknown_server_code_keeps_its_code_message_and_status_kind() {
         let body = br#"{"error":"future_conflict","message":"try again later"}"#;
-        let transport = galata_vault_client::RecordingTransport::responding(move |_| {
-            Ok(galata_vault_client::Response::new(409, body.to_vec()))
+        let transport = crate::client::RecordingTransport::responding(move |_| {
+            Ok(crate::client::Response::new(409, body.to_vec()))
         });
-        let e = galata_vault_client::Api::new(transport)
-            .status(galata_vault_client::Auth::None)
+        let e = crate::client::Api::new(transport)
+            .status(crate::client::Auth::None)
             .unwrap_err();
         let e = Error::api(e, Some("acme/dev"));
         assert_eq!(e.code(), "future_conflict");
@@ -880,7 +876,7 @@ mod tests {
     #[test]
     fn a_transport_failure_keeps_its_cause() {
         let io = std::io::Error::new(std::io::ErrorKind::ConnectionRefused, "refused");
-        let t = galata_vault_client::TransportError::with_source("https://vault.example", io);
+        let t = crate::client::TransportError::with_source("https://vault.example", io);
         let e = Error::api(ApiError::Transport(t), Some("acme/dev"));
         assert_eq!(e.code(), code::UNREACHABLE);
         assert!(e.message().starts_with("acme/dev: could not reach"), "{e}");

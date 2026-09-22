@@ -4,12 +4,16 @@
 # workflow with `dist generate` after changing this file; CI's `plan` step
 # fails if the two disagree.
 #
-# Per package (their Cargo.toml `[package.metadata.dist]`): galata-vault-cli
-# builds with `ui`; galata-vault-server and galata-vault-mcp build for Linux
-# and macOS only. Crates marked `publish = false` are not built.
+# Per package (their Cargo.toml `[package.metadata.dist]`): crates/gv builds
+# with `ui`; crates/gv-server and crates/gv-mcp build for Linux and macOS
+# only. These three carry `publish = false` -- the one published crate is
+# galata-vault, the library they wrap -- so dist is told to build them
+# explicitly.
 
 [workspace]
 members = ["cargo:."]
+# The binaries live in unpublished crates, so name them.
+packages = ["gv", "gv-server", "gv-mcp"]
 
 [dist]
 cargo-dist-version = "0.32.0"
@@ -35,7 +39,7 @@ installers = ["shell", "powershell"]
 #   publish-jobs = ["homebrew"]
 #
 # and regenerate release.yml with `dist generate`. The install lines in
-# README.md and crates/galata-vault-cli/README.md come back at the same time.
+# README.md comes back at the same time.
 # Provenance: a GitHub artifact attestation for every artifact, and the
 # dependency list embedded in every binary (`cargo audit bin` reads it).
 github-attestations = true

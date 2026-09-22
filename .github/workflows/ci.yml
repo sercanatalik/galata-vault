@@ -88,8 +88,9 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
+          # One published crate, and its whole public surface: the modules
+          # that used to be separate crates are features of it now.
           cargo semver-checks \
             --baseline-rev "$BASE" \
             -p galata-vault \
-            -p galata-vault-cli \
-            -p galata-vault-proto
+            --all-features

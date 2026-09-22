@@ -14,9 +14,7 @@ workspace = true
 # The server side only: it links no client crypto. Tests that use it forge
 # material with the client crates they already depend on.
 [dependencies]
-galata-vault-server = { path = "../galata-vault-server" }
-galata-vault-store.workspace = true
-galata-vault-proto.workspace = true
+galata-vault = { workspace = true, features = ["server", "embedded"] }
 axum.workspace = true
 serde.workspace = true
 serde_json.workspace = true

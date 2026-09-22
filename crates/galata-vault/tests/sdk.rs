@@ -21,22 +21,22 @@ use axum::extract::Request;
 use axum::middleware::Next;
 use axum::response::Response;
 use galata_vault::ClientBuilder;
+use galata_vault::backend::{SqliteStore, StoreConfig};
 use galata_vault::client::{
     Api, HttpTransport, RecordingTransport, Request as WireRequest, Response as WireResponse,
     Transport, TransportError,
 };
-use galata_vault::testing::RawVault as Core;
-use galata_vault::{ChainHead, ConfigFormat, ErrorKind, NewConfig, Scope, Vault, code};
-use galata_vault_keys::NodeKey;
-use galata_vault_proto::api::{ChallengeResponse, CreateVaultRequest, ErrorCode};
-use galata_vault_proto::ids::{B64, Hash32};
-use galata_vault_proto::pow::{self, CHALLENGE_TTL_SECS, Challenge};
-use galata_vault_server::journal::FileJournal;
-use galata_vault_server::{
+use galata_vault::keys::NodeKey;
+use galata_vault::proto::api::{ChallengeResponse, CreateVaultRequest, ErrorCode};
+use galata_vault::proto::ids::{B64, Hash32};
+use galata_vault::proto::pow::{self, CHALLENGE_TTL_SECS, Challenge};
+use galata_vault::server::journal::FileJournal;
+use galata_vault::server::{
     AppState, Core as ServerCore, Policy, ServerConfig, SystemClock, router,
 };
-use galata_vault_server_core::{Admission, Admitted, CoreError};
-use galata_vault_store::{SqliteStore, StoreConfig};
+use galata_vault::server_core::{Admission, Admitted, CoreError};
+use galata_vault::testing::RawVault as Core;
+use galata_vault::{ChainHead, ConfigFormat, ErrorKind, NewConfig, Scope, Vault, code};
 
 struct Server {
     url: String,
@@ -480,7 +480,7 @@ fn pins_refuse_version_and_generation_rollback() {
 #[test]
 fn a_token_of_another_version_is_refused_locally() {
     let env = env();
-    let other = galata_vault_proto::codec::encode_checked("gvt2_", &[7u8; 48]);
+    let other = galata_vault::proto::codec::encode_checked("gvt2_", &[7u8; 48]);
     let e = Vault::new(&other, &env.server.url).unwrap_err();
     assert_eq!((e.code(), e.kind()), (code::INVALID_TOKEN, ErrorKind::Auth));
     assert!(e.message().contains("version 2"), "{e}");

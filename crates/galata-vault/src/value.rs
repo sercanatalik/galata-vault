@@ -4,7 +4,7 @@
 //! Plaintext is reached through `expose()`, which returns exactly the bytes
 //! that were written.
 
-use galata_vault_seal::ConfigFormat;
+use crate::seal::ConfigFormat;
 use serde::de::DeserializeOwned;
 use zeroize::Zeroizing;
 

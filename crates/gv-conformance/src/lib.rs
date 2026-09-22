@@ -13,15 +13,15 @@
 use std::sync::{Arc, Mutex};
 
 use galata_vault::client::{Api, ApiError, Auth, Method, Pre, Reply, Request, Transport};
-use galata_vault::testing::RawVault;
-use galata_vault_keys::{NodeKey, TokenKeys};
-use galata_vault_proto::api::{
+use galata_vault::keys::{NodeKey, TokenKeys};
+use galata_vault::proto::api::{
     Capabilities, ErrorCode, PROTOCOL, PutSecretRequest, Scope, SecretList, VersionList,
 };
-use galata_vault_proto::ids::NameHmac;
-use galata_vault_proto::record::RecordKind;
-use galata_vault_proto::sig::SignedRequest;
-use galata_vault_seal::Writer;
+use galata_vault::proto::ids::NameHmac;
+use galata_vault::proto::record::RecordKind;
+use galata_vault::proto::sig::SignedRequest;
+use galata_vault::seal::Writer;
+use galata_vault::testing::RawVault;
 
 /// What a case found.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -145,7 +145,7 @@ fn now() -> i64 {
 
 /// A random record index: nothing is stored under it.
 fn fresh_index() -> NameHmac {
-    galata_vault_keys::NameKey::generate().hmac("conformance")
+    galata_vault::keys::NameKey::generate().hmac("conformance")
 }
 
 /// The status and code of a refusal, or why it was not one.
@@ -176,7 +176,7 @@ struct Vault {
 }
 
 impl Vault {
-    fn owner(&self) -> galata_vault_keys::OwnerKeys {
+    fn owner(&self) -> galata_vault::keys::OwnerKeys {
         self.key.owner()
     }
 
@@ -712,7 +712,7 @@ fn c10_uniform_401(cx: &Ctx<'_>) -> Step<String> {
     let stranger = NodeKey::generate().owner();
     let get = SignedRequest::new("GET", "/v1/vault", b"");
     let header =
-        |keys: &galata_vault_keys::OwnerKeys, ts| keys.sign_request(&get, ts).to_header_value();
+        |keys: &galata_vault::keys::OwnerKeys, ts| keys.sign_request(&get, ts).to_header_value();
     let good = header(&owner, now());
     // One character in the middle of the signature: still well-formed
     // base64url, no longer a valid signature.

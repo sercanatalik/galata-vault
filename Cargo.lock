@@ -1347,206 +1347,46 @@ dependencies = [
 name = "galata-vault"
 version = "0.3.0"
 dependencies = [
- "axum",
- "galata-vault",
- "galata-vault-client",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "galata-vault-server",
- "galata-vault-server-core",
- "galata-vault-store",
- "gv-adversary",
- "proptest",
- "rlimit",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "toml 1.1.5+spec-1.1.0",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-cli"
-version = "0.3.0"
-dependencies = [
+ "age",
  "anyhow",
  "axum",
+ "base64 0.22.1",
+ "bech32",
+ "blake3",
+ "chacha20poly1305 0.11.0",
  "clap",
+ "crc32fast",
+ "crypto_box",
+ "ed25519-dalek",
  "galata-vault",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "galata-vault-server",
- "galata-vault-store",
  "getrandom 0.4.3",
  "gv-adversary",
+ "hex",
+ "hkdf 0.13.0",
+ "hmac 0.13.0",
+ "http-body-util",
  "keyring",
  "maud",
+ "proptest",
  "rlimit",
+ "rmcp",
  "rpassword",
  "rusqlite",
+ "rustls",
  "serde",
  "serde_json",
  "sha2 0.11.0",
  "signal-hook",
  "tempfile",
+ "thiserror 2.0.20",
  "tiny_http",
- "tokio",
- "toml 1.1.5+spec-1.1.0",
- "ureq",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-client"
-version = "0.3.0"
-dependencies = [
- "axum",
- "galata-vault-client",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-server",
- "galata-vault-store",
- "rustls",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "ureq",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-keys"
-version = "0.3.0"
-dependencies = [
- "chacha20poly1305 0.11.0",
- "crypto_box",
- "ed25519-dalek",
- "galata-vault-keys",
- "galata-vault-proto",
- "getrandom 0.4.3",
- "hex",
- "hkdf 0.13.0",
- "hmac 0.13.0",
- "proptest",
- "serde",
- "serde_json",
- "sha2 0.11.0",
- "thiserror 2.0.20",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-mcp"
-version = "0.3.0"
-dependencies = [
- "anyhow",
- "axum",
- "galata-vault",
- "galata-vault-client",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "galata-vault-server",
- "galata-vault-store",
- "gv-adversary",
- "rlimit",
- "rmcp",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "toml 1.1.5+spec-1.1.0",
- "ureq",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-proto"
-version = "0.3.0"
-dependencies = [
- "base64 0.22.1",
- "blake3",
- "crc32fast",
- "ed25519-dalek",
- "galata-vault-proto",
- "hex",
- "proptest",
- "serde",
- "serde_json",
- "sha2 0.11.0",
- "thiserror 2.0.20",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-seal"
-version = "0.3.0"
-dependencies = [
- "age",
- "bech32",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "hex",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "zeroize",
-]
-
-[[package]]
-name = "galata-vault-server"
-version = "0.3.0"
-dependencies = [
- "anyhow",
- "axum",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "galata-vault-server-core",
- "galata-vault-store",
- "http-body-util",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.20",
  "tokio",
  "toml 1.1.5+spec-1.1.0",
  "tower",
  "tracing",
  "tracing-subscriber",
+ "ureq",
  "zeroize",
-]
-
-[[package]]
-name = "galata-vault-server-core"
-version = "0.3.0"
-dependencies = [
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "galata-vault-store",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "galata-vault-store"
-version = "0.3.0"
-dependencies = [
- "galata-vault-proto",
- "rusqlite",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.20",
 ]
 
 [[package]]
@@ -1617,13 +1457,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "gv"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "galata-vault",
+ "gv-adversary",
+ "http-body-util",
+ "rlimit",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "toml 1.1.5+spec-1.1.0",
+ "tower",
+ "ureq",
+]
+
+[[package]]
 name = "gv-adversary"
 version = "0.3.0"
 dependencies = [
  "axum",
- "galata-vault-proto",
- "galata-vault-server",
- "galata-vault-store",
+ "galata-vault",
  "serde",
  "serde_json",
  "tempfile",
@@ -1637,14 +1496,27 @@ version = "0.3.0"
 dependencies = [
  "axum",
  "galata-vault",
- "galata-vault-keys",
- "galata-vault-proto",
- "galata-vault-seal",
- "galata-vault-server",
- "galata-vault-store",
  "serde_json",
  "tempfile",
  "tokio",
+ "ureq",
+]
+
+[[package]]
+name = "gv-mcp"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "galata-vault",
+ "gv-adversary",
+ "rlimit",
+ "rmcp",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "toml 1.1.5+spec-1.1.0",
  "ureq",
 ]
 
@@ -1653,10 +1525,29 @@ name = "gv-py"
 version = "0.3.0"
 dependencies = [
  "galata-vault",
- "galata-vault-cli",
- "galata-vault-proto",
  "pyo3",
  "serde_json",
+ "zeroize",
+]
+
+[[package]]
+name = "gv-server"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "galata-vault",
+ "http-body-util",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "toml 1.1.5+spec-1.1.0",
+ "tower",
+ "tracing",
+ "tracing-subscriber",
+ "ureq",
  "zeroize",
 ]
 

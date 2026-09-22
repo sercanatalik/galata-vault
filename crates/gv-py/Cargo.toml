@@ -21,15 +21,12 @@ unimplemented = "deny"
 [lib]
 crate-type = ["cdylib"]
 
-# A client: every vault operation is the galata-vault SDK's; galata-vault-cli is here
+# A client: every vault operation is the galata-vault SDK's; the `cli` module is here
 # only for the bundled `gv` command. The server and MCP linkage guards are
 # unaffected.
 [dependencies]
 # `vectors`: the private `_vectors` runner ships in the wheel.
-galata-vault = { workspace = true, features = ["vectors"] }
+galata-vault = { workspace = true, features = ["vectors", "cli", "ui"] }
 serde_json.workspace = true
-# `ui` on: the wheel's `gv` keeps `gv ui` (galata-vault-cli has it off by default).
-galata-vault-cli = { path = "../galata-vault-cli", features = ["ui"] }
-galata-vault-proto.workspace = true
 pyo3.workspace = true
 zeroize.workspace = true

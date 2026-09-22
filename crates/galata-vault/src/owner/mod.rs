@@ -4,7 +4,7 @@
 //! An [`Owner`] is built from a [`KeyStore`] (where held node keys live), a
 //! [`StateStore`] (the known tree and bookkeeping), an optional
 //! [`crate::Events`] observer, and a connector that reaches each project's
-//! pinned server (by default [`galata_vault_client::ClientBuilder`] over HTTP).
+//! pinned server (by default [`crate::client::ClientBuilder`] over HTTP).
 //!
 //! The library asks nothing and prints nothing:
 //! - every confirmation `gv` asks for is a typestate or an argument: a new
@@ -44,12 +44,12 @@ pub use rekey::{PendingRekey, RekeyAborted, RekeyOutcome};
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 
-use galata_vault_client::{Api, Events, NoEvents, Progress, Warning, now};
-use galata_vault_keys::{NodeKey, seal_child_key};
-use galata_vault_proto::children::{ChildEntry, ChildMode};
-use galata_vault_proto::codec::FormatError;
-use galata_vault_proto::ids::B64;
-use galata_vault_proto::path::{EnvPath, Segment};
+use crate::client::{Api, Events, NoEvents, Progress, Warning, now};
+use crate::keys::{NodeKey, seal_child_key};
+use crate::proto::children::{ChildEntry, ChildMode};
+use crate::proto::codec::FormatError;
+use crate::proto::ids::B64;
+use crate::proto::path::{EnvPath, Segment};
 
 use crate::audit::{self, AuditReport};
 use crate::error::{Error, code};
@@ -143,7 +143,7 @@ fn default_connector() -> Connector {
     #[cfg(feature = "http")]
     {
         Arc::new(|server: &str| {
-            galata_vault_client::ClientBuilder::new(server)
+            crate::client::ClientBuilder::new(server)
                 .build()
                 .map_err(Error::build)
         })
@@ -378,11 +378,6 @@ impl Owner {
                             Error::key(e, format!("{child}'s sealed key does not open"))
                         })?
                     }
-                    _ => {
-                        return Err(Error::unsupported(format!(
-                            "{here}'s children record lists {seg} in a way this client does not know"
-                        )));
-                    }
                 }
             } else {
                 key.child(seg)
@@ -560,13 +555,6 @@ impl Owner {
                             }
                         }
                     }
-                    _ => {
-                        self.events.warning(&Warning::SealedKeyUnopenable {
-                            path: child.to_string(),
-                            message: "its children entry is in a form this client does not know; upgrade to reach it".to_owned(),
-                        });
-                        continue;
-                    }
                 };
                 queue.push(next);
             }
@@ -680,7 +668,7 @@ impl Owner {
             )
         })?;
         let path = EnvPath::project(seg);
-        let server = galata_vault_proto::url::validate_server_url(server)
+        let server = crate::proto::url::validate_server_url(server)
             .map_err(|e| Error::local(code::INVALID_SERVER, e))?;
         if self.state.projects.contains_key(project) {
             return Err(Error::local(

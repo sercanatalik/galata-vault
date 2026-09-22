@@ -30,7 +30,7 @@ cd "$ROOT"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/gv-python.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
-if ! out="$(cargo build -q -p galata-vault-server 2>&1)"; then
+if ! out="$(cargo build -q -p gv-server 2>&1)"; then
     echo "python: FAILED building gv-server" >&2
     echo "$out" | tail -20 >&2
     exit 1

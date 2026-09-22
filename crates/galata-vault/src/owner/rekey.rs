@@ -11,12 +11,12 @@
 use std::collections::{HashMap, VecDeque};
 use std::path::PathBuf;
 
-use galata_vault_client::{Api, Auth, Progress, Warning, now};
-use galata_vault_keys::NodeKey;
-use galata_vault_proto::api::ErrorCode;
-use galata_vault_proto::children::{ChildEntry, ChildMode, ChildrenRecord};
-use galata_vault_proto::ids::VaultId;
-use galata_vault_proto::path::{EnvPath, Segment};
+use crate::client::{Api, Auth, Progress, Warning, now};
+use crate::keys::NodeKey;
+use crate::proto::api::ErrorCode;
+use crate::proto::children::{ChildEntry, ChildMode, ChildrenRecord};
+use crate::proto::ids::VaultId;
+use crate::proto::path::{EnvPath, Segment};
 
 use super::{Kit, KitKind, Owner, RetiresAllTokens, chain_end, children_error};
 use crate::error::{Error, code};
@@ -277,12 +277,6 @@ impl Owner {
                             )
                         })?
                     }
-                    _ => {
-                        return Err(Error::unsupported(format!(
-                            "{here}'s children record lists {} in a way this client does not know",
-                            entry.seg
-                        )));
-                    }
                 };
                 queue.push_back((child, child_key));
             }
@@ -421,11 +415,6 @@ impl Owner {
                                                 format!("{label}'s sealed key does not open"),
                                             )
                                         })?,
-                                    _ => {
-                                        return Err(Error::unsupported(format!(
-                                            "{label}'s old parent lists it in a way this client does not know"
-                                        )));
-                                    }
                                 })
                             }
                         }

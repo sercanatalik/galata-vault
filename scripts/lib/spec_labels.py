@@ -9,7 +9,7 @@ import pathlib
 import re
 import sys
 
-CRATES = ("galata-vault-proto", "galata-vault-keys", "galata-vault-seal")
+MODULES = ("proto", "keys", "seal")
 # A string or byte-string literal holding a label or a context. Byte strings
 # may carry the framing's 0x00 after the label (`b"gv/v1/vault-id\0"`).
 LITERAL = re.compile(
@@ -19,8 +19,8 @@ LITERAL = re.compile(
 
 def code_labels(root: pathlib.Path) -> dict[str, str]:
     found: dict[str, str] = {}
-    for crate in CRATES:
-        for path in sorted((root / "crates" / crate / "src").rglob("*.rs")):
+    for module in MODULES:
+        for path in sorted((root / "crates" / "galata-vault" / "src" / module).rglob("*.rs")):
             text = path.read_text()
             cut = text.find("#[cfg(test)]")
             if cut >= 0:
@@ -60,13 +60,13 @@ def main() -> int:
         if label not in spec
     ]
     problems += [
-        f"{label} is registered in docs/spec/keys.md#3 but no longer used by {', '.join(CRATES)}"
+        f"{label} is registered in docs/spec/keys.md#3 but no longer used by {', '.join(f'the `{m}` module' for m in MODULES)}"
         for label in sorted(spec - code.keys())
     ]
     if problems:
         print("\n".join(problems))
         return 1
-    print(f"{len(spec)} labels, the same in docs/spec/keys.md#3 and in {', '.join(CRATES)}")
+    print(f"{len(spec)} labels, the same in docs/spec/keys.md#3 and in {', '.join(f'the `{m}` module' for m in MODULES)}")
     return 0
 
 

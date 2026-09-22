@@ -12,7 +12,7 @@ publish = false
 workspace = true
 
 # The embedded target (`--embedded <dir>`) links the SDK's in-process
-# backend, and so galata-vault-server-core and galata-vault-store. It is opt-in: Cargo unifies
+# backend, and so the server_core and backend modules. It is opt-in: Cargo unifies
 # features across the workspace, so enabling galata-vault/embedded here by
 # default would put the server core into every workspace build of the SDK,
 # which scripts/check-sdk-linkage.sh forbids. scripts/conformance.sh and
@@ -30,15 +30,11 @@ path = "src/main.rs"
 # send, and ureq for the HTTP-only checks on headers and query strings.
 [dependencies]
 galata-vault = { workspace = true, features = ["test-util"] }
-galata-vault-keys.workspace = true
-galata-vault-seal.workspace = true
-galata-vault-proto.workspace = true
 serde_json.workspace = true
 ureq.workspace = true
 
 [dev-dependencies]
-galata-vault-server = { path = "../galata-vault-server" }
-galata-vault-store.workspace = true
+galata-vault = { workspace = true, features = ["server", "embedded", "test-util"] }
 axum.workspace = true
 tokio.workspace = true
 tempfile.workspace = true

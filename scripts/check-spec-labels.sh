@@ -33,10 +33,10 @@ fi
 case "$VERB" in
     targets)
         echo "docs/spec/keys.md"
-        echo "crates/galata-vault-proto/src"
-        echo "crates/galata-vault-proto/src/frame.rs"
-        echo "crates/galata-vault-keys/src"
-        echo "crates/galata-vault-seal/src"
+        echo "crates/galata-vault/src/proto"
+        echo "crates/galata-vault/src/proto/frame.rs"
+        echo "crates/galata-vault/src/keys"
+        echo "crates/galata-vault/src/seal"
         echo "scripts/lib/spec_labels.py"
         exit 0
         ;;
@@ -47,7 +47,7 @@ case "$VERB" in
     plant)
         # A new derivation label added to the code without a registry row.
         perl -0pi -e 's/(\n\s*pub const SIG: &str = "gv\/v1\/sig";)/$1\n    pub const PLANTED: &str = "gv\/v1\/planted-by-test-guards";/' \
-            "$ROOT/crates/galata-vault-proto/src/frame.rs"
+            "$ROOT/crates/galata-vault/src/proto/frame.rs"
         exit 0
         ;;
 esac

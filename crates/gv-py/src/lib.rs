@@ -15,8 +15,8 @@
 
 use std::path::PathBuf;
 
+use galata_vault::proto::ids::Hash32;
 use galata_vault::{ChainHead, ConfigFormat, EXPIRY_WARNING_SECS, Error, NewConfig, Vault, code};
-use galata_vault_proto::ids::Hash32;
 use pyo3::create_exception;
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
@@ -271,7 +271,7 @@ fn _vectors_run(construct: &str, case: &str) -> PyResult<String> {
 /// returns its exit status.
 #[pyfunction]
 fn run_cli(py: Python<'_>, args: Vec<String>) -> u8 {
-    py.detach(|| galata_vault_cli::run(args))
+    py.detach(|| galata_vault::cli::run(args))
 }
 
 #[pymodule]

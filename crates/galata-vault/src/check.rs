@@ -7,8 +7,8 @@
 //! while a heuristic's misses would look like a guarantee it cannot give.
 //! Errors name the line and the kind of pattern, never the matched text.
 
-use galata_vault_keys::TokenKeys;
-use galata_vault_seal::ConfigFormat;
+use crate::keys::TokenKeys;
+use crate::seal::ConfigFormat;
 
 use crate::error::{Error, code};
 
@@ -80,7 +80,7 @@ fn is_token(s: &str) -> bool {
 }
 
 fn is_node_key(s: &str) -> bool {
-    galata_vault_proto::codec::decode_node_key(s).is_ok()
+    crate::proto::codec::decode_node_key(s).is_ok()
 }
 
 /// A prefix, what a match is called, and the check that it is a real one.
@@ -166,7 +166,7 @@ mod tests {
                 .starts_with("line 2")
         );
 
-        let token = TokenKeys::generate(galata_vault_proto::ids::VaultId([3; 16])).token_string();
+        let token = TokenKeys::generate(crate::proto::ids::VaultId([3; 16])).token_string();
         let line = format!("token = \"{}\"", token.as_str());
         assert!(scan_literals(line.as_bytes()).is_err());
         // A mistyped token is not a token. The replacement has to differ from

@@ -164,10 +164,10 @@ their own notices.
   `Vault::with_api` and `Owner::with_connector`.
 - `platform-verifier`: verify TLS with the operating system's trust store.
 - `embedded`: the in-process backend, `galata_vault::embedded::open(dir)`: a
-  `Transport` that runs `galata-vault-server-core` over the SQLite store in a data
+  `Transport` that runs `galata_vault::server_core` over the SQLite store in a data
   directory, the layout `gv-server local` uses, with no socket, HTTP or
   async runtime. Every request is signed and checked as over HTTP. It links
-  `galata-vault-server-core`, `galata-vault-store` and `rusqlite`, and no HTTP server, runtime or
+  `galata_vault::server_core`, `galata_vault::backend` and `rusqlite`, and no HTTP server, runtime or
   S3 client (`scripts/check-sdk-linkage.sh`). One process opens a directory
   at a time (`data_dir_in_use` otherwise); several processes share vaults
   through `gv-server local`. The module documentation states what the
@@ -251,7 +251,7 @@ keychain and no process limits, writes nothing to stdout or stderr, prompts
 for nothing, installs no signal handler, starts no runtime and keeps no
 process-global state. `scripts/check-sdk-linkage.sh` keeps keyring, rlimit,
 rpassword, clap and pyo3 out of its dependency graph, and
-`scripts/check-client-linkage.sh` keeps value decryption out of `galata-vault-client`,
+`scripts/check-client-linkage.sh` keeps value decryption out of `galata_vault::client`,
 the transport crate beneath it.
 
 ## Examples

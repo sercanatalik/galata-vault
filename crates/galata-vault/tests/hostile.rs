@@ -4,18 +4,31 @@
 //!
 //! The hostile answers come from transports that never open a socket (or
 //! that pass only the token's own view through to a real server), so every
-//! `galata_vault_client::Api` operation and the SDK paths on top meet malformed JSON,
+//! `galata_vault::client::Api` operation and the SDK paths on top meet malformed JSON,
 //! unknown statuses, truncated bodies and unknown error codes.
 
 use std::net::SocketAddr;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 
+use galata_vault::backend::{SqliteStore, StoreConfig};
 use galata_vault::client::{
     Api, ApiError, Auth, HttpTransport, Pre, RecordingTransport, Request, Response, Transport,
     TransportError,
 };
+use galata_vault::keys::{
+    FullBundle, NodeKey, OwnerKeys, TokenKeys, seal_for_scope, seal_owner_bundle,
+};
 use galata_vault::owner::Owner;
+use galata_vault::proto::api::{
+    ChallengePurpose, CreateVaultRequest, DeleteRecordRequest, PutSecretRequest,
+    RegisterTokenRequest, ReportTokenRequest, RotationRequest,
+};
+use galata_vault::proto::children::ChildrenRecord;
+use galata_vault::proto::ids::{B64, Hash32, NameHmac, Sig64};
+use galata_vault::proto::record::RecordKind;
+use galata_vault::server::journal::FileJournal;
+use galata_vault::server::{AppState, ServerConfig, SystemClock, router};
 use galata_vault::state::MemoryStateStore;
 use galata_vault::store::MemoryKeyStore;
 use galata_vault::testing::RawVault;
@@ -23,19 +36,6 @@ use galata_vault::{
     ChainHead, ClientBuilder, ConfigFormat, Error, ErrorKind, NewConfig, Scope, Vault, code,
     kind_of,
 };
-use galata_vault_keys::{
-    FullBundle, NodeKey, OwnerKeys, TokenKeys, seal_for_scope, seal_owner_bundle,
-};
-use galata_vault_proto::api::{
-    ChallengePurpose, CreateVaultRequest, DeleteRecordRequest, PutSecretRequest,
-    RegisterTokenRequest, ReportTokenRequest, RotationRequest,
-};
-use galata_vault_proto::children::ChildrenRecord;
-use galata_vault_proto::ids::{B64, Hash32, NameHmac, Sig64};
-use galata_vault_proto::record::RecordKind;
-use galata_vault_server::journal::FileJournal;
-use galata_vault_server::{AppState, ServerConfig, SystemClock, router};
-use galata_vault_store::{SqliteStore, StoreConfig};
 
 fn start() -> String {
     let dir = tempfile::tempdir().unwrap();

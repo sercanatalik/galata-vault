@@ -1,4 +1,4 @@
-"""List galata-vault-proto's types declared `deny_unknown_fields`, and fail on any that
+"""List the `proto` module's types declared `deny_unknown_fields`, and fail on any that
 the allow-list does not name (scripts/check-response-types.sh).
 
 Usage: response_types.py <root>. Prints a summary and exits 0, or prints one
@@ -38,7 +38,7 @@ ITEM = re.compile(r"pub(?:\([a-z]+\))?\s+(?:struct|enum)\s+(\w+)")
 
 def main() -> int:
     root = pathlib.Path(sys.argv[1])
-    src = root / "crates" / "galata-vault-proto" / "src"
+    src = root / "crates" / "galata-vault" / "src" / "proto"
     files = sorted(src.rglob("*.rs"))
     if not files:
         print(f"no Rust source under {src}")
@@ -65,7 +65,7 @@ def main() -> int:
     if problems:
         print("\n".join(problems))
         return 1
-    print(f"{len(strict)} strict types in galata-vault-proto, every one a request body, the audit row or never a response")
+    print(f"{len(strict)} strict types in the `proto` module, every one a request body, the audit row or never a response")
     return 0
 
 

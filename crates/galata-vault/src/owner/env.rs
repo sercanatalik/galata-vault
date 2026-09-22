@@ -3,11 +3,11 @@
 
 use std::ops::Deref;
 
-use galata_vault_client::Warning;
-use galata_vault_proto::api::{Scope, TokenSummary, VaultStatus};
-use galata_vault_proto::ids::TokenId;
-use galata_vault_proto::path::EnvPath;
-use galata_vault_proto::tolerant::Tolerant;
+use crate::client::Warning;
+use crate::proto::api::{Scope, TokenSummary, VaultStatus};
+use crate::proto::ids::TokenId;
+use crate::proto::path::EnvPath;
+use crate::proto::tolerant::Tolerant;
 use zeroize::Zeroizing;
 
 use crate::error::Error;
@@ -181,7 +181,7 @@ impl Environment {
     /// needs it is the guard in [`Environment::mint`], which exists to stop
     /// a mint while a token of an unknown scope is present — and an absent
     /// list is exactly when that guard would otherwise wave everything
-    /// through. `galata_vault_seal::SealError::TokensNotVisible` refuses the
+    /// through. `crate::seal::SealError::TokensNotVisible` refuses the
     /// same way for a rotation.
     fn visible_tokens(&self) -> Result<&[TokenSummary], Error> {
         self.status.tokens.as_deref().ok_or_else(|| {

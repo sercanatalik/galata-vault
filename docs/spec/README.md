@@ -310,9 +310,9 @@ every file, through the Python wheel.
 
 | Constructs | Runs in |
 |---|---|
-| `strings`, `paths`, `audit`, `pow` | `galata-vault-proto` (`crates/galata-vault-proto/tests/vectors.rs`) |
-| `keys`, `names`, `descriptors`, `bundles`, `records`, `signatures`, `children` | `galata-vault-keys` (`crates/galata-vault-keys/tests/vectors.rs`) |
-| `envelopes` | `galata-vault-seal` (`crates/galata-vault-seal/tests/vectors.rs`) |
+| `strings`, `paths`, `audit`, `pow` | `galata_vault::proto` (`crates/galata_vault::proto/tests/vectors.rs`) |
+| `keys`, `names`, `descriptors`, `bundles`, `records`, `signatures`, `children` | `galata_vault::keys` (`crates/galata_vault::keys/tests/vectors.rs`) |
+| `envelopes` | `galata_vault::seal` (`crates/galata_vault::seal/tests/vectors.rs`) |
 | `kits` | `galata-vault` (`crates/galata-vault/tests/vectors.rs`) |
 | every file | the Python wheel, through `galata_vault._vectors` (`crates/gv-py/tests/test_vectors.py`) |
 
@@ -392,9 +392,9 @@ build:
 | Check | Holds |
 |---|---|
 | `scripts/check-spec-labels.sh` | The label registry ([keys.md#3](keys.md#3)) is exactly the set of labels and contexts in the protocol, keys and seal crates, in both directions |
-| `crates/galata-vault-proto/tests/spec_tables.rs` | The error-code table ([http-api.md#5](http-api.md#5)) is exactly `ErrorCode`, with each code's status and retry class; every anchor a vector cites exists |
-| `crates/galata-vault-server-core/tests/route_table.rs` | The endpoint table ([http-api.md#2](http-api.md#2)) is exactly the server's route table, by method, path and authentication scheme |
-| `scripts/check-response-types.sh` | In `galata-vault-proto`, only request bodies, the audit row, and types that never cross the wire as a response (the children record's plaintext, the MCP's configuration) refuse unknown fields ([http-api.md#7](http-api.md#7)) |
+| `crates/galata_vault::proto/tests/spec_tables.rs` | The error-code table ([http-api.md#5](http-api.md#5)) is exactly `ErrorCode`, with each code's status and retry class; every anchor a vector cites exists |
+| `crates/galata_vault::server_core/tests/route_table.rs` | The endpoint table ([http-api.md#2](http-api.md#2)) is exactly the server's route table, by method, path and authentication scheme |
+| `scripts/check-response-types.sh` | In `galata_vault::proto`, only request bodies, the audit row, and types that never cross the wire as a response (the children record's plaintext, the MCP's configuration) refuse unknown fields ([http-api.md#7](http-api.md#7)) |
 | The vector regenerate-and-diff ([§5.3](#5.3)) | The committed vectors are what the independent generator produces |
 | The vector tests ([§5.4](#5.4)) | The Rust crates and the Python wheel agree with every vector |
 | The conformance suite ([§6](#6)) | A server built from this repository behaves as specified, over HTTP and embedded |
@@ -507,7 +507,7 @@ count those as enforcement.
   `If-None-Match` other than `*`, is `invalid_request`; a quoted or weak
   `If-Match` is accepted.
 - [#4.5](http-api.md#4.5), [#4.6](http-api.md#4.6): `X-GV-Expires-At` and
-  `Retry-After` *(galata-vault-server tests)*.
+  `Retry-After` *(galata_vault::server tests)*.
 - [#5.1](http-api.md#5.1): codes are only ever added. The error-table test
   catches a removal or a rename, not a reuse.
 - [#6.1](http-api.md#6.1), [#6.3](http-api.md#6.3): `server` absent by
@@ -523,15 +523,15 @@ count those as enforcement.
 **hosted.md** (no server in this repository implements the appendix, so
 nothing here is covered by a server test)
 - [#2](hosted.md#2): with `proof_of_work` null, `/v1/challenges` is 404
-  *(galata-vault-server tests)*; the challenge encoding, difficulty and
+  *(galata_vault::server tests)*; the challenge encoding, difficulty and
   expiry have vectors, and the SDK's own admission exercises solving one
   *(galata-vault tests)*.
 - [#3](hosted.md#3): that no answer carries `X-GV-Expires-At` and no vault
-  expires *(galata-vault-server tests)*; the client's handling of a server
-  that announces an expiry *(galata-vault-cli tests)*.
+  expires *(galata_vault::server tests)*; the client's handling of a server
+  that announces an expiry *(galata_vault::cli tests)*.
 - [#4](hosted.md#4): not covered. No server here limits a request, and
   client addresses reach no database, log or metric
-  *(galata-vault-server tests)*.
+  *(galata_vault::server tests)*.
 
 **stability.md**
 - [#2](stability.md#2): a byte change comes with a new marker. The

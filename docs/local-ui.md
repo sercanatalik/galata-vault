@@ -35,7 +35,7 @@ believed. The server holds only the hashes of the names in those rows.
 - **One thread owns all state:** the owner session and its credential store,
   the browser session, the pending confirmation, a minted token awaiting
   hand-over, and the clipboard timers.
-- **Code:** `crates/galata-vault-cli/src/ui/`. The HTTP plumbing and checks are in
+- **Code:** `crates/galata_vault::cli/src/ui/`. The HTTP plumbing and checks are in
   `web.rs`, the loop and handlers in `app.rs`, templates in `pages.rs`, and
   the clipboard in `clip.rs`.
 
@@ -50,7 +50,7 @@ believed. The server holds only the hashes of the names in those rows.
 
 ## Threats and controls
 
-| Threat | Control | Where tested (`crates/galata-vault-cli/tests/ui.rs`) |
+| Threat | Control | Where tested (`crates/galata_vault::cli/tests/ui.rs`) |
 |---|---|---|
 | Another site in the same browser posts to `gv ui` (CSRF) | `SameSite=Strict` cookie. Every `POST` needs `Origin` equal to `http://127.0.0.1:<port>` and `X-GV-UI: 1`. No CORS headers are sent, so cross-origin reads fail. `GET` changes nothing | `every_request_is_checked_and_every_response_hardened` |
 | DNS rebinding (a name that resolves to 127.0.0.1) | An exact `Host` match, checked before any handler; otherwise 421 with an empty body | same |

@@ -6,13 +6,13 @@
 //! Applications use [`crate::Vault`] and [`crate::owner`]; nothing here is
 //! needed to use the service.
 
-use galata_vault_client::{Api, Pre};
-use galata_vault_keys::{NameKey, NodeKey, TokenKeys};
-use galata_vault_proto::api::{RegisterTokenResponse, RevokeResponse, Scope};
-use galata_vault_proto::children::ChildrenRecord;
-use galata_vault_proto::descriptor::Descriptor;
-use galata_vault_proto::ids::{NameHmac, TokenId, VaultId};
-use galata_vault_seal::{ConfigFormat, Opened, OpenedConfig};
+use crate::client::{Api, Pre};
+use crate::keys::{NameKey, NodeKey, TokenKeys};
+use crate::proto::api::{RegisterTokenResponse, RevokeResponse, Scope};
+use crate::proto::children::ChildrenRecord;
+use crate::proto::descriptor::Descriptor;
+use crate::proto::ids::{NameHmac, TokenId, VaultId};
+use crate::seal::{ConfigFormat, Opened, OpenedConfig};
 
 use crate::error::Error;
 use crate::token::Vault;
@@ -66,12 +66,12 @@ impl RawVault {
     }
 
     /// The secret writer key, if this credential holds it.
-    pub fn secret_writer(&self) -> Option<galata_vault_keys::WriterKey> {
+    pub fn secret_writer(&self) -> Option<crate::keys::WriterKey> {
         self.0.view().bundle.secret_writer().cloned()
     }
 
     /// The config writer key, if this credential holds it.
-    pub fn config_writer(&self) -> Option<galata_vault_keys::WriterKey> {
+    pub fn config_writer(&self) -> Option<crate::keys::WriterKey> {
         self.0.view().bundle.config_writer().cloned()
     }
 

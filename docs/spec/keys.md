@@ -52,7 +52,7 @@ password-hardening function would add nothing, and none is used.
 
 Every label and context string the protocol, key and seal crates use. The
 guard `scripts/check-spec-labels.sh` extracts these strings from
-`crates/galata-vault-proto`, `crates/galata-vault-keys` and `crates/galata-vault-seal` and fails if the
+`crates/galata_vault::proto`, `crates/galata_vault::keys` and `crates/galata_vault::seal` and fails if the
 code uses one this table does not list, or this table lists one the code no
 longer uses.
 

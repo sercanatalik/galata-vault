@@ -9,16 +9,16 @@ use std::sync::{Arc, Mutex};
 
 use axum::extract::Request;
 use axum::middleware::Next;
+use galata_vault::backend::{SqliteStore, Store, StoreConfig};
 use galata_vault::owner::{GrantsSubtreeOwnership, Kit, KitKind, Owner, RetiresAllTokens};
+use galata_vault::server::journal::FileJournal;
+use galata_vault::server::{AppState, Core, Policy, ServerConfig, SystemClock, router};
 use galata_vault::state::MemoryStateStore;
 use galata_vault::store::MemoryKeyStore;
 use galata_vault::{
     Actor, AuditReport, ClientBuilder, EnvPath, Error, ErrorKind, Events, FileStateStore, Progress,
     Scope, StateStore, Vault, Warning, code,
 };
-use galata_vault_server::journal::FileJournal;
-use galata_vault_server::{AppState, Core, Policy, ServerConfig, SystemClock, router};
-use galata_vault_store::{SqliteStore, Store, StoreConfig};
 use gv_adversary::{Adversary, Matcher};
 
 struct Server {

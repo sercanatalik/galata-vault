@@ -1,0 +1,44 @@
+[package]
+name = "gv-server"
+description = "The gv-server binary. Not published: it is a thin wrapper around the galata-vault crate, which is where the code and the version live."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+# The one published crate is galata-vault. These three exist so that dist can
+# give each binary its own target list (RELEASING.md); nothing else.
+publish = false
+
+[package.metadata.dist]
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "aarch64-unknown-linux-gnu", "x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "gv-server"
+path = "src/main.rs"
+
+[dependencies]
+galata-vault = { workspace = true, features = ["server"] }
+anyhow.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+clap.workspace = true
+axum.workspace = true
+
+[dev-dependencies]
+serde.workspace = true
+galata-vault = { workspace = true, features = ["server", "embedded", "test-util"] }
+axum.workspace = true
+http-body-util.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+toml.workspace = true
+tower.workspace = true
+ureq.workspace = true
+zeroize.workspace = true

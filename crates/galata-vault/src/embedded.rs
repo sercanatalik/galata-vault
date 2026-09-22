@@ -62,10 +62,10 @@
 use std::path::Path;
 use std::sync::Arc;
 
-use galata_vault_client::{Request, Response, Transport, TransportError};
-use galata_vault_server_core::data_dir::{DataDir, DataDirError};
-use galata_vault_server_core::{CanonicalRequest, Core, FileJournal, Policy, SystemClock};
-use galata_vault_store::{SqliteStore, StoreConfig};
+use crate::backend::{SqliteStore, StoreConfig};
+use crate::client::{Request, Response, Transport, TransportError};
+use crate::server_core::data_dir::{DataDir, DataDirError};
+use crate::server_core::{CanonicalRequest, Core, FileJournal, Policy, SystemClock};
 
 use crate::error::{Error, code};
 

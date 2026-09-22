@@ -1,0 +1,52 @@
+[package]
+name = "gv"
+description = "The gv binary. Not published: it is a thin wrapper around the galata-vault crate, which is where the code and the version live."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+# The one published crate is galata-vault. These three exist so that dist can
+# give each binary its own target list (RELEASING.md); nothing else.
+publish = false
+
+[package.metadata.dist]
+# gv ships with the local UI compiled in.
+features = ["ui"]
+
+# `gv ui`, which every released gv has and an embedding binary may not want.
+[features]
+default = []
+ui = ["galata-vault/ui"]
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "gv"
+path = "src/main.rs"
+
+[dependencies]
+galata-vault = { workspace = true, features = ["cli"] }
+
+[dev-dependencies]
+anyhow.workspace = true
+clap.workspace = true
+serde.workspace = true
+rlimit.workspace = true
+galata-vault = { workspace = true, features = ["cli", "ui", "test-util", "embedded", "server"] }
+gv-adversary = { path = "../gv-adversary" }
+axum.workspace = true
+http-body-util.workspace = true
+rusqlite.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+toml.workspace = true
+tower.workspace = true
+ureq.workspace = true
+
+[[test]]
+name = "cli_ui"
+required-features = ["ui"]

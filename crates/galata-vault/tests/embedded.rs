@@ -12,18 +12,18 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Arc;
 
+use galata_vault::backend::{SqliteStore, StoreConfig};
 use galata_vault::client::{Api, Auth, Method, Pre};
+use galata_vault::keys::NodeKey;
 use galata_vault::owner::Owner;
+use galata_vault::proto::audit::{Actor, AuditAction, AuditResult};
+use galata_vault::server::journal::FileJournal;
+use galata_vault::server::{AppState, ServerConfig, SystemClock, router};
+use galata_vault::server_core::data_dir::{DATABASE, DataDir, JOURNAL_ROOT};
 use galata_vault::state::MemoryStateStore;
 use galata_vault::store::MemoryKeyStore;
 use galata_vault::testing::RawVault;
 use galata_vault::{ClientBuilder, ConfigFormat, EnvPath, Error, Scope, Vault, code, embedded};
-use galata_vault_keys::NodeKey;
-use galata_vault_proto::audit::{Actor, AuditAction, AuditResult};
-use galata_vault_server::journal::FileJournal;
-use galata_vault_server::{AppState, ServerConfig, SystemClock, router};
-use galata_vault_server_core::data_dir::{DATABASE, DataDir, JOURNAL_ROOT};
-use galata_vault_store::{SqliteStore, StoreConfig};
 
 /// Serve the data directory `dir` over HTTP on loopback, as `gv-server
 /// local` serves one: `vault.db`, and the file journal under `journal-root/`.

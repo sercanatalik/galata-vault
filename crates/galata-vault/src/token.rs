@@ -2,13 +2,13 @@
 
 use std::path::Path;
 
-use galata_vault_client::{Api, Pre, Warning};
-use galata_vault_keys::TokenKeys;
-use galata_vault_proto::FormatError;
-use galata_vault_proto::api::{Scope, VaultStatus, VersionMeta};
-use galata_vault_proto::audit::ChainHead;
-use galata_vault_proto::children::is_reserved_name;
-use galata_vault_proto::ids::TokenId;
+use crate::client::{Api, Pre, Warning};
+use crate::keys::TokenKeys;
+use crate::proto::FormatError;
+use crate::proto::api::{Scope, VaultStatus, VersionMeta};
+use crate::proto::audit::ChainHead;
+use crate::proto::children::is_reserved_name;
+use crate::proto::ids::TokenId;
 use zeroize::Zeroizing;
 
 use crate::audit::{self, AuditReport};
@@ -160,7 +160,7 @@ impl Vault {
     #[cfg(feature = "http")]
     pub fn new(token: &str, server: &str) -> Result<Vault, Error> {
         let keys = parse_token(token)?;
-        let api = galata_vault_client::ClientBuilder::new(server)
+        let api = crate::client::ClientBuilder::new(server)
             .build()
             .map_err(Error::build)?;
         Vault::open(keys, &api)
@@ -168,7 +168,7 @@ impl Vault {
 
     /// Open the vault `token` belongs to over `api`: any transport, with the
     /// observer the API carries (a proxy, a test transport, a
-    /// [`galata_vault_client::ClientBuilder`] with a private CA, …).
+    /// [`crate::client::ClientBuilder`] with a private CA, …).
     pub fn with_api(token: &str, api: &Api) -> Result<Vault, Error> {
         Vault::open(parse_token(token)?, api)
     }
@@ -661,7 +661,7 @@ mod tests {
     #[cfg(feature = "http")]
     #[test]
     fn construction_checks_before_any_request() {
-        use galata_vault_proto::ids::VaultId;
+        use crate::proto::ids::VaultId;
         let e = Vault::new("gvt1_nonsense", "https://vault.example").unwrap_err();
         assert_eq!(e.code(), code::INVALID_TOKEN);
         let token = TokenKeys::generate(VaultId([1; 16])).token_string();
@@ -673,7 +673,7 @@ mod tests {
 
     #[test]
     fn a_token_of_another_version_is_refused() {
-        let other = galata_vault_proto::codec::encode_checked("gvt2_", &[7u8; 48]);
+        let other = crate::proto::codec::encode_checked("gvt2_", &[7u8; 48]);
         let e = parse_token(&other).unwrap_err();
         assert_eq!(
             (e.code(), e.kind()),
@@ -690,7 +690,7 @@ mod tests {
     fn a_token_file_fails_closed_where_permissions_cannot_be_checked() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("token");
-        let token = TokenKeys::generate(galata_vault_proto::ids::VaultId([2; 16])).token_string();
+        let token = TokenKeys::generate(crate::proto::ids::VaultId([2; 16])).token_string();
         std::fs::write(&path, token.as_str()).unwrap();
         let e = read_token_file(&path, TokenFileCheck::Permissions).unwrap_err();
         assert_eq!(e.code(), code::INVALID_TOKEN_FILE);

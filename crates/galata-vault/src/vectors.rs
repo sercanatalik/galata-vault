@@ -6,7 +6,7 @@
 //! tested. Pure: inputs in, what this
 //! build observed out. It keeps no key between calls and does no I/O.
 
-use galata_vault_proto::vectors::{Inputs, Outcome, Step, format_failure, unknown_op};
+use crate::proto::vectors::{Inputs, Outcome, Step, format_failure, unknown_op};
 use serde_json::{Value, json};
 
 use crate::owner::kit::{Kit, KitFault};
@@ -38,12 +38,12 @@ pub fn run(construct: &str, case: &Value) -> Value {
 
 /// Run one operation of `construct` on `inputs`.
 pub fn run_op(construct: &str, op: &str, inputs: &Value) -> Outcome {
-    if galata_vault_proto::vectors::CONSTRUCTS.contains(&construct) {
-        galata_vault_proto::vectors::run(construct, op, inputs)
-    } else if galata_vault_keys::vectors::CONSTRUCTS.contains(&construct) {
-        galata_vault_keys::vectors::run(construct, op, inputs)
-    } else if galata_vault_seal::vectors::CONSTRUCTS.contains(&construct) {
-        galata_vault_seal::vectors::run(construct, op, inputs)
+    if crate::proto::vectors::CONSTRUCTS.contains(&construct) {
+        crate::proto::vectors::run(construct, op, inputs)
+    } else if crate::keys::vectors::CONSTRUCTS.contains(&construct) {
+        crate::keys::vectors::run(construct, op, inputs)
+    } else if crate::seal::vectors::CONSTRUCTS.contains(&construct) {
+        crate::seal::vectors::run(construct, op, inputs)
     } else if construct == "kits" {
         kits(op, Inputs(inputs)).unwrap_or_else(|o| o)
     } else {
@@ -58,7 +58,7 @@ fn kits(op: &str, i: Inputs<'_>) -> Step<Outcome> {
     Ok(match Kit::check(i.str("text")?) {
         Ok(kit) => {
             let key = kit.key().map_err(Outcome::runner_error)?;
-            let bytes = galata_vault_proto::codec::decode_node_key(&key.encode())
+            let bytes = crate::proto::codec::decode_node_key(&key.encode())
                 .map_err(Outcome::runner_error)?;
             Outcome::success(json!({
                 "kind": match kit.kind() {
@@ -67,7 +67,7 @@ fn kits(op: &str, i: Inputs<'_>) -> Step<Outcome> {
                 },
                 "path": kit.path().to_string(),
                 "server": kit.server(),
-                "key": galata_vault_proto::vectors::hex(*bytes),
+                "key": crate::proto::vectors::hex(*bytes),
             }))
         }
         Err(fault) => Outcome::failure(match fault {

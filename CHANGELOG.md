@@ -12,6 +12,8 @@ marker guarantees.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-22
+
 ### Changed
 
 - **Ten published crates became one.** `galata-vault` is now the only crate on
@@ -142,7 +144,8 @@ attestations on the GitHub release.
   other than your own, and what this build deliberately does not implement.
 - This changelog, and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.4.0
 [0.3.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.3.0
 [0.2.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.2.0
 [0.1.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.1.0

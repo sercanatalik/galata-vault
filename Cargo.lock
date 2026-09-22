@@ -1345,7 +1345,7 @@ dependencies = [
 
 [[package]]
 name = "galata-vault"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "age",
  "anyhow",
@@ -1458,7 +1458,7 @@ dependencies = [
 
 [[package]]
 name = "gv"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1479,7 +1479,7 @@ dependencies = [
 
 [[package]]
 name = "gv-adversary"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "axum",
  "galata-vault",
@@ -1492,7 +1492,7 @@ dependencies = [
 
 [[package]]
 name = "gv-conformance"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "axum",
  "galata-vault",
@@ -1504,7 +1504,7 @@ dependencies = [
 
 [[package]]
 name = "gv-mcp"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1522,7 +1522,7 @@ dependencies = [
 
 [[package]]
 name = "gv-py"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "galata-vault",
  "pyo3",
@@ -1532,7 +1532,7 @@ dependencies = [
 
 [[package]]
 name = "gv-server"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "axum",

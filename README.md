@@ -20,6 +20,10 @@ galata-vault is a Rust library first: the `galata-vault` SDK. Built on it are
 the `gv` command line, a Python package, a server that cannot decrypt, and a
 metadata-only MCP server for AI agents.
 
+It is a general-purpose tool, and it is also the configuration and secret
+store of [Galata](#part-of-galata), a low-latency algorithmic trading
+framework in Rust.
+
 > **galata-vault has not been independently audited. Its formats may change
 > before 1.0. Use it at your own risk.**
 
@@ -182,6 +186,54 @@ it all.
 All of it is also on the documentation site,
 <https://sercanatalik.github.io/galata-vault/>, built from this repository by
 `.github/workflows/pages.yml`.
+
+## Part of Galata
+
+Galata is a Rust framework for low-latency algorithmic trading. It covers
+multi-venue market data capture, signal generation, deterministic portfolio
+risk controls, and agentic strategy execution driven by a fine-tuned decision
+model that turns market signals into calibrated probabilities. galata-vault is
+its single source of configuration and secrets.
+
+```mermaid
+flowchart LR
+    VAULT["gv-server local<br/>loopback :8750<br/>ciphertext only"]
+    CAP["galata-datawatch<br/>capture, one per venue"]
+    NATS{{"NATS"}}
+    TOWER["galata-tower"]
+    VAULT -- "config document<br/>+ its venue's credentials" --> CAP
+    VAULT -- "broker passwords" --> NATS
+    VAULT -- "reader password" --> TOWER
+```
+
+- **One source, never two.** Capture fetches its configuration document from
+  the vault once, at boot, and refuses to start if the vault is unreachable.
+  There is no cached last-known-good copy to disagree with it.
+- **Each service holds a token for its own secrets only.** A capture process
+  can read its venue's credentials and nothing else. Credentials that must be
+  cryptographically isolated from each other, such as two venues' keys, go in
+  child vaults, since an allow-list is server policy rather than a second
+  encryption boundary.
+- **Local-first.** The reference deployment runs `gv-server local` on
+  loopback, so the vault's availability is the machine's, not a network's.
+
+Galata consumes this repository only as the published `galata-vault` crate,
+never as a path or git dependency. How it is wired is described in
+[galata-datawatch](https://github.com/sercanatalik/galata-datawatch#configuration-and-secrets).
+
+## Roadmap
+
+| Item | Status |
+|---|---|
+| One published crate in place of ten, with the server/SDK split enforced by features | done in 0.4.0 |
+| Refuse at startup a database whose tables do not match its schema version | done, in the next release |
+| Deprecate the nine crates that 0.4.0 folded into `galata-vault` (still on crates.io at 0.2.0) | next |
+| Homebrew tap for `gv`, `gv-server` and `gv-mcp` | planned; see [RELEASING.md](RELEASING.md) |
+| **1.0**: an external security review published under `audit/` with every high-severity finding fixed, the wire and file formats declared frozen in [docs/spec/](docs/spec/README.md), and OpenSSF Best Practices "passing" | before 1.0 |
+
+For Galata, the vault next holds the Robinhood venue credentials (a provider
+RPC key for Robinhood Chain and an Ed25519 key for the Crypto Trading API),
+each in its own child vault.
 
 ## Contributing and licence
 

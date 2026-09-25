@@ -186,5 +186,90 @@ pub(crate) fn migrate(conn: &Connection) -> Result<(), StoreError> {
         )?;
         tx.commit()?;
     }
+    check_shape(conn)
+}
+
+/// Every table this binary's migrations define, compared column by column
+/// with the table on disk.
+///
+/// The expected shape is what `MIGRATIONS` produce in a fresh in-memory
+/// database — never a second, hand-kept list that a later migration could
+/// forget to update. Found on 2026-09-25: version 1's SQL had been edited in
+/// place before the first release, so a pre-release database recorded
+/// version 1, was skipped by `migrate`, and failed at its first write.
+fn check_shape(conn: &Connection) -> Result<(), StoreError> {
+    let fresh = Connection::open_in_memory()?;
+    for (_, sql) in MIGRATIONS {
+        fresh.execute_batch(sql)?;
+    }
+    let mut tables = fresh.prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
+    )?;
+    let names: Vec<String> = tables
+        .query_map([], |r| r.get(0))?
+        .collect::<Result<_, _>>()?;
+    for table in names {
+        let want = columns(&fresh, &table)?;
+        let have = columns(conn, &table)?;
+        if have.is_empty() {
+            return Err(StoreError::ReshapedSchema {
+                table,
+                detail: "it is missing".into(),
+            });
+        }
+        if let Some((name, kind)) = want.iter().find(|c| !have.contains(c)) {
+            return Err(StoreError::ReshapedSchema {
+                table,
+                detail: format!("column {name} {kind} is missing"),
+            });
+        }
+        if let Some((name, kind)) = have.iter().find(|c| !want.contains(c)) {
+            return Err(StoreError::ReshapedSchema {
+                table,
+                detail: format!("column {name} {kind} is not in this build's schema"),
+            });
+        }
+    }
     Ok(())
+}
+
+/// A table's columns as (name, declared type), in declaration order.
+fn columns(conn: &Connection, table: &str) -> Result<Vec<(String, String)>, StoreError> {
+    // `table` comes from sqlite_master of this binary's own migrations, never
+    // from input; PRAGMA takes no bound parameter.
+    let mut stmt = conn.prepare(&format!("PRAGMA table_info(\"{table}\")"))?;
+    let cols = stmt
+        .query_map([], |r| Ok((r.get::<_, String>(1)?, r.get::<_, String>(2)?)))?
+        .collect::<Result<_, _>>()?;
+    Ok(cols)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_database_this_binary_made_opens() {
+        let conn = Connection::open_in_memory().unwrap();
+        migrate(&conn).unwrap();
+        // And again: an opened store is reopened on every start.
+        migrate(&conn).unwrap();
+    }
+
+    #[test]
+    fn a_reshaped_version_1_database_is_refused_by_name() {
+        // What a pre-release database looks like: version 1 recorded, and
+        // `vaults` without the column version 1 gained before release.
+        let conn = Connection::open_in_memory().unwrap();
+        migrate(&conn).unwrap();
+        conn.execute_batch("ALTER TABLE vaults DROP COLUMN owner_bundle_sig")
+            .unwrap();
+        match migrate(&conn) {
+            Err(StoreError::ReshapedSchema { table, detail }) => {
+                assert_eq!(table, "vaults");
+                assert!(detail.contains("owner_bundle_sig"), "{detail}");
+            }
+            other => panic!("expected ReshapedSchema, got {other:?}"),
+        }
+    }
 }

@@ -176,7 +176,10 @@ impl From<StoreError> for CoreError {
             .logged(format!(
                 "journal write failed; operation rolled back: {detail}"
             )),
-            StoreError::NotWal(_) | StoreError::Database(_) | StoreError::NewerSchema { .. } => {
+            StoreError::NotWal(_)
+            | StoreError::Database(_)
+            | StoreError::NewerSchema { .. }
+            | StoreError::ReshapedSchema { .. } => {
                 CoreError::internal().logged(format!("storage error: {e}"))
             }
         }

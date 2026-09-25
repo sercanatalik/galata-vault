@@ -225,6 +225,16 @@ pub enum StoreError {
         "the database has schema version {found}, newer than this gv-server knows ({known}); run the newer binary"
     )]
     NewerSchema { found: i64, known: i64 },
+    /// The database is at a version this binary knows, and its tables are not
+    /// that version's shape — written by a different build of the same
+    /// version, such as a pre-release one. Refused at open: otherwise it opens
+    /// and fails at the first write, which the client sees as an internal error.
+    #[error(
+        "the database's table {table} is not the shape this build's schema gives it: {detail}. \
+         It was written by a different build of the same schema version; move the data \
+         directory aside and start fresh, or run the build that wrote it"
+    )]
+    ReshapedSchema { table: String, detail: String },
 }
 
 impl From<rusqlite::Error> for StoreError {

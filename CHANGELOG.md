@@ -12,6 +12,16 @@ marker guarantees.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A store refuses, at open, a database whose tables are not its version's
+  shape.** A 0.4 `gv-server` started on a data directory written by a
+  pre-release build at the same schema version, listened, and failed at the
+  first write with `table vaults has no column named owner_bundle_sig`, which
+  the client saw as an internal error. It now compares every table with what
+  this build's migrations produce and exits at startup, naming the table, the
+  column and the remedy.
+
 ## [0.4.0] - 2026-09-22
 
 ### Changed

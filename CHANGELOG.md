@@ -12,6 +12,8 @@ marker guarantees.
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-16
+
 ### Security
 
 - **Dependencies with published advisories are updated.** `rustls` 0.23.46,
@@ -219,7 +221,8 @@ attestations on the GitHub release.
   other than your own, and what this build deliberately does not implement.
 - This changelog, and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.5.1
 [0.5.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.5.0
 [0.4.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.4.0
 [0.3.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.3.0

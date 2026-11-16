@@ -12,6 +12,20 @@ marker guarantees.
 
 ## [Unreleased]
 
+### Security
+
+- **Dependencies with published advisories are updated.** `rustls` 0.23.46,
+  `rustls-webpki` 0.103.17, `webpki-roots` and `webpki-root-certs` 1.0.12,
+  `tokio` 1.54, `ctutils` 0.4.8, `rmcp` 3.10 (the MCP server; three
+  advisories), and `rusqlite` 0.43 with the SQLite it bundles
+  (`libsqlite3-sys` 0.40). `cargo deny check` had been failing on these
+  since they were published. Five advisories remain and are ignored by name
+  in `deny.toml`, each with why it cannot be fixed here: `crypto-bigint`
+  0.5, reached only through age's P-256 recipients, which this crate never
+  constructs; and four crates that are unmaintained rather than vulnerable
+  (`basic-toml`, build-time only, and three merged into `zbus` 6, which the
+  Linux keychain backend has not reached).
+
 ## [0.5.0] - 2026-11-16
 
 ### Security

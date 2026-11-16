@@ -44,6 +44,36 @@ multiple-versions = "allow"
 [advisories]
 # A vulnerable dependency in a secrets service is a stop, not a warning.
 yanked = "deny"
+# IGNORED, EACH WITH THE REASON IT CANNOT BE FIXED HERE AND WHAT WOULD END IT.
+# An entry is removed the day its condition is met; `cargo deny` warns when an
+# ignored advisory no longer matches anything, which is the reminder.
+ignore = [
+    # crypto-bigint 0.5: operations meant to be constant-time may branch on
+    # secrets. Fixed in 0.7.6, which elliptic-curve 0.13 cannot take
+    # (`crypto-bigint = "^0.5"`), and elliptic-curve 0.13 is what p256 0.13
+    # needs, which age 0.12.1 -- the newest age -- depends on unconditionally
+    # for its P-256 "tag" recipients. This crate builds only
+    # `age::x25519` identities and recipients (seal/keys.rs) and calls
+    # `age::encrypt` / `age::decrypt` with those, so no P-256 arithmetic runs
+    # on any key it holds. Ends when age moves to p256 0.14, or when `seal`
+    # stops depending on age.
+    { id = "RUSTSEC-2026-0387", reason = "crypto-bigint 0.5 via age 0.12.1's p256; only age::x25519 is used, so the affected arithmetic never runs on a vault key. No age release takes the fix yet." },
+    # basic-toml: unmaintained. Reached only through i18n-config, which age's
+    # localisation macros (i18n-embed-fl, a proc-macro) use at compile time to
+    # read age's own i18n.toml. It parses no input of ours and is not in any
+    # binary's runtime path. Ends when i18n-config drops it or age does.
+    { id = "RUSTSEC-2026-0374", reason = "basic-toml via age's compile-time i18n macros; unmaintained, not vulnerable, and it parses only age's own i18n.toml at build time." },
+    # zvariant, zbus_names, zvariant_derive: no longer published separately;
+    # merged into zbus 6. They arrive through zbus 5 <- secret-service 5 <-
+    # zbus-secret-service-keyring-store 1.0.1 <- keyring 4.2, the Linux
+    # Secret Service backend of `gv`'s keychain. Every one of those is at its
+    # newest stable release; secret-service 6, which takes zbus 6, is a
+    # release candidate. Unmaintained, not vulnerable. Ends when keyring's
+    # store reaches zbus 6.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant merged into zbus 6; keyring 4.2's Secret Service store is still on zbus 5 and has no newer stable release." },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names merged into zbus 6; same chain as RUSTSEC-2026-0370." },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive merged into zbus 6; same chain as RUSTSEC-2026-0370." },
+]
 
 [sources]
 unknown-registry = "deny"

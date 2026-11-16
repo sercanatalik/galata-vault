@@ -12,6 +12,8 @@ marker guarantees.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-16
+
 ### Security
 
 - **`gv` acted as the owner when only `GV_TOKEN_FILE` was set.** The SDK has
@@ -195,7 +197,8 @@ attestations on the GitHub release.
   other than your own, and what this build deliberately does not implement.
 - This changelog, and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/sercanatalik/galata-vault/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.5.0
 [0.4.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.4.0
 [0.3.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.3.0
 [0.2.0]: https://github.com/sercanatalik/galata-vault/releases/tag/v0.2.0

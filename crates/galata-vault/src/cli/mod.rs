@@ -147,9 +147,12 @@ pub fn dispatch(ctx: &mut Context, env: Option<&str>, command: Command) -> anyho
             force,
             only,
         } => secrets::export(ctx, env, format, out.as_deref(), force, &only),
-        Command::Token(TokenCommand::Mint { scope, ttl, only }) => {
-            tokens::mint(ctx, env, &scope, ttl.as_deref(), &only)
-        }
+        Command::Token(TokenCommand::Mint {
+            scope,
+            ttl,
+            only,
+            json,
+        }) => tokens::mint(ctx, env, &scope, ttl.as_deref(), &only, json),
         Command::Token(TokenCommand::Ls) => tokens::ls(ctx, env),
         Command::Token(TokenCommand::Revoke { id, rotate }) => {
             tokens::revoke(ctx, env, &id, rotate)

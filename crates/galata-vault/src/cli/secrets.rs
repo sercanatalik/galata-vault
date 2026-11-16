@@ -23,7 +23,8 @@ use crate::cli::select::selected_env;
 use crate::cli::util::fmt_time;
 
 /// Where a command's vault comes from: a known environment and its owner
-/// key, or `<prefix>TOKEN` + `<prefix>SERVER`.
+/// key, or `<prefix>SERVER` with one of `<prefix>TOKEN` and
+/// `<prefix>TOKEN_FILE`.
 pub(crate) struct Target {
     mode: Mode,
 }
@@ -32,6 +33,8 @@ enum Mode {
     Token {
         api: Api,
         token: Option<Zeroizing<String>>,
+        /// The variable that selected token mode, for refusals to name.
+        var: String,
     },
     Owner {
         owner: Box<Owner>,
@@ -59,31 +62,31 @@ impl Deref for Opened {
 impl Target {
     pub fn select(ctx: &Context, env: Option<&str>) -> anyhow::Result<Target> {
         let b = ctx.branding();
-        let (token_var, server_var) = (b.var("TOKEN"), b.var("SERVER"));
-        if let Some(token) = std::env::var_os(&token_var).filter(|t| !t.is_empty()) {
+        let (token_var, file_var, server_var) =
+            (b.var("TOKEN"), b.var("TOKEN_FILE"), b.var("SERVER"));
+        // The SDK's rule, under this binary's prefix. Once either token
+        // variable is set this is a token or an error: the owner key below is
+        // reached only when both are unset.
+        if let Some(found) = crate::token::token_from_env(&token_var, &file_var, &server_var)? {
+            let var = found.var;
             if env.is_some() {
-                bail!(
-                    "{token_var} is set: token mode acts on the token's own vault and takes no --env"
-                );
+                bail!("{var} is set: token mode acts on the token's own vault and takes no --env");
             }
-            let server = std::env::var(&server_var).with_context(|| {
-                format!("{token_var} is set without {server_var}; token mode needs both")
-            })?;
-            let token = Zeroizing::new(token.to_string_lossy().into_owned());
             // Checked locally: a mistyped token never reaches the server,
             // and the error never repeats it.
-            TokenKeys::parse(&token).map_err(|e| match e {
-                FormatError::UnknownVersion { found } => anyhow::anyhow!(
-                    "{token_var} carries version {found}, which this build does not know"
-                ),
+            TokenKeys::parse(&found.token).map_err(|e| match e {
+                FormatError::UnknownVersion { found } => {
+                    anyhow::anyhow!("{var} carries version {found}, which this build does not know")
+                }
                 _ => anyhow::anyhow!(
-                    "{token_var} is not a valid gvt1_ token (its checksum does not match)"
+                    "{var} does not hold a valid gvt1_ token (its checksum does not match)"
                 ),
             })?;
             return Ok(Target {
                 mode: Mode::Token {
-                    api: ctx.api(&server)?,
-                    token: Some(token),
+                    api: ctx.api(&found.server)?,
+                    token: Some(found.token),
+                    var,
                 },
             });
         }
@@ -98,19 +101,26 @@ impl Target {
         })
     }
 
-    pub fn owner_only(&self, ctx: &Context, what: &str) -> anyhow::Result<()> {
-        if matches!(self.mode, Mode::Token { .. }) {
+    pub fn owner_only(&self, what: &str) -> anyhow::Result<()> {
+        if let Mode::Token { var, .. } = &self.mode {
             bail!(
-                "{what} needs the environment's owner key; a token cannot do it, whatever its scope (unset {} to act as the owner)",
-                ctx.branding().var("TOKEN")
+                "{what} needs the environment's owner key; a token cannot do it, whatever its scope (unset {var} to act as the owner)"
             );
         }
         Ok(())
     }
 
+    /// The variable that put this command in token mode, if one did.
+    pub fn token_var(&self) -> Option<&str> {
+        match &self.mode {
+            Mode::Token { var, .. } => Some(var),
+            Mode::Owner { .. } => None,
+        }
+    }
+
     pub fn open(&mut self) -> anyhow::Result<Opened> {
         match &mut self.mode {
-            Mode::Token { api, token } => {
+            Mode::Token { api, token, .. } => {
                 let token = token
                     .take()
                     .context("the token was already used by this command")?;

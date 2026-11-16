@@ -51,6 +51,10 @@ let vault = Vault::from_token_file("/run/secrets/gv-token", "http://127.0.0.1:84
 # Ok::<(), galata_vault::Error>(())
 ```
 
+`gv` reads the same three variables by the same rule, so a token file that
+opens a vault here selects token mode there. Once either token variable is
+set, `gv` uses that token or refuses: it never falls back to an owner key.
+
 The server must be `https://`, or `http://` on loopback. A token's checksum
 is checked before any request, and neither the token nor anything decrypted
 ever appears in an error.

@@ -12,6 +12,47 @@ marker guarantees.
 
 ## [Unreleased]
 
+### Security
+
+- **`gv` acted as the owner when only `GV_TOKEN_FILE` was set.** The SDK has
+  always opened a vault from `GV_TOKEN` or `GV_TOKEN_FILE`; the command line
+  read only `GV_TOKEN`, ignored the file, and continued with the owner key
+  without saying so. On a machine that holds an environment's owner key, a
+  process started with `gv run` and a restricted token file was therefore
+  given every secret of that environment rather than the names its token
+  allows. Affected: anyone who set `GV_TOKEN_FILE` for `gv` on a machine that
+  also holds the owner key. Not affected: the SDK, the Python package, and
+  machines with no owner key (there `gv` failed for want of a project).
+  Nothing was sent to or readable by the server. Fixed below; if a service
+  was started this way, treat the environment's other secrets as read by it.
+
+### Changed
+
+- **`gv` honours `GV_TOKEN_FILE`, and a token that is set is used or
+  refused.** The command line now applies the rule of `Vault::from_env`,
+  through the same code: `GV_SERVER` with exactly one of `GV_TOKEN` and
+  `GV_TOKEN_FILE`; the file mode 0600 or 0400, holding one token. A missing
+  file, a wrong mode, a bad checksum, both variables set, or no server is an
+  error naming the cause, never a fallback to the owner key. **Breaking:** a
+  shell that exports `GV_TOKEN_FILE` now runs every `gv` command in token
+  mode; owner-only commands say which variable to unset. The same holds
+  under a branded prefix (`<PREFIX>TOKEN_FILE`).
+- **A secret asked for by name and outside the token's allow-list is an
+  error, not an omission.** `Vault::readable(Some(names))`, `gv run --only`
+  and the Python package's `load_env(only=…)` returned the permitted names
+  and silently left the rest out, so `gv run --only B -- cmd` with a token
+  for `A` started `cmd` without `B` and exited 0. They now fail with
+  `forbidden`, naming the secret, and deliver nothing. **Breaking** for a
+  caller that relied on the omission. Without names, the result is still
+  everything the token may read.
+
+### Added
+
+- `gv token mint --json` prints one object on stdout -- `token`, `id`,
+  `scope`, `expires_at` (Unix seconds) and `only` (the allow-list, or
+  `null`) -- so a script stores a token and records its id without matching
+  text on two streams. The default output is unchanged.
+
 ### Fixed
 
 - **A store refuses, at open, a database whose tables are not its version's

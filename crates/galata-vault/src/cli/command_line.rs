@@ -335,6 +335,10 @@ pub enum TokenCommand {
         /// Read tokens only: the names this token may read.
         #[arg(long, value_delimiter = ',')]
         only: Vec<String>,
+        /// Print one JSON object on stdout: token, id, scope, expires_at
+        /// (Unix seconds) and only (the allow-list, or null).
+        #[arg(long)]
+        json: bool,
     },
     /// List the environment's tokens.
     Ls,

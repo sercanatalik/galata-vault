@@ -50,6 +50,63 @@ fn set(var: &str) -> Option<std::ffi::OsString> {
     std::env::var_os(var).filter(|v| !v.is_empty())
 }
 
+/// A token found in the process environment, and the variable that held it.
+#[cfg(feature = "http")]
+pub(crate) struct EnvToken {
+    /// The token string.
+    pub token: Zeroizing<String>,
+    /// The server it belongs to.
+    pub server: String,
+    /// The variable that selected it: `token_var` or `file_var`. Read by the
+    /// command line, to name it in a refusal; the SDK has no use for it.
+    #[cfg_attr(not(feature = "cli"), allow(dead_code))]
+    pub var: String,
+}
+
+/// The one rule for a token in the environment, for [`Vault::from_env`] and
+/// for the command line, which reads the same three variables under its own
+/// prefix.
+///
+/// `Ok(None)` means neither token variable is set (an empty one is unset).
+/// Once either is set, the answer is a token or an error, never `None`: a
+/// caller that named a token has said which authority it intends, and a
+/// token that cannot be used must not be replaced by a stronger one.
+#[cfg(feature = "http")]
+pub(crate) fn token_from_env(
+    token_var: &str,
+    file_var: &str,
+    server_var: &str,
+) -> Result<Option<EnvToken>, Error> {
+    let (token, file) = (set(token_var), set(file_var));
+    if token.is_some() && file.is_some() {
+        return Err(Error::local(
+            code::INVALID_ENVIRONMENT,
+            format!("{token_var} and {file_var} are both set; set exactly one"),
+        ));
+    }
+    let (token, file) = match (token, file) {
+        (None, None) => return Ok(None),
+        pair => pair,
+    };
+    let var = if token.is_some() { token_var } else { file_var };
+    let server = set(server_var).ok_or_else(|| {
+        Error::local(
+            code::MISSING_SERVER,
+            format!("{var} is set without {server_var}; a token needs the server it belongs to"),
+        )
+    })?;
+    let token = match (token, file) {
+        (Some(token), _) => Zeroizing::new(token.to_string_lossy().into_owned()),
+        (None, Some(file)) => read_token_file(Path::new(&file), TokenFileCheck::Permissions)?,
+        (None, None) => return Ok(None),
+    };
+    Ok(Some(EnvToken {
+        token,
+        server: server.to_string_lossy().into_owned(),
+        var: var.to_owned(),
+    }))
+}
+
 /// Check a token string before any request.
 pub(crate) fn parse_token(token: &str) -> Result<TokenKeys, Error> {
     TokenKeys::parse(token).map_err(|e| Error::Auth {
@@ -204,27 +261,15 @@ impl Vault {
     /// of `GV_TOKEN` or `GV_TOKEN_FILE`. Both set is refused, not ranked.
     #[cfg(feature = "http")]
     pub fn from_env() -> Result<Vault, Error> {
-        let (token, file) = (set("GV_TOKEN"), set("GV_TOKEN_FILE"));
-        if token.is_some() && file.is_some() {
-            return Err(Error::local(
-                code::INVALID_ENVIRONMENT,
-                "GV_TOKEN and GV_TOKEN_FILE are both set; set exactly one",
-            ));
-        }
-        let server = set("GV_SERVER").ok_or_else(|| {
-            Error::local(
+        match token_from_env("GV_TOKEN", "GV_TOKEN_FILE", "GV_SERVER")? {
+            Some(found) => Vault::new(&found.token, &found.server),
+            // Neither token variable is set. A missing server is still the
+            // first thing said, as it was before the rule was shared.
+            None if set("GV_SERVER").is_none() => Err(Error::local(
                 code::MISSING_SERVER,
                 "GV_SERVER is not set; a token needs the server it belongs to",
-            )
-        })?;
-        let server = server.to_string_lossy().into_owned();
-        match (token, file) {
-            (Some(token), None) => {
-                let token = Zeroizing::new(token.to_string_lossy().into_owned());
-                Vault::new(&token, &server)
-            }
-            (None, Some(file)) => Vault::from_token_file(file, &server),
-            _ => Err(Error::Auth {
+            )),
+            None => Err(Error::Auth {
                 code: code::INVALID_TOKEN.to_owned(),
                 message: "neither GV_TOKEN nor GV_TOKEN_FILE is set".to_owned(),
             }),
@@ -435,19 +480,30 @@ impl Vault {
         Ok(SecretSet { values })
     }
 
-    /// Every live secret this credential may read, or, with `only`, the
-    /// readable ones among those names, each of which must exist. All or
-    /// nothing: the first failure is the result. This is what `gv run` and
-    /// the Python package's `load_env` inject.
+    /// Every live secret this credential may read, or, with `only`, exactly
+    /// those names: each must exist and each must be one this credential may
+    /// read. All or nothing: the first failure is the result, and it names
+    /// the secret. This is what `gv run` and the Python package's `load_env`
+    /// inject.
+    ///
+    /// A name outside a read token's allow-list is [`Error::Forbidden`], not
+    /// an omission. A caller that asks for a name is about to start something
+    /// that needs it; handing back the rest would start it without.
     pub fn readable(&self, only: Option<&[&str]>) -> Result<SecretSet, Error> {
         let v = self.inner.view();
         self.inner.vault_secret(&v)?;
         let all = self.inner.list()?;
         let only = only.unwrap_or(&[]);
         for want in only {
-            if !all.iter().any(|i| i.name == *want && !i.tombstone) {
+            let Some(item) = all.iter().find(|i| i.name == *want && !i.tombstone) else {
                 return Err(Error::not_found(format!(
                     "{}: no secret named {want}",
+                    self.inner.label
+                )));
+            };
+            if !self.inner.may_read(&v, &item.hmac) {
+                return Err(Error::forbidden(format!(
+                    "{}: this token's allow-list does not include {want}",
                     self.inner.label
                 )));
             }

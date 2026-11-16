@@ -102,6 +102,10 @@ def test_an_allow_listed_read_token_reads_only_its_names(gv):
     with pytest.raises(gvl.ForbiddenError):
         v.get("DENIED")
     assert [name for name, _ in v._inner.load_items(None)] == ["ALLOWED"]
+    # Asked for by name, a secret outside the allow-list is refused, not
+    # left out.
+    with pytest.raises(gvl.ForbiddenError):
+        v.load_env(only=["DENIED"])
 
 
 def test_writes_follow_the_scope(gv):

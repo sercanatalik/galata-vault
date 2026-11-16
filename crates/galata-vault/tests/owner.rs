@@ -591,6 +591,13 @@ fn a_token_can_do_everything_its_scope_allows() {
         read.readable(Some(&["MISSING"])).unwrap_err().code(),
         code::NOT_FOUND
     );
+    // A name that exists and is outside the allow-list is refused by name,
+    // not left out: the rest alone would start a process without it.
+    admin.set_secret("OUTSIDE", b"o").unwrap();
+    let e = read.readable(Some(&["A", "OUTSIDE"])).unwrap_err();
+    assert_eq!(e.code(), code::FORBIDDEN);
+    assert!(e.message().contains("OUTSIDE"), "{e}");
+    assert_eq!(names(read.readable(None).unwrap()), ["A", "B"]);
 
     let store = MemoryStateStore::new();
     let report = read.audit(&store).unwrap();

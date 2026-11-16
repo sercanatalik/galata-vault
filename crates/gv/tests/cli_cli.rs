@@ -2045,3 +2045,271 @@ fn an_admin_token_lists_and_revokes_from_the_command_line() {
     let out = ci.run_with(&["token", "ls"], b"", &as_meta);
     assert!(!out.status.success(), "a revoked token opens nothing");
 }
+
+/// A read token restricted to `PROD_ONLY`, in a 0600 file in the owner's own
+/// working directory, beside a second secret the token may not read.
+fn restricted_token_file(gv: &Gv) -> PathBuf {
+    gv.set("acme/prod", "OTHER", "o1");
+    let token = gv.ok(
+        &[
+            "token",
+            "mint",
+            "--scope",
+            "read",
+            "--only",
+            "PROD_ONLY",
+            "--env",
+            "acme/prod",
+        ],
+        b"",
+    );
+    let path = gv.file("service.gvt");
+    std::fs::write(&path, token).unwrap();
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+    path
+}
+
+/// The defect this closes: with only the token *file* variable set, `gv`
+/// used to ignore it and answer with the owner key, so a service's
+/// restricted token read every secret on a machine that held that key.
+#[test]
+fn a_token_file_selects_token_mode_even_beside_the_owner_key() {
+    let server = Server::start();
+    // `gv` is the owner's machine: its home holds the project key.
+    let gv = project(&server);
+    let file = restricted_token_file(&gv);
+    let tm = [
+        ("GV_TOKEN_FILE", file.to_str().unwrap()),
+        ("GV_SERVER", server.url.as_str()),
+    ];
+
+    // What the token may read, it reads.
+    let out = gv.run_with(
+        &[
+            "run",
+            "--only",
+            "PROD_ONLY",
+            "--",
+            "sh",
+            "-c",
+            "test \"$PROD_ONLY\" = p1",
+        ],
+        b"",
+        &tm,
+    );
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+
+    // What it may not, the owner key does not supply: the command never
+    // starts, so the marker file is never written.
+    let marker = gv.file("started");
+    let script = format!("printf %s \"$OTHER\" > {}", marker.display());
+    let out = gv.run_with(
+        &["run", "--only", "OTHER", "--", "sh", "-c", &script],
+        b"",
+        &tm,
+    );
+    assert!(
+        !out.status.success(),
+        "a restricted token started a command without the name it asked for"
+    );
+    assert!(
+        String::from_utf8_lossy(&out.stderr).contains("OTHER"),
+        "the refusal names the secret"
+    );
+    assert!(!marker.exists(), "the command ran");
+    let out = gv.run_with(&["get", "OTHER"], b"", &tm);
+    assert!(!out.status.success());
+    assert!(!String::from_utf8_lossy(&out.stdout).contains("o1"));
+
+    // Token mode takes no --env, whichever variable selected it.
+    let out = gv.run_with(&["ls", "--env", "acme/prod"], b"", &tm);
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !out.status.success() && err.contains("GV_TOKEN_FILE") && err.contains("--env"),
+        "{err}"
+    );
+
+    // An owner-only command names the variable that is actually set.
+    let out = gv.run_with(&["token", "mint", "--scope", "read"], b"", &tm);
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !out.status.success() && err.contains("unset GV_TOKEN_FILE"),
+        "{err}"
+    );
+    assert!(out.stdout.is_empty());
+}
+
+/// Once a token variable is set, the answer is that token or a refusal. The
+/// owner key on the same machine is never the fallback.
+#[test]
+fn an_unusable_token_is_refused_and_never_replaced_by_the_owner_key() {
+    let server = Server::start();
+    let gv = project(&server);
+    let file = restricted_token_file(&gv);
+    let file = file.to_str().unwrap();
+    let url = server.url.as_str();
+    let refused = |envs: &[(&str, &str)], says: &[&str]| {
+        let out = gv.run_with(&["ls"], b"", envs);
+        let (stdout, err) = (
+            String::from_utf8_lossy(&out.stdout),
+            String::from_utf8_lossy(&out.stderr),
+        );
+        assert!(!out.status.success(), "gv ls answered: {stdout}");
+        assert!(!stdout.contains("PROD_ONLY"), "a name was listed: {stdout}");
+        for said in says {
+            assert!(err.contains(said), "{said:?} not in {err}");
+        }
+    };
+
+    // No such file.
+    let missing = gv.file("absent.gvt");
+    let missing = missing.to_str().unwrap();
+    refused(
+        &[("GV_TOKEN_FILE", missing), ("GV_SERVER", url)],
+        &[missing],
+    );
+
+    // Readable by others.
+    let loose = gv.file("loose.gvt");
+    std::fs::copy(file, &loose).unwrap();
+    std::fs::set_permissions(&loose, std::fs::Permissions::from_mode(0o644)).unwrap();
+    refused(
+        &[
+            ("GV_TOKEN_FILE", loose.to_str().unwrap()),
+            ("GV_SERVER", url),
+        ],
+        &["0644", "0600 or 0400"],
+    );
+
+    // A token whose checksum does not match; its text is never repeated.
+    let token = std::fs::read_to_string(file).unwrap();
+    let token = token.trim();
+    let swap = if token.ends_with('x') { 'y' } else { 'x' };
+    let bad = format!("{}{swap}", &token[..token.len() - 1]);
+    let mangled = gv.file("mangled.gvt");
+    std::fs::write(&mangled, &bad).unwrap();
+    std::fs::set_permissions(&mangled, std::fs::Permissions::from_mode(0o600)).unwrap();
+    let out = gv.run_with(
+        &["ls"],
+        b"",
+        &[
+            ("GV_TOKEN_FILE", mangled.to_str().unwrap()),
+            ("GV_SERVER", url),
+        ],
+    );
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !out.status.success() && err.contains("checksum") && !err.contains(&bad[5..20]),
+        "{err}"
+    );
+
+    // Both variables.
+    refused(
+        &[
+            ("GV_TOKEN", token),
+            ("GV_TOKEN_FILE", file),
+            ("GV_SERVER", url),
+        ],
+        &["GV_TOKEN and GV_TOKEN_FILE are both set"],
+    );
+
+    // No server.
+    refused(&[("GV_TOKEN_FILE", file)], &["GV_TOKEN_FILE", "GV_SERVER"]);
+
+    // An empty variable is an unset one: this is the owner, as before.
+    let out = gv.run_with(&["ls", "--env", "acme/prod"], b"", &[("GV_TOKEN_FILE", "")]);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(String::from_utf8_lossy(&out.stdout).contains("OTHER"));
+}
+
+#[test]
+fn minting_reports_one_json_object_on_request() {
+    let server = Server::start();
+    let gv = project(&server);
+    gv.set("acme/prod", "A", "a1");
+    gv.set("acme/prod", "B", "b1");
+    let before = now();
+    let out = gv.run(
+        &[
+            "token",
+            "mint",
+            "--scope",
+            "read",
+            "--only",
+            "A,B",
+            "--ttl",
+            "365d",
+            "--json",
+            "--env",
+            "acme/prod",
+        ],
+        b"",
+    );
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    // Exactly one object, and nothing else, on stdout.
+    let object: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
+    let token = object["token"].as_str().unwrap().to_owned();
+    let id = object["id"].as_str().unwrap().to_owned();
+    assert!(token.starts_with("gvt1_"));
+    assert_eq!(object["scope"], "read");
+    assert_eq!(object["only"], serde_json::json!(["A", "B"]));
+    let expires = object["expires_at"].as_i64().unwrap();
+    let year = 365 * 86_400;
+    assert!(
+        (before + year - 5..=now() + year + 5).contains(&expires),
+        "{expires}"
+    );
+
+    // The token opens the vault, and the id revokes it.
+    let ci = Gv::new(&server);
+    let tm = [
+        ("GV_TOKEN", token.as_str()),
+        ("GV_SERVER", server.url.as_str()),
+    ];
+    let out = ci.run_with(&["get", "A"], b"", &tm);
+    assert_eq!(String::from_utf8_lossy(&out.stdout), "a1");
+    gv.ok(&["token", "revoke", &id, "--env", "acme/prod"], b"");
+    let out = ci.run_with(&["get", "A"], b"", &tm);
+    assert!(!out.status.success(), "a revoked token still read");
+
+    // No allow-list is null, not an empty list.
+    let out = gv.ok(
+        &[
+            "token",
+            "mint",
+            "--scope",
+            "config",
+            "--json",
+            "--env",
+            "acme/prod",
+        ],
+        b"",
+    );
+    let object: serde_json::Value = serde_json::from_str(&out).unwrap();
+    assert!(object["only"].is_null(), "{object}");
+
+    // A failed mint writes nothing token-shaped: stdout stays empty.
+    let out = ci.run_with(&["token", "mint", "--scope", "read", "--json"], b"", &tm);
+    assert!(!out.status.success());
+    assert!(out.stdout.is_empty());
+
+    // Without --json: the token alone, as before.
+    let plain = gv.ok(
+        &["token", "mint", "--scope", "read", "--env", "acme/prod"],
+        b"",
+    );
+    assert!(plain.trim().starts_with("gvt1_") && plain.trim().lines().count() == 1);
+    assert!(!plain.contains('{'));
+}

@@ -96,6 +96,40 @@ gv token mint --scope config --env acme/prod    # reads configs, never a secret
 Bundles and descriptors are owner-signed, so no token, whatever its scope,
 can produce them.
 
+**Token mode on the command line.** `gv` acts as a token, and never as the
+owner, when `GV_SERVER` is set with exactly one of `GV_TOKEN` (the token) or
+`GV_TOKEN_FILE` (a file holding it). The rules are the SDK's
+`Vault::from_env`: the file must be mode 0600 or 0400 and hold one token and
+nothing else, and setting both variables is refused. An empty variable counts
+as unset.
+
+```sh
+GV_SERVER=http://127.0.0.1:8750 GV_TOKEN_FILE=/run/secrets/app.gvt \
+  gv run --only DATABASE_URL -- ./app
+```
+
+- **A token that is set and cannot be used is refused.** A missing file, a
+  wrong mode, a bad checksum: `gv` says which and exits. It does not fall
+  back to an owner key the machine happens to hold, because a caller that
+  named a token has said which authority it meant.
+- **A name asked for is a name delivered, or nothing is.** `gv run --only`
+  fails, naming the secret, when a name does not exist or is outside the
+  token's allow-list, and the command is not started.
+- Token mode acts on the token's own vault, so it takes no `--env`, and
+  owner-only commands name the variable to unset.
+
+**Minting for a script.** `gv token mint --json` prints one JSON object on
+stdout and nothing else:
+
+```sh
+gv token mint --scope read --only DATABASE_URL --ttl 365d --json --env acme/prod
+# {"token":"gvt1_…","id":"<32 hex>","scope":"read","expires_at":1811462400,"only":["DATABASE_URL"]}
+```
+
+`id` is what `gv token revoke` takes, `expires_at` is Unix seconds, and
+`only` is `null` for a token with no allow-list. Without `--json` the token
+alone is printed, as before.
+
 **Revocation is forward-only.** Revoking a token stops it at the server. A
 holder may already have unwrapped the keys its scope holds, and with a copied
 key can decrypt any ciphertext it already copied, or sign a write the server

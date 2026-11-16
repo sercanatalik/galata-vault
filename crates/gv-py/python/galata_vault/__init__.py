@@ -336,7 +336,8 @@ class Vault:
         """Copy readable secrets into ``os.environ``; returns the names set.
 
         Existing variables are kept unless ``override`` is true. With
-        ``only``, just those names (each must exist). Names that cannot be
+        ``only``, just those names (each must exist and be one this token
+        may read, or nothing is loaded). Names that cannot be
         environment variables are skipped with a warning.
         """
         wanted = None if only is None else list(only)

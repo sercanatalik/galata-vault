@@ -24,6 +24,7 @@ pub fn mint(
     scope: &str,
     ttl: Option<&str>,
     only: &[String],
+    json: bool,
 ) -> anyhow::Result<()> {
     let scope = Scope::parse(scope)
         .context("--scope must be meta, append, read, admin, config or config-write")?;
@@ -32,7 +33,7 @@ pub fn mint(
     }
     let ttl = ttl.map(parse_ttl).transpose()?.unwrap_or(0);
     let mut target = Target::select(ctx, env)?;
-    target.owner_only(ctx, "minting a token")?;
+    target.owner_only("minting a token")?;
     let vault = target.open_owner()?;
     let token = vault.mint(scope, ttl, only)?;
     let label = vault.label().to_owned();
@@ -43,7 +44,23 @@ pub fn mint(
         token.id(),
         fmt_time(token.expires_at())
     ));
-    ctx.out_line(token.expose())?;
+    if json {
+        // One object and nothing else on stdout, so a script stores the
+        // token and records its id without reading the notice above, which
+        // is written for a person and stays on stderr. `only` is null for a
+        // token with no allow-list.
+        let only = (!only.is_empty()).then_some(only);
+        let object = serde_json::json!({
+            "token": token.expose(),
+            "id": token.id().to_string(),
+            "scope": scope.to_string(),
+            "expires_at": token.expires_at(),
+            "only": only,
+        });
+        ctx.out_line(&Zeroizing::new(object.to_string()))?;
+    } else {
+        ctx.out_line(token.expose())?;
+    }
     Ok(())
 }
 
@@ -79,6 +96,7 @@ pub fn revoke(ctx: &mut Context, env: Option<&str>, id: &str, rotate: bool) -> a
         anyhow::anyhow!("a token id is 32 hexadecimal characters (see {bin} token ls)")
     })?;
     let mut target = Target::select(ctx, env)?;
+    let token_var = target.token_var().map(str::to_owned);
     // Not owner-only: `admin` may revoke (docs/spec/http-api.md#2). Rotating
     // still is, so an admin token is told which half it cannot do rather
     // than being refused the whole command.
@@ -92,7 +110,7 @@ pub fn revoke(ctx: &mut Context, env: Option<&str>, id: &str, rotate: bool) -> a
                     "--rotate needs the environment's owner key: rotation re-encrypts every \
                      record and reseals every bundle, which only the owner can do. An admin \
                      token may revoke without it (unset {} to act as the owner).",
-                    ctx.branding().var("TOKEN")
+                    token_var.as_deref().unwrap_or("the token variable")
                 );
             }
             vault.revoke(&id)?
@@ -126,7 +144,7 @@ pub fn revoke(ctx: &mut Context, env: Option<&str>, id: &str, rotate: bool) -> a
 
 pub fn rotate(ctx: &mut Context, env: Option<&str>) -> anyhow::Result<()> {
     let mut target = Target::select(ctx, env)?;
-    target.owner_only(ctx, "rotating a vault")?;
+    target.owner_only("rotating a vault")?;
     let vault = target.open_owner()?;
     let generation = vault.rotate()?;
     let label = vault.label().to_owned();

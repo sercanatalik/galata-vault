@@ -177,6 +177,122 @@ fn a_branded_binary_keeps_its_own_home_words_and_terminal() {
     assert!(home.path().join("state.toml").exists());
 }
 
+/// The child of the token-file test, twice. `mint`: the owner writes two
+/// secrets and a token for one of them into a 0600 file. `read`: the same
+/// home, owner key and all, with only `ACME_TOKEN_FILE` and `ACME_SERVER`
+/// set.
+#[test]
+fn child_token_file() {
+    let Ok(phase) = std::env::var(CHILD) else {
+        return;
+    };
+    let work = PathBuf::from(std::env::var("ACME_TEST_WORK").unwrap());
+    let file = work.join("service.gvt");
+    let run = |stdin: &[u8], args: &[&str]| {
+        let output = Arc::new(CapturedOutput::new());
+        let mut ctx = Context::builder(branded::ACME)
+            .output(output.clone())
+            .prompter(ScriptedPrompter::new().line("saved").stdin(stdin.to_vec()))
+            .build();
+        acme(&mut ctx, args).map(|()| output.stdout_text())
+    };
+    match phase.as_str() {
+        "token-file-mint" => {
+            let server = std::env::var("ACME_TEST_SERVER").unwrap();
+            let kit = work.join("acme.gvkit");
+            run(
+                b"",
+                &[
+                    "init",
+                    "acme",
+                    "--server",
+                    &server,
+                    "--kit",
+                    kit.to_str().unwrap(),
+                ],
+            )
+            .unwrap();
+            run(b"", &["env", "add", "acme/prod"]).unwrap();
+            run(b"s3cret", &["set", "DB", "--env", "acme/prod"]).unwrap();
+            run(b"other", &["set", "OTHER", "--env", "acme/prod"]).unwrap();
+            let token = run(
+                b"",
+                &[
+                    "token",
+                    "mint",
+                    "--scope",
+                    "read",
+                    "--only",
+                    "DB",
+                    "--env",
+                    "acme/prod",
+                ],
+            )
+            .unwrap();
+            std::fs::write(&file, token).unwrap();
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600)).unwrap();
+        }
+        "token-file-read" => {
+            // The product's own prefix selects token mode, and the owner key
+            // in this same home does not answer for what the token cannot.
+            assert_eq!(run(b"", &["get", "DB"]).unwrap(), "s3cret");
+            assert!(run(b"", &["get", "OTHER"]).is_err());
+            let e = run(b"", &["token", "mint", "--scope", "read"]).unwrap_err();
+            assert!(e.to_string().contains("unset ACME_TOKEN_FILE"), "{e}");
+        }
+        _ => {}
+    }
+}
+
+#[test]
+fn a_branded_prefix_token_file_selects_token_mode() {
+    let (server, _data) = start();
+    let home = tempfile::tempdir().unwrap();
+    let work = tempfile::tempdir().unwrap();
+    let child = |phase: &str, token_mode: bool| {
+        let mut cmd = Command::new(std::env::current_exe().unwrap());
+        cmd.args([
+            "--exact",
+            "child_token_file",
+            "--test-threads=1",
+            "--nocapture",
+        ]);
+        for var in [
+            "GV_HOME",
+            "GV_ENV",
+            "GV_TOKEN",
+            "GV_TOKEN_FILE",
+            "GV_SERVER",
+            "ACME_ENV",
+            "ACME_TOKEN",
+            "ACME_TOKEN_FILE",
+            "ACME_SERVER",
+        ] {
+            cmd.env_remove(var);
+        }
+        cmd.env(CHILD, phase)
+            .env("ACME_HOME", home.path())
+            .env("ACME_CREDENTIAL_STORE", "file")
+            .env("ACME_TEST_SERVER", &server)
+            .env("ACME_TEST_WORK", work.path())
+            .current_dir(work.path());
+        if token_mode {
+            cmd.env("ACME_TOKEN_FILE", work.path().join("service.gvt"))
+                .env("ACME_SERVER", &server);
+        }
+        let out = cmd.output().unwrap();
+        assert!(
+            out.status.success(),
+            "{phase}: {}{}",
+            String::from_utf8_lossy(&out.stdout),
+            String::from_utf8_lossy(&out.stderr)
+        );
+    };
+    child("token-file-mint", false);
+    child("token-file-read", true);
+}
+
 /// The vault commands flatten beside the product's own, and the whole tree
 /// parses with the product's name.
 #[test]

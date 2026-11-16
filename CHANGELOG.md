@@ -26,6 +26,14 @@ marker guarantees.
   (`basic-toml`, build-time only, and three merged into `zbus` 6, which the
   Linux keychain backend has not reached).
 
+### Fixed
+
+- **The Apple Silicon builds run again.** GitHub retired the `macos-14`
+  runner that built the `aarch64-apple-darwin` binaries and wheel, so both
+  jobs failed at once for 0.5.0. That release is on crates.io only: it has
+  no GitHub release, no installers and no PyPI package. The builds now use
+  `macos-15`, and the next release carries all three.
+
 ## [0.5.0] - 2026-11-16
 
 ### Security
